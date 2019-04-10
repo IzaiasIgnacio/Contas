@@ -1,0 +1,135 @@
+body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+    background-color: #ccc;
+}
+
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+    margin-top: 15px;
+}
+
+.body-content, .menu_container {
+    width: 90%;
+}
+
+.table {
+    box-shadow: 5px 5px 5px #333;
+}
+
+.table thead, .table tfoot {
+    background-color: #2e3338;
+    color: #fff;
+    font-weight: bold;
+}
+
+.table td, .table th {
+    border: 1px solid #000 !important;
+}
+
+.table tbody td {
+    background-color: #49515a;
+    color: #fff;
+}
+
+.table-condensed td, .table-condensed tfoot td, .table-condensed thead th {
+    padding-left: 2px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+.valores_topo {
+    display: block;
+    padding-top: 12px;
+    margin-left: 10px;
+    color: #9d9d9d;
+}
+
+.navbar-brand {
+    margin-right: 20px;
+}
+
+.divisor {
+    margin-left: 55px;
+}
+
+.td_definido {
+    font-style: italic;
+}
+
+.td_normal {
+    font-style: normal;
+    font-weight: bold;
+    background-color: grey !important;
+}
+
+.td_pago {
+    background-color: royalblue !important;
+}
+
+.td_renda {
+    background-color: forestgreen !important;
+}
+
+.td_terceiros {
+    background-color: palevioletred !important;
+}
+
+.clicado {
+    background-color: #000 !important;
+}
+
+.navbar-brand, .navbar-brand:hover {
+    cursor: pointer;
+    color: #9d9d9d !important;
+}
+
+.modal-content {
+    background-color: #222;
+    color: #fff;
+}
+
+.modal-header {
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.dot {
+    display: inline-block;
+    vertical-align: middle;
+    border-radius: 50%;
+    height: 15px;
+    width: 15px;
+    border: 1px solid #fff;
+}
+.nubank_dot {
+    background-color: purple;
+}
+
+.digio_dot {
+    background-color: blue;
+}
+
+.inter_dot {
+    background-color: orangered;
+}
+
+.itau_dot {
+    background-color: darkblue;
+}
+
+.slow-spin {
+    -webkit-animation: fa-spin 3s infinite linear;
+    animation: fa-spin 3s infinite linear;
+    font-size: 15px;
+}
+
+.topo_cartoes {
+    padding: 0;
+}
+
+.col_valores {
+    margin-left: -5px;
+    margin-top: -5px;
+}
