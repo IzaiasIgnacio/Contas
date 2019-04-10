@@ -19,6 +19,7 @@ class IndexController extends Controller {
         $data = \Carbon\Carbon::createFromFormat('d/m/Y', '01/'.$consolidado->where('nome', 'mes_atual')->first()->valor);
 
         for ($i=0;$i<=5;$i++) {
+            $this->definirValoresFixosMes($data, $movimentacao);
             $movimentacoes_mes[$i] = [
                 'mes' => ucfirst($data->locale('pt-br')->monthName),
                 'movimentacoes' => $movimentacao->whereMonth('data', $data->format('m'))->get()
@@ -34,9 +35,29 @@ class IndexController extends Controller {
             'maximo_movimentacoes' => $maximo_movimentacoes,
             'cartoes' => $cartao->get(),
             'consolidado' => $consolidado,
-            'movimentacoes' => $movimentacao->whereRaw('data >= '.$data->format('Y-m-d'))->get(),
+            'movimentacoes' => $movimentacao->whereRaw("data >= '".$data->format('Y-m-d')."'")->get(),
             'movimentacoes_mes' => $movimentacoes_mes
         ]);
+    }
+
+    private function definirValoresFixosMes($data, $movimentacao) {
+        $valores_fixos = [
+            "virtua" => 207,
+            "netflix" => 45.9,
+            "m" => 1500,
+            "fiesta" => 531.6,
+            "vivo" => 46.99
+        ];
+
+        foreach ($valores_fixos as $nome => $valor) {
+            if ($movimentacao->whereRaw("data = '".$data->format('Y-m-d')."'")->where('nome', $nome)->count() == 0) {
+                $mov = new Movimentacao();
+                $mov->nome = $nome;
+                $mov->valor = $valor;
+                $mov->data = $data->format('Y-m-d');
+                $mov->save();
+            }
+        }
     }
     
 }

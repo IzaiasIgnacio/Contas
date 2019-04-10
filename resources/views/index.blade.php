@@ -67,11 +67,13 @@
                             </thead>
                             <tbody>
                                 @if (count($mes['movimentacoes']) > 0)
+                                    @php $total = 0; @endphp
                                     @for ($i=0;$i<$maximo_movimentacoes;$i++)
                                         <tr>
                                             <td><input type="hidden" class="id_movimentacao" value="@Model.Movimentacoes[i].Id" />{{$mes['movimentacoes'][$i]->nome}}</td>
                                             <td class="text-right td_valor td_@Model.Movimentacoes[i].Status td_@Model.Movimentacoes[i].Tipo">{{$mes['movimentacoes'][$i]->valor}}</td>
                                         </tr>
+                                        @php $total += $mes['movimentacoes'][$i]->valor; @endphp
                                     @endfor
                                 @endif
                                 <tr>
@@ -86,7 +88,7 @@
                                 </tr>
                                 <tr>
                                     <td>Total</td>
-                                    <td class="text-right"><span class="valor_total">ValorTotal</span></td>
+                                    <td class="text-right"><span class="valor_total">{{$total}}</span></td>
                                 </tr>
                                 <tr>
                                     <td>Sobra</td>
