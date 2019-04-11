@@ -22,7 +22,8 @@ class IndexController extends Controller {
             $this->definirValoresFixosMes($data, $movimentacao);
             $movimentacoes_mes[$i] = [
                 'mes' => ucfirst($data->locale('pt-br')->monthName),
-                'movimentacoes' => $movimentacao->whereMonth('data', $data->format('m'))->get()
+                'movimentacoes' => $movimentacao->whereMonth('data', $data->format('m'))->where('tipo', '<>', 'save')->get(),
+                'save' => $movimentacao->whereMonth('data', $data->format('m'))->where('tipo', 'save')->first()
             ];
             
             if (count($movimentacoes_mes[$i]['movimentacoes']) > $maximo_movimentacoes) {
@@ -30,8 +31,12 @@ class IndexController extends Controller {
             }
             $data->addMonth();
         }
+
+        
+        $total_atual = $consolidado->where('nome', 'itau')->first()->valor + $consolidado->where('nome', 'casa')->first()->valor + $consolidado->where('nome', 'inter')->first()->valor;
         
         return view('index', [
+            'total_atual' => number_format($total_atual, 2),
             'maximo_movimentacoes' => $maximo_movimentacoes,
             'cartoes' => $cartao->get(),
             'consolidado' => $consolidado,
@@ -54,6 +59,7 @@ class IndexController extends Controller {
                 $mov = new Movimentacao();
                 $mov->nome = $nome;
                 $mov->valor = $valor;
+                $mov->tipo = 'gasto';
                 $mov->data = $data->format('Y-m-d');
                 $mov->save();
             }

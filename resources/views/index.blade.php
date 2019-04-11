@@ -56,24 +56,36 @@
         </nav>
         <div class="container body-content">
             <div class="row div_movimentacoes">
-                @foreach ($movimentacoes_mes as $mes)
+                @for ($m=0;$m<=5;$m++) {
                     <div class="col-md-2">
                         <table class="table table-condensed table-bordered tabela_mes">
                             <thead>
                                 <tr>
-                                    <th>Mês<input type="hidden" class="mes_clicado" value="@Model.Indice"></th>
-                                    <th class="text-right">{{$mes['mes']}}</th>
+                                    <th>{{$movimentacoes_mes[$m]['mes']}}<input type="hidden" class="mes_clicado" value="@Model.Indice"></th>
+                                    @if ($m == 0)
+                                        <th class="text-right">{{$total_atual}}</th>
+                                    @else
+                                        <th class="text-right">{{$consolidado->where('nome', 'salario')->first()->valor}}</th>
+                                    @endif
                                 </tr>
                             </thead>
                             <tbody>
-                                @if (count($mes['movimentacoes']) > 0)
-                                    @php $total = 0; @endphp
+                                @if (count($movimentacoes_mes[$m]['movimentacoes']) > 0)
+                                    @php $total_mes = 0; @endphp
                                     @for ($i=0;$i<$maximo_movimentacoes;$i++)
-                                        <tr>
-                                            <td><input type="hidden" class="id_movimentacao" value="@Model.Movimentacoes[i].Id" />{{$mes['movimentacoes'][$i]->nome}}</td>
-                                            <td class="text-right td_valor td_@Model.Movimentacoes[i].Status td_@Model.Movimentacoes[i].Tipo">{{$mes['movimentacoes'][$i]->valor}}</td>
-                                        </tr>
-                                        @php $total += $mes['movimentacoes'][$i]->valor; @endphp
+                                        @isset($movimentacoes_mes[$m]['movimentacoes'][$i])
+                                            <tr>
+                                                <td><input type="hidden" class="id_movimentacao" value="@Model.Movimentacoes[i].Id" />{{$movimentacoes_mes[$m]['movimentacoes'][$i]->nome}}</td>
+                                                <td class="text-right td_valor td_@Model.Movimentacoes[i].Status td_@Model.Movimentacoes[i].Tipo">{{$movimentacoes_mes[$m]['movimentacoes'][$i]->valor}}</td>
+                                            </tr>
+                                            @php $total_mes += $movimentacoes_mes[$m]['movimentacoes'][$i]->valor; @endphp
+                                        @endisset
+                                        @empty($movimentacoes_mes[$m]['movimentacoes'][$i])
+                                            <tr>
+                                                <td>&nbsp;</td>
+                                                <td class="text-right">&nbsp;</td>
+                                            </tr>
+                                        @endempty
                                     @endfor
                                 @endif
                                 <tr>
@@ -84,37 +96,55 @@
                             <tfoot>
                                 <tr>
                                     <td><input type="hidden" class="id_movimentacao" value="@Model.SaveId" />Save</td>
-                                    <td class="text-right save_@Model.Indice">Save</td>
+                                    @if ($m == 0)
+                                        <td class="text-right save_@Model.Indice">{{@$movimentacoes_mes[$m]['save']->valor}}</td>
+                                    @else
+                                        <td class="text-right save_@Model.Indice">&nbsp;</td>
+                                    @endif
                                 </tr>
                                 <tr>
                                     <td>Total</td>
-                                    <td class="text-right"><span class="valor_total">{{$total}}</span></td>
+                                    <td class="text-right"><span class="valor_total">{{$total_mes}}</span></td>
                                 </tr>
                                 <tr>
                                     <td>Sobra</td>
-                                    <td class="text-right"><span class="valor_sobra">Sobra</span></td>
+                                    <td class="text-right"><span class="valor_sobra">{{$total_atual-$total_mes-@$movimentacoes_mes[$m]['save']->valor}}</span></td>
                                 </tr>
+                                @if ($m > 0)
+                                    <tr>
+                                        <td>reserva</td>
+                                        <td class="text-right"><span class="valor_sobra"></span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>dif. salario</td>
+                                        <td class="text-right"><span class="valor_sobra"></span></td>
+                                    </tr>
+                                @endif
                             </tfoot>
                         </table>
                     </div>
-                @endforeach
-                @for ($i=0;$i<=5;$i++)
+                @endfor
+                @for ($s=0;$s<=5;$s++)
                     <div class="col-md-2 tabela_saving_@i">
                         <table class="table table-condensed table-bordered">
                             <thead>
                                 <tr>
-                                    <th>Mes</th>
-                                    <th class="text-right">ValorMes</th>
+                                    <th>{{$movimentacoes_mes[$s]['mes']}}</th>
+                                    @if ($s == 0)
+                                        <th class="text-right">{{$consolidado->where('nome', 'savings')->first()->valor}}</th>
+                                    @else
+                                        <th class="text-right">&nbsp</th>
+                                    @endif
                                 </tr>
                             </thead>
                             <tfoot>
                                 <tr>
                                     <td>Save</td>
-                                    <td class="text-right">Save</td>
+                                    <td class="text-right">{{@$movimentacoes_mes[$s]['save']->valor}}</td>
                                 </tr>
                                 <tr>
                                     <td>Total</td>
-                                    <td class="text-right">Sobra</td>
+                                    <td class="text-right">{{$consolidado->where('nome', 'savings')->first()->valor-@$movimentacoes_mes[$s]['save']->valor}}</td>
                                 </tr>
                             </tfoot>
                         </table>
