@@ -56,7 +56,7 @@
         </nav>
         <div class="container body-content">
             <div class="row div_movimentacoes">
-                @for ($m=0;$m<=5;$m++) {
+                @for ($m=0;$m<=5;$m++)
                     <div class="col-md-2">
                         <table class="table table-condensed table-bordered tabela_mes">
                             <thead>
@@ -65,7 +65,7 @@
                                     @if ($m == 0)
                                         <th class="text-right">{{$total_atual}}</th>
                                     @else
-                                        <th class="text-right">{{$consolidado->where('nome', 'salario')->first()->valor}}</th>
+                                        <th class="text-right">{{$consolidado->where('nome', 'salario')->first()->valor+$sobra}}</th>
                                     @endif
                                 </tr>
                             </thead>
@@ -97,7 +97,7 @@
                                 <tr>
                                     <td><input type="hidden" class="id_movimentacao" value="@Model.SaveId" />Save</td>
                                     @if ($m == 0)
-                                        <td class="text-right save_@Model.Indice">{{@$movimentacoes_mes[$m]['save']->valor}}</td>
+                                        <td class="text-right save_@Model.Indice">{{$movimentacoes_mes[$m]['save']->valor}}</td>
                                     @else
                                         <td class="text-right save_@Model.Indice">&nbsp;</td>
                                     @endif
@@ -108,7 +108,8 @@
                                 </tr>
                                 <tr>
                                     <td>Sobra</td>
-                                    <td class="text-right"><span class="valor_sobra">{{$total_atual-$total_mes-@$movimentacoes_mes[$m]['save']->valor}}</span></td>
+                                    @php $sobra = $total_atual-$total_mes-@$movimentacoes_mes[$m]['save']->valor; @endphp
+                                    <td class="text-right"><span class="valor_sobra">{{$sobra}}</span></td>
                                 </tr>
                                 @if ($m > 0)
                                     <tr>
@@ -117,7 +118,7 @@
                                     </tr>
                                     <tr>
                                         <td>dif. salario</td>
-                                        <td class="text-right"><span class="valor_sobra"></span></td>
+                                        <td class="text-right"><span class="valor_sobra">{{$consolidado->where('nome', 'salario')->first()->valor-$total_mes}}</span></td>
                                     </tr>
                                 @endif
                             </tfoot>
