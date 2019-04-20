@@ -7,6 +7,15 @@
         <link rel="stylesheet" href="{{URL::asset('public/css/bootstrap/bootstrap.min.css')}}" />
         <link rel="stylesheet" href="{{URL::asset('public/css/fontawesome/fontawesome-all.css')}}" />
         <link rel="stylesheet" href="{{URL::asset('public/css/app.css')}}" />
+        <script src="{{URL::asset('public/js/jquery.min.js')}}"></script>
+        <script src="{{URL::asset('public/js/bootstrap.min.js')}}"></script>
+        <script type="text/javascript">
+            $().ready(function() {
+                $(".div_movimentacoes").on('click','.tabela_mes thead',function() {
+                    $("#modal_movimentacao").modal('show');
+                });
+            });
+        </script>
     </head>
     <body>
         <nav class="navbar navbar-inverse navbar-fixed-top">
@@ -55,8 +64,25 @@
             </div>
         </nav>
         <div class="container body-content">
+            <div class="modal fade" id="modal_movimentacao" role="dialog" tabindex="-1">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"></span></button>
+                            <h4 class="modal-title">Movimentação</h4>
+                        </div>
+                        <div class="modal-body row">
+                            @include('form_movimentacao')
+                        </div>
+                        <div class="modal-footer footer_form_movimentacao">
+                            <button type="button" class="btn btn-primary salvar">Salvar</button>
+                            <button type="button" class="btn btn-primary cancelar" data-dismiss="modal">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="row div_movimentacoes">
-                @for ($m=0;$m<=5;$m++) {
+                @for ($m=0;$m<=5;$m++)
                     <div class="col-md-2">
                         <table class="table table-condensed table-bordered tabela_mes">
                             <thead>
@@ -108,7 +134,7 @@
                                 </tr>
                                 <tr>
                                     <td>Sobra</td>
-                                    <td class="text-right"><span class="valor_sobra">{{$total_atual-$total_mes-@$movimentacoes_mes[$m]['save']->valor}}</span></td>
+                                    <td class="text-right"><span class="valor_sobra">{{str_replace(",","",$total_atual)-$total_mes-@$movimentacoes_mes[$m]['save']->valor}}</span></td>
                                 </tr>
                                 @if ($m > 0)
                                     <tr>

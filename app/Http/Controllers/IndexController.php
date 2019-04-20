@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Cartao;
 use App\Models\Consolidado;
 use App\Models\Movimentacao;
+use App\Models\Status;
+use App\Models\Tipo;
 
 class IndexController extends Controller {
 
@@ -36,6 +38,8 @@ class IndexController extends Controller {
         $total_atual = $consolidado->where('nome', 'itau')->first()->valor + $consolidado->where('nome', 'casa')->first()->valor + $consolidado->where('nome', 'inter')->first()->valor;
         
         return view('index', [
+            'tipos' => Tipo::get(),
+            'lista_status' => Status::get(),
             'total_atual' => number_format($total_atual, 2),
             'maximo_movimentacoes' => $maximo_movimentacoes,
             'cartoes' => $cartao->get(),
