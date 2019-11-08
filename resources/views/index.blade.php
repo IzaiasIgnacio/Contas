@@ -14,6 +14,10 @@
                 $(".div_movimentacoes").on('click','.tabela_mes thead',function() {
                     $("#modal_movimentacao").modal('show');
                 });
+                $(".salvar").click(function() {
+                    $.post("{{route('salvar_movimentacao')}}", {dados: $("form").serialize()});
+                    $("#modal_movimentacao").modal('hide');
+                });
             });
         </script>
     </head>
@@ -25,11 +29,11 @@
                 </ul>
                 <div class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
-                        <li><span class="valores_topo"><img src="{{URL::asset('public/imagens/casa.png')}}" /> R$ {{$consolidado->where('nome', 'casa')->first()->valor}}</span></li>
-                        <li><span class="valores_topo"><img src="{{URL::asset('public/imagens/itau.png')}}" /> R$ {{$consolidado->where('nome', 'itau')->first()->valor}}</span></li>
-                        <li><span class="valores_topo"><img src="{{URL::asset('public/imagens/inter.png')}}" /> R$ {{$consolidado->where('nome', 'inter')->first()->valor}}</span></li>
+                        <li><span class="valores_topo"><img src="{{URL::asset('public/imagens/casa.png')}}" /> R$ {{$helper->format($consolidado->where('nome', 'casa')->first()->valor)}}</span></li>
+                        <li><span class="valores_topo"><img src="{{URL::asset('public/imagens/itau.png')}}" /> R$ {{$helper->format($consolidado->where('nome', 'itau')->first()->valor)}}</span></li>
+                        <li><span class="valores_topo"><img src="{{URL::asset('public/imagens/inter.png')}}" /> R$ {{$helper->format($consolidado->where('nome', 'inter')->first()->valor)}}</span></li>
                         <li class="divisor">&nbsp;</li>
-                        <li><span class="valores_topo"><img src="{{URL::asset('public/imagens/safe.png')}}" /> R$ {{$consolidado->where('nome', 'savings')->first()->valor}}</span></li>
+                        <li><span class="valores_topo"><img src="{{URL::asset('public/imagens/safe.png')}}" /> R$ {{$helper->format($consolidado->where('nome', 'savings')->first()->valor)}}</span></li>
                         <li class="divisor">&nbsp;</li>
                         @foreach ($cartoes as $cartao)
                             <li>
@@ -43,12 +47,12 @@
                                         <div class="col-md-12 topo_cartoes">
                                             <span class="valores_topo">
                                                 R$ {{
-                                                    $movimentacoes
+                                                    $helper->format($movimentacoes
                                                         ->where('id_cartao', $cartao->id)
                                                         ->whereIn('status', ['normal', 'definido'])
                                                         ->where('tipo', 'gasto')
-                                                            ->sum('valor')
-                                                    }} / {{$cartao->credito}}<br>{{$cartao->numero}}
+                                                            ->sum('valor'))
+                                                    }} / {{$helper->format($cartao->credito)}}<br>{{$cartao->numero}}
                                             </span>
                                         </div>
                                     </div>  
@@ -89,22 +93,35 @@
                                 <tr>
                                     <th>{{$movimentacoes_mes[$m]['mes']}}<input type="hidden" class="mes_clicado" value="@Model.Indice"></th>
                                     @if ($m == 0)
-                                        <th class="text-right">{{$total_atual}}</th>
+                                        <th class="text-right">{{$helper->format($total_atual)}}</th>
                                     @else
-                                        <th class="text-right">{{$consolidado->where('nome', 'salario')->first()->valor}}</th>
+                                        @php $total_atual = $consolidado->where('nome', 'salario')->first()->valor+$sobra @endphp
+                                        <th class="text-right">{{$helper->format($total_atual)}}</th>
                                     @endif
                                 </tr>
                             </thead>
                             <tbody>
                                 @if (count($movimentacoes_mes[$m]['movimentacoes']) > 0)
-                                    @php $total_mes = 0; @endphp
+                                    @php
+                                        $total_mes = 0;
+                                        $renda_mes = 0;
+                                    @endphp
                                     @for ($i=0;$i<$maximo_movimentacoes;$i++)
                                         @isset($movimentacoes_mes[$m]['movimentacoes'][$i])
                                             <tr>
                                                 <td><input type="hidden" class="id_movimentacao" value="@Model.Movimentacoes[i].Id" />{{$movimentacoes_mes[$m]['movimentacoes'][$i]->nome}}</td>
-                                                <td class="text-right td_valor td_@Model.Movimentacoes[i].Status td_@Model.Movimentacoes[i].Tipo">{{$movimentacoes_mes[$m]['movimentacoes'][$i]->valor}}</td>
+                                                <td class="text-right td_valor td_@Model.Movimentacoes[i].Status td_@Model.Movimentacoes[i].Tipo">{{$helper->format($movimentacoes_mes[$m]['movimentacoes'][$i]->valor)}}</td>
                                             </tr>
-                                            @php $total_mes += $movimentacoes_mes[$m]['movimentacoes'][$i]->valor; @endphp
+                                            @php
+                                                if ($movimentacoes_mes[$m]['movimentacoes'][$i]->status != 'pago') {
+                                                    if ($movimentacoes_mes[$m]['movimentacoes'][$i]->tipo == 'gasto') {
+                                                        $total_mes += $movimentacoes_mes[$m]['movimentacoes'][$i]->valor;
+                                                    }
+                                                    if ($movimentacoes_mes[$m]['movimentacoes'][$i]->tipo == 'renda') {
+                                                        $renda_mes += $movimentacoes_mes[$m]['movimentacoes'][$i]->valor;
+                                                    }
+                                                }
+                                            @endphp
                                         @endisset
                                         @empty($movimentacoes_mes[$m]['movimentacoes'][$i])
                                             <tr>
@@ -122,28 +139,37 @@
                             <tfoot>
                                 <tr>
                                     <td><input type="hidden" class="id_movimentacao" value="@Model.SaveId" />Save</td>
+                                    @php
+                                        if ($m == 0) {
+                                            $sobra = str_replace(",","",$total_atual)-$total_mes-$renda_mes-$movimentacoes_mes[$m]['save']->valor;
+                                        }
+                                        else {
+                                            $sobra = str_replace(",","",$total_atual)-($total_mes-$renda_mes);
+                                            $save_mes[$m] = $helper->saveMes($sobra, $consolidado->where('nome', 'mensal')->first()->valor, $m);
+                                        }
+                                    @endphp
                                     @if ($m == 0)
-                                        <td class="text-right save_@Model.Indice">{{@$movimentacoes_mes[$m]['save']->valor}}</td>
+                                        <td class="text-right save_@Model.Indice">{{$helper->format($movimentacoes_mes[$m]['save']->valor)}}</td>
                                     @else
-                                        <td class="text-right save_@Model.Indice">&nbsp;</td>
+                                        <td class="text-right save_@Model.Indice">{{$helper->format($save_mes[$m])}}</td>
                                     @endif
                                 </tr>
                                 <tr>
                                     <td>Total</td>
-                                    <td class="text-right"><span class="valor_total">{{$total_mes}}</span></td>
+                                    <td class="text-right"><span class="valor_total">{{$helper->format($total_mes-$renda_mes)}}</span></td>
                                 </tr>
                                 <tr>
                                     <td>Sobra</td>
-                                    <td class="text-right"><span class="valor_sobra">{{str_replace(",","",$total_atual)-$total_mes-@$movimentacoes_mes[$m]['save']->valor}}</span></td>
+                                    <td class="text-right"><span class="valor_sobra">{{$helper->format($sobra)}}</span></td>
                                 </tr>
                                 @if ($m > 0)
                                     <tr>
                                         <td>reserva</td>
-                                        <td class="text-right"><span class="valor_sobra"></span></td>
+                                        <td class="text-right"><span class="valor_sobra">{{$helper->format($total_atual-($total_mes-$renda_mes)-$save_mes[$m])}}</span></td>
                                     </tr>
                                     <tr>
                                         <td>dif. salario</td>
-                                        <td class="text-right"><span class="valor_sobra"></span></td>
+                                        <td class="text-right"><span class="valor_sobra">{{$helper->format($consolidado->where('nome', 'salario')->first()->valor-($total_mes-$renda_mes))}}</span></td>
                                     </tr>
                                 @endif
                             </tfoot>
@@ -151,26 +177,38 @@
                     </div>
                 @endfor
                 @for ($s=0;$s<=5;$s++)
+                    @php
+                        if ($s == 0) {
+                            $savings_mes[$s] = $consolidado->where('nome', 'savings')->first()->valor+@$movimentacoes_mes[$s]['save']->valor;
+                        }
+                        else {
+                            $savings_mes[$s] = $savings_mes[$s-1]+$save_mes[$s];
+                        }
+                    @endphp
                     <div class="col-md-2 tabela_saving_@i">
                         <table class="table table-condensed table-bordered">
                             <thead>
                                 <tr>
                                     <th>{{$movimentacoes_mes[$s]['mes']}}</th>
                                     @if ($s == 0)
-                                        <th class="text-right">{{$consolidado->where('nome', 'savings')->first()->valor}}</th>
+                                        <th class="text-right">{{$helper->format($consolidado->where('nome', 'savings')->first()->valor)}}</th>
                                     @else
-                                        <th class="text-right">&nbsp</th>
+                                        <th class="text-right">{{$helper->format($savings_mes[$s-1])}}</th>
                                     @endif
                                 </tr>
                             </thead>
                             <tfoot>
                                 <tr>
                                     <td>Save</td>
-                                    <td class="text-right">{{@$movimentacoes_mes[$s]['save']->valor}}</td>
+                                    @if ($s == 0)
+                                        <td class="text-right">{{$helper->format($movimentacoes_mes[$s]['save']->valor)}}</td>
+                                    @else
+                                        <td class="text-right">{{$helper->format($save_mes[$s])}}</td>
+                                    @endif
                                 </tr>
                                 <tr>
                                     <td>Total</td>
-                                    <td class="text-right">{{$consolidado->where('nome', 'savings')->first()->valor-@$movimentacoes_mes[$s]['save']->valor}}</td>
+                                    <td class="text-right">{{$helper->format($savings_mes[$s])}}</td>
                                 </tr>
                             </tfoot>
                         </table>
