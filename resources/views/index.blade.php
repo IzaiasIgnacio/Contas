@@ -5,12 +5,17 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Contas</title>
         <link rel="stylesheet" href="{{URL::asset('public/css/bootstrap/bootstrap.min.css')}}" />
+        <link rel="stylesheet" href="{{URL::asset('public/css/fontawesome/fontawesome-4.7.0.css')}}" />
         <link rel="stylesheet" href="{{URL::asset('public/css/fontawesome/fontawesome-all.css')}}" />
+        <link rel="stylesheet" href="{{URL::asset('public/css/jquery.contextMenu.min.css')}}" />
         <link rel="stylesheet" href="{{URL::asset('public/css/app.css')}}" />
         <script src="{{URL::asset('public/js/jquery.min.js')}}"></script>
         <script src="{{URL::asset('public/js/bootstrap.min.js')}}"></script>
+        <script src="{{URL::asset('public/js/jquery.contextMenu.min.js')}}"></script>
+        <script src="{{URL::asset('public/js/jquery.ui.position.min.js')}}"></script>
         <script type="text/javascript">
             var tipo_consolidado;
+            var movimentacao_escolhida;
 
             $().ready(function() {
                 $(".icone_consolidado").click(function() {
@@ -31,6 +36,12 @@
                 });
 
                 $(".div_movimentacoes").on('click','.tabela_mes thead .fa-plus-square',function() {
+                    var d = new Date();
+                    var dia = d.getDate();
+                    var mes = $(this).next('.mes_clicado').val();
+                    var ano = $(this).next().next('.ano_clicado').val();
+                    $("#modal_movimentacao #data").val(dia+"/"+mes+"/"+ano);
+
                     $("#modal_movimentacao").modal('show');
                 });
 
@@ -51,6 +62,62 @@
                     });
                     $("#modal_movimentacao").modal('hide');
                 });
+
+                $.contextMenu({
+                    selector: '.tabela_mes tbody td', 
+                    events: {
+                        show: function(options) {
+                            movimentacao_escolhida = options.$trigger.parent().find('.id_movimentacao').val();
+                        }
+                    },
+                    callback: function(key, options) {
+                        if (key != 'excluir') {
+                            $.post("{{route('atualizar_movimentacao')}}", {id: movimentacao_escolhida, valor: key});
+                        }
+                        if (key == 'excluir') {
+                            $.post("{{route('excluir_movimentacao')}}", {id: movimentacao_escolhida});
+                        }
+                    },
+                    items: {
+                        "normal": {name: "Normal", icon: "fa-square-o"},
+                        "definido": {name: "Definido", icon: "fa-check-square-o"},
+                        "pago": {name: "Pago", icon: "fa-check-square"},
+                        "sep1": "---",
+                        "gasto": {name: "Gasto", icon: "fa-minus"},
+                        "renda": {name: "Renda", icon: "fa-plus"},
+                        "terceiros": {name: "Terceiros", icon: "fa-user"},
+                        "sep2": "---",
+                        "cartao": {
+                            "name": "Cartão", 
+                            "icon": "fa-cc",
+                            "items": {
+                                "nenhum": {"name": "Nenhum"},
+                                @foreach ($cartoes as $cartao)
+                                {{$cartao->nome}}: {"name": "{{$cartao->nome}}"},
+                                @endforeach
+                            }
+                        },
+                        "sep3": "---",
+                        // "editar": {name: "Editar", icon: "edit"},
+                        "excluir": {name: "Excluir", icon: "delete"},
+                    }
+                });
+
+                $('.context-menu-one').on('click', function(e){
+                    console.log('clicked', this);
+                });
+
+                $(".td_save").dblclick(function() {
+                    $(this).html("<input type='text' id='save' style='height:20px;width:50px;color:#000' value="+$(this).html()+">");
+                    $("#save").focus();
+                });
+
+                $(".td_save").on("keypress", "#save", function(e) {
+                    if (e.which == 13) {
+                        $.post("{{route('atualizar_save')}}", {mes: "{{$movimentacoes_mes[0]['numero_mes']}}", valor: $("#save").val()});
+                        $(".td_save").html($("#save").val());
+                    }
+                });
             });
         </script>
     </head>
@@ -69,7 +136,7 @@
                         <li class="divisor">&nbsp;</li>
                         @foreach ($cartoes as $cartao)
                             <li>
-                                <div class="row">
+                                <div class="row row_cartoes">
                                     <div class="col-md-4 topo_cartoes">
                                         <div class="col-md-12">
                                             <span class="valores_topo"><img src="{{URL::asset('public/imagens/'.$cartao->nome.'.png')}}" /></span>
@@ -79,10 +146,10 @@
                                         <div class="col-md-12 topo_cartoes">
                                             <span class="valores_topo">
                                                 R$ {{
-                                                    $helper->format($movimentacoes
+                                                    $helper->format($total_movimentacoes
                                                         ->where('id_cartao', $cartao->id)
-                                                        ->whereIn('status', ['normal', 'definido'])
-                                                        ->where('tipo', 'gasto')
+                                                        ->whereIn('status', ['normal', 'definido', ])
+                                                        ->whereIn('tipo', ['gasto', 'terceiros'])
                                                             ->sum('valor'))
                                                     }} / {{$helper->format($cartao->credito)}}<br>{{$cartao->numero}}
                                             </span>
@@ -149,13 +216,20 @@
                                     <th>
                                         {{$movimentacoes_mes[$m]['mes']}}
                                         <i class="fas fa-plus-square"></i>
-                                        <input type="hidden" class="mes_clicado" value="@Model.Indice"></th>
-                                    @if ($m == 0)
-                                        <th class="text-right">{{$helper->format($total_atual)}}</th>
-                                    @else
-                                        @php $total_atual = $consolidado->where('nome', 'salario')->first()->valor+$sobra @endphp
-                                        <th class="text-right">{{$helper->format($total_atual)}}</th>
-                                    @endif
+                                        <input type="hidden" class="mes_clicado" value="{{$movimentacoes_mes[$m]['numero_mes']}}">
+                                        <input type="hidden" class="ano_clicado" value="{{$movimentacoes_mes[$m]['ano']}}">
+                                    </th>
+                                    @switch ($m)
+                                        @case (0)
+                                        @break
+                                        @case (1)
+                                            @php $total_atual = $consolidado->where('nome', 'salario')->first()->valor+$sobra @endphp
+                                        @break
+                                        @default
+                                            @php $total_atual = $consolidado->where('nome', 'salario')->first()->valor @endphp
+                                        @break
+                                    @endswitch
+                                    <th class="text-right">{{$helper->format($total_atual)}}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -166,8 +240,14 @@
                                     @endphp
                                     @for ($i=0;$i<$maximo_movimentacoes;$i++)
                                         @isset($movimentacoes_mes[$m]['movimentacoes'][$i])
-                                            <tr>
-                                                <td><input type="hidden" class="id_movimentacao" value="@Model.Movimentacoes[i].Id" />{{$movimentacoes_mes[$m]['movimentacoes'][$i]->nome}}</td>
+                                            <tr class="linha_{{$movimentacoes_mes[$m]['movimentacoes'][$i]->status}} linha_{{$movimentacoes_mes[$m]['movimentacoes'][$i]->tipo}}">
+                                                <input type="hidden" class="id_movimentacao" value="{{$movimentacoes_mes[$m]['movimentacoes'][$i]->id}}" />
+                                                <td>
+                                                    {{$movimentacoes_mes[$m]['movimentacoes'][$i]->nome}}
+                                                    @if ($movimentacoes_mes[$m]['movimentacoes'][$i]->id_cartao != '')
+                                                        <i class="fa fa-cc {{$modelCartoes::find($movimentacoes_mes[$m]['movimentacoes'][$i]->id_cartao)->sigla}}"></i>
+                                                    @endif
+                                                </td>
                                                 <td class="text-right td_valor td_@Model.Movimentacoes[i].Status td_@Model.Movimentacoes[i].Tipo">{{$helper->format($movimentacoes_mes[$m]['movimentacoes'][$i]->valor)}}</td>
                                             </tr>
                                             @php
@@ -199,7 +279,7 @@
                                     <td><input type="hidden" class="id_movimentacao" value="@Model.SaveId" />Save</td>
                                     @php
                                         if ($m == 0) {
-                                            $sobra = str_replace(",","",$total_atual)-$total_mes-$renda_mes-@$movimentacoes_mes[$m]['save']->valor;    
+                                            $sobra = str_replace(",","",$total_atual)-$total_mes+$renda_mes-@$movimentacoes_mes[$m]['save']->valor;    
                                         }
                                         else {
                                             $sobra = str_replace(",","",$total_atual)-($total_mes-$renda_mes);
@@ -207,9 +287,9 @@
                                         }
                                     @endphp
                                     @if ($m == 0)
-                                        <td class="text-right save_@Model.Indice">{{$helper->format(@$movimentacoes_mes[$m]['save']->valor)}}</td>
+                                        <td class="text-right td_save">{{$helper->format(@$movimentacoes_mes[$m]['save']->valor)}}</td>
                                     @else
-                                        <td class="text-right save_@Model.Indice">{{$helper->format($save_mes[$m])}}</td>
+                                        <td class="text-right">{{$helper->format($save_mes[$m])}}</td>
                                     @endif
                                 </tr>
                                 <tr>

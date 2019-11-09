@@ -18,15 +18,17 @@ class IndexController extends Controller {
         $movimentacao = new Movimentacao();
         $movimentacoes_mes = array();
         $maximo_movimentacoes = 0;
-
+        
         $data = \Carbon\Carbon::createFromFormat('d/m/Y', '01/'.$consolidado->where('nome', 'mes_atual')->first()->valor);
 
         for ($i=0;$i<=5;$i++) {
             $this->definirValoresFixosMes($data, $movimentacao);
             $movimentacoes_mes[$i] = [
                 'mes' => ucfirst($data->locale('pt-br')->monthName),
-                'movimentacoes' => $movimentacao->whereMonth('data', $data->format('m'))->where('tipo', '<>', 'save')->get(),
-                'save' => $movimentacao->whereMonth('data', $data->format('m'))->where('tipo', 'save')->first()
+                'numero_mes' => $data->locale('pt-br')->month,
+                'ano' => $data->locale('pt-br')->year,
+                'movimentacoes' => $movimentacao->whereMonth('data', $data->format('m'))->whereYear('data', $data->format('Y'))->where('tipo', '<>', 'save')->get(),
+                'save' => $movimentacao->whereMonth('data', $data->format('m'))->whereYear('data', $data->format('Y'))->where('tipo', 'save')->first()
             ];
             
             if (count($movimentacoes_mes[$i]['movimentacoes']) > $maximo_movimentacoes) {
@@ -36,7 +38,7 @@ class IndexController extends Controller {
         }
 
         
-        $total_atual = $consolidado->where('nome', 'itau')->first()->valor + $consolidado->where('nome', 'casa')->first()->valor + $consolidado->where('nome', 'inter')->first()->valor;
+        $total_atual = $consolidado->where('nome', 'itau')->first()->valor + $consolidado->where('nome', 'casa')->first()->valor;
         
         return view('index', [
             'helper' => new \App\Models\Helper(),
@@ -45,8 +47,10 @@ class IndexController extends Controller {
             'total_atual' => number_format($total_atual, 2),
             'maximo_movimentacoes' => $maximo_movimentacoes,
             'cartoes' => $cartao->get(),
+            'modelCartoes' => $cartao,
             'consolidado' => $consolidado,
             'movimentacoes' => $movimentacao->whereRaw("data >= '".$data->format('Y-m-d')."'")->get(),
+            'total_movimentacoes' => $movimentacao->get(),
             'movimentacoes_mes' => $movimentacoes_mes
         ]);
     }
@@ -57,7 +61,10 @@ class IndexController extends Controller {
             "netflix" => 45.9,
             "m" => 1500,
             "fiesta" => 531.6,
-            "vivo" => 49.99
+            "vivo" => 49.99,
+            'gpm' => 16.9,
+            'gp' =>	13.99,
+            'merc' => 600
         ];
 
         foreach ($valores_fixos as $nome => $valor) {
@@ -67,6 +74,7 @@ class IndexController extends Controller {
                 $mov->valor = $valor;
                 $mov->tipo = 'gasto';
                 $mov->data = $data->format('Y-m-d');
+                $mov->status = 'definido';
                 $mov->save();
             }
         }
@@ -79,7 +87,7 @@ class IndexController extends Controller {
     }
     
     public function salvarMovimentacao(Request $request) {
-        $cartao = Cartao::where('nome', $request['cartao'])->first();
+        $cartao = Cartao::find($request['cartao']);
         $id_cartao = null;
         if ($cartao != null) {
             $id_cartao = $cartao->id;
@@ -94,7 +102,14 @@ class IndexController extends Controller {
 
         for ($p=1;$p<=$request['parcelas'];$p++) {
             $movimentacao = new Movimentacao();
-            $movimentacao->nome = $request['nome'];
+            $nome = $request['nome'];
+            if ($request['parcelas'] > 1) {
+                $nome = $request['nome']." ".$p."/".$request['parcelas'];
+            }
+            $movimentacao->nome = $nome;
+            if ($p > 1) {
+                $data = date_add($data, date_interval_create_from_date_string("1 month"));
+            }
             $movimentacao->data = $data->format('Y-m-d');
             $movimentacao->tipo = $request['tipo'];
             $movimentacao->valor = $request['valor'];
@@ -103,4 +118,53 @@ class IndexController extends Controller {
             $movimentacao->save();
         }
     }
+
+    public function atualizarMovimentacao(Request $request) {
+        $movimentacao = Movimentacao::find($request['id']);
+        switch ($request['valor']) {
+            case 'normal':
+            case 'definido':
+            case 'pago':
+                $movimentacao->status = $request['valor'];
+            break;
+            case 'gasto';
+            case 'renda';
+            case 'terceiros';
+                $movimentacao->tipo = $request['valor'];
+            break;
+            default:
+                if ($request['valor'] == 'nenhum') {
+                    $movimentacao->id_cartao = null;
+                }
+                else {
+                    $movimentacao->id_cartao = Cartao::where('nome', $request['valor'])->first()->id;
+                }
+            break;
+        }
+        $movimentacao->save();
+    }
+
+    public function ExcluirMovimentacao(Request $request) {
+        Movimentacao::find($request['id'])->delete();
+    }
+    public function AtualizarSave(Request $request) {
+        $movimentacao = Movimentacao::where(
+            [
+                'nome' => 'save',
+                'data' => date('Y').'-'.$request['mes'].'-01'
+            ]
+        )->first();
+
+        if ($movimentacao == null) {
+            $movimentacao = new Movimentacao();
+        }
+
+        $movimentacao->nome = 'save';
+        $movimentacao->data = date('Y').'-'.$request['mes'].'-01';
+        $movimentacao->tipo = 'save';
+        $movimentacao->valor = $request['valor'];
+
+        $movimentacao->save();
+    }
+
 }

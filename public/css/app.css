@@ -137,3 +137,31 @@ body {
     margin-left: -5px;
     margin-top: -5px;
 }
+
+.context-menu-icon::before {
+    color: #000 !important;
+}
+
+.n {
+    color: #FF00FF;
+}
+
+.vp {
+    color: blue;
+}
+
+.linha_normal td {
+    background-color: gray !important;
+}
+
+.linha_pago td, .linha_renda td {
+    background-color: green !important;
+}
+
+.row_cartoes {
+    min-width: 270px;
+}
+
+.row_cartoes .col-md-4 {
+    margin-right: -15px;
+}
