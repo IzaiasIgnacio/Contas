@@ -10,12 +10,45 @@
         <script src="{{URL::asset('public/js/jquery.min.js')}}"></script>
         <script src="{{URL::asset('public/js/bootstrap.min.js')}}"></script>
         <script type="text/javascript">
+            var tipo_consolidado;
+
             $().ready(function() {
-                $(".div_movimentacoes").on('click','.tabela_mes thead',function() {
+                $(".icone_consolidado").click(function() {
+                    switch ($(this).attr('tipo')) {
+                        case 'casa':
+                            $(".titulo_consolidado_modal").html('Casa');
+                        break;
+                        case 'itau':
+                            $(".titulo_consolidado_modal").html('Itaú');
+                        break;
+                        case 'savings':
+                            $(".titulo_consolidado_modal").html('Savings');        
+                        break;
+                    }
+
+                    tipo_consolidado = $(this).attr('tipo');
+                    $("#modal_consolidado").modal('show');
+                });
+
+                $(".div_movimentacoes").on('click','.tabela_mes thead .fa-plus-square',function() {
                     $("#modal_movimentacao").modal('show');
                 });
-                $(".salvar").click(function() {
-                    $.post("{{route('salvar_movimentacao')}}", {dados: $("form").serialize()});
+
+                $("#modal_consolidado .salvar").click(function() {
+                    $.post("{{route('salvar_consolidado')}}", {tipo: tipo_consolidado, valor: $(".valor_consolidado_modal").val()});
+                    $("#modal_consolidado").modal('hide');
+                });
+
+                $("#modal_movimentacao .salvar").click(function() {
+                    $.post("{{route('salvar_movimentacao')}}", {
+                        nome: $("#nome").val(),
+                        data: $("#data").val(),
+                        tipo: $("#tipo").val(),
+                        valor: $("#valor").val(),
+                        status: $("#status").val(),
+                        cartao: $("#cartao").val(),
+                        parcelas: $("#parcelas").val()
+                    });
                     $("#modal_movimentacao").modal('hide');
                 });
             });
@@ -29,11 +62,10 @@
                 </ul>
                 <div class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
-                        <li><span class="valores_topo"><img src="{{URL::asset('public/imagens/casa.png')}}" /> R$ {{$helper->format($consolidado->where('nome', 'casa')->first()->valor)}}</span></li>
-                        <li><span class="valores_topo"><img src="{{URL::asset('public/imagens/itau.png')}}" /> R$ {{$helper->format($consolidado->where('nome', 'itau')->first()->valor)}}</span></li>
-                        <li><span class="valores_topo"><img src="{{URL::asset('public/imagens/inter.png')}}" /> R$ {{$helper->format($consolidado->where('nome', 'inter')->first()->valor)}}</span></li>
+                        <li><span class="valores_topo"><img class='icone_consolidado' tipo='casa' src="{{URL::asset('public/imagens/casa.png')}}" /> R$ {{$helper->format($consolidado->where('nome', 'casa')->first()->valor)}}</span></li>
+                        <li><span class="valores_topo"><img class='icone_consolidado' tipo='itau' src="{{URL::asset('public/imagens/itau.png')}}" /> R$ {{$helper->format($consolidado->where('nome', 'itau')->first()->valor)}}</span></li>
                         <li class="divisor">&nbsp;</li>
-                        <li><span class="valores_topo"><img src="{{URL::asset('public/imagens/safe.png')}}" /> R$ {{$helper->format($consolidado->where('nome', 'savings')->first()->valor)}}</span></li>
+                        <li><span class="valores_topo"><img class='icone_consolidado' tipo='savings' src="{{URL::asset('public/imagens/safe.png')}}" /> R$ {{$helper->format($consolidado->where('nome', 'savings')->first()->valor)}}</span></li>
                         <li class="divisor">&nbsp;</li>
                         @foreach ($cartoes as $cartao)
                             <li>
@@ -85,13 +117,39 @@
                     </div>
                 </div>
             </div>
+            <div class="modal fade" id="modal_consolidado" role="dialog" tabindex="-1">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"></span></button>
+                            <h4 class="modal-title titulo_consolidado_modal"></h4>
+                        </div>
+                        <div class="modal-body row">
+                            <form id="form_movimentacao">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label style="display:block">Valor</label>
+                                    <input class="form-control valor_consolidado_modal" type="text" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer footer_form_movimentacao">
+                            <button type="button" class="btn btn-primary salvar">Salvar</button>
+                            <button type="button" class="btn btn-primary cancelar" data-dismiss="modal">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="row div_movimentacoes">
                 @for ($m=0;$m<=5;$m++)
                     <div class="col-md-2">
                         <table class="table table-condensed table-bordered tabela_mes">
                             <thead>
                                 <tr>
-                                    <th>{{$movimentacoes_mes[$m]['mes']}}<input type="hidden" class="mes_clicado" value="@Model.Indice"></th>
+                                    <th>
+                                        {{$movimentacoes_mes[$m]['mes']}}
+                                        <i class="fas fa-plus-square"></i>
+                                        <input type="hidden" class="mes_clicado" value="@Model.Indice"></th>
                                     @if ($m == 0)
                                         <th class="text-right">{{$helper->format($total_atual)}}</th>
                                     @else
@@ -141,15 +199,15 @@
                                     <td><input type="hidden" class="id_movimentacao" value="@Model.SaveId" />Save</td>
                                     @php
                                         if ($m == 0) {
-                                            $sobra = str_replace(",","",$total_atual)-$total_mes-$renda_mes-$movimentacoes_mes[$m]['save']->valor;
+                                            $sobra = str_replace(",","",$total_atual)-$total_mes-$renda_mes-@$movimentacoes_mes[$m]['save']->valor;    
                                         }
                                         else {
                                             $sobra = str_replace(",","",$total_atual)-($total_mes-$renda_mes);
-                                            $save_mes[$m] = $helper->saveMes($sobra, $consolidado->where('nome', 'mensal')->first()->valor, $m);
+                                            $save_mes[$m] = $sobra;
                                         }
                                     @endphp
                                     @if ($m == 0)
-                                        <td class="text-right save_@Model.Indice">{{$helper->format($movimentacoes_mes[$m]['save']->valor)}}</td>
+                                        <td class="text-right save_@Model.Indice">{{$helper->format(@$movimentacoes_mes[$m]['save']->valor)}}</td>
                                     @else
                                         <td class="text-right save_@Model.Indice">{{$helper->format($save_mes[$m])}}</td>
                                     @endif
@@ -163,10 +221,6 @@
                                     <td class="text-right"><span class="valor_sobra">{{$helper->format($sobra)}}</span></td>
                                 </tr>
                                 @if ($m > 0)
-                                    <tr>
-                                        <td>reserva</td>
-                                        <td class="text-right"><span class="valor_sobra">{{$helper->format($total_atual-($total_mes-$renda_mes)-$save_mes[$m])}}</span></td>
-                                    </tr>
                                     <tr>
                                         <td>dif. salario</td>
                                         <td class="text-right"><span class="valor_sobra">{{$helper->format($consolidado->where('nome', 'salario')->first()->valor-($total_mes-$renda_mes))}}</span></td>
@@ -201,7 +255,7 @@
                                 <tr>
                                     <td>Save</td>
                                     @if ($s == 0)
-                                        <td class="text-right">{{$helper->format($movimentacoes_mes[$s]['save']->valor)}}</td>
+                                        <td class="text-right">{{$helper->format(@$movimentacoes_mes[$s]['save']->valor)}}</td>
                                     @else
                                         <td class="text-right">{{$helper->format($save_mes[$s])}}</td>
                                     @endif

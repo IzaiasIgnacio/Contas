@@ -2,6 +2,7 @@ body {
     padding-top: 50px;
     padding-bottom: 20px;
     background-color: #ccc;
+    font-size: 15px;
 }
 
 .body-content {
@@ -81,8 +82,11 @@ body {
 }
 
 .navbar-brand, .navbar-brand:hover {
-    cursor: pointer;
     color: #9d9d9d !important;
+}
+
+.icone_consolidado, .fa-plus-square {
+    cursor: pointer;
 }
 
 .modal-content {

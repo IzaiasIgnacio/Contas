@@ -3,15 +3,15 @@
     <div class="col-md-6">
         <div class="form-group">
             <label style="display:block">Nome</label>
-            <input class="form-control" type="text" />
+            <input class="form-control" type="text" name='nome' id='nome' />
         </div>
         <div class="form-group">
             <label style="display:block">Data</label>
-            <input class="form-control" type="text" value="{{date('d/m/Y')}}" />
+            <input class="form-control" type="text" name='data' id='data' value="{{date('d/m/Y')}}" />
         </div>
         <div class="form-group">
             <label style="display:block">Tipo</label>
-            <select name='tipo' class="form-control">
+            <select name='tipo' id='tipo' class="form-control">
                 @foreach ($tipos as $tipo)
                     <option value="{{$tipo}}">{{$tipo}}</option>
                 @endforeach
@@ -21,11 +21,11 @@
     <div class="col-md-6">
         <div class="form-group">
             <label style="display:block">Valor</label>
-            <input class="form-control" type="text" />
+            <input class="form-control" type="text" name='valor' id='valor' />
         </div>
         <div class="form-group">
             <label style="display:block">Status</label>
-            <select name='status' class="form-control">
+            <select name='status' id='status' class="form-control">
                 @foreach ($lista_status as $status)
                     <option value="{{$status}}">{{$status}}</option>
                 @endforeach
@@ -33,7 +33,7 @@
         </div>
         <div class="form-group">
             <label style="display:block">Cartão</label>
-            <select name='cartao' class="form-control">
+            <select name='cartao' id='cartao' class="form-control">
                 <option value="">Nenhum</option>
                 @foreach ($cartoes as $cartao)
                     <option value="{{$cartao->id}}">{{$cartao->nome}}</option>
@@ -42,7 +42,7 @@
         </div>
         <div class="form-group">
             <label style="display:block">Parcelas</label>
-            <input class="form-control" type="text" />
+            <input class="form-control" type="text" name='parcelas' id='parcelas' />
         </div>
     </div>
 </form>
