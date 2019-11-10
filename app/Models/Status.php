@@ -5,7 +5,7 @@ class Status {
 
     static function get() {
         return [
-            'normal',
+            'planejado',
             'definido',
             'pago'
         ];

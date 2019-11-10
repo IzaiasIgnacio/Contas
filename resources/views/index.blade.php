@@ -13,6 +13,7 @@
         <script src="{{URL::asset('public/js/bootstrap.min.js')}}"></script>
         <script src="{{URL::asset('public/js/jquery.contextMenu.min.js')}}"></script>
         <script src="{{URL::asset('public/js/jquery.ui.position.min.js')}}"></script>
+        <script src="{{URL::asset('public/js/html5sortable.min.js')}}"></script>
         <script type="text/javascript">
             var tipo_consolidado;
             var movimentacao_escolhida;
@@ -22,17 +23,28 @@
                     switch ($(this).attr('tipo')) {
                         case 'casa':
                             $(".titulo_consolidado_modal").html('Casa');
+                            $(".valor_consolidado_modal").val("{{$consolidado::where('nome', 'casa')->first()->valor}}");
                         break;
                         case 'itau':
                             $(".titulo_consolidado_modal").html('Itaú');
+                            $(".valor_consolidado_modal").val("{{$consolidado::where('nome', 'itau')->first()->valor}}");
                         break;
                         case 'savings':
-                            $(".titulo_consolidado_modal").html('Savings');        
+                            $(".titulo_consolidado_modal").html('Savings');
+                            $(".valor_consolidado_modal").val("{{$consolidado::where('nome', 'savings')->first()->valor}}");
                         break;
                     }
 
                     tipo_consolidado = $(this).attr('tipo');
                     $("#modal_consolidado").modal('show');
+                });
+
+                $('#modal_consolidado').on('shown.bs.modal', function (e) {
+                    $(".valor_consolidado_modal").focus();
+                });
+
+                $('#modal_movimentacao').on('shown.bs.modal', function (e) {
+                    $("#nome").focus();
                 });
 
                 $(".div_movimentacoes").on('click','.tabela_mes thead .fa-plus-square',function() {
@@ -46,21 +58,33 @@
                 });
 
                 $("#modal_consolidado .salvar").click(function() {
-                    $.post("{{route('salvar_consolidado')}}", {tipo: tipo_consolidado, valor: $(".valor_consolidado_modal").val()});
-                    $("#modal_consolidado").modal('hide');
+                    $.post("{{route('salvar_consolidado')}}", {tipo: tipo_consolidado, valor: $(".valor_consolidado_modal").val()},
+                    function(resposta) {
+                        location.reload();
+                    });
                 });
 
                 $("#modal_movimentacao .salvar").click(function() {
+                    var status;
+                    if ($("#tipo").val() == 'terceiros') {
+                        status = $("#text_status").val();
+                    }
+                    else {
+                        status = $("#select_status").val();
+                    }
+
                     $.post("{{route('salvar_movimentacao')}}", {
                         nome: $("#nome").val(),
                         data: $("#data").val(),
                         tipo: $("#tipo").val(),
                         valor: $("#valor").val(),
-                        status: $("#status").val(),
+                        status: status,
                         cartao: $("#cartao").val(),
                         parcelas: $("#parcelas").val()
+                    },
+                    function(resposta) {
+                        location.reload();
                     });
-                    $("#modal_movimentacao").modal('hide');
                 });
 
                 $.contextMenu({
@@ -72,14 +96,20 @@
                     },
                     callback: function(key, options) {
                         if (key != 'excluir') {
-                            $.post("{{route('atualizar_movimentacao')}}", {id: movimentacao_escolhida, valor: key});
+                            $.post("{{route('atualizar_movimentacao')}}", {id: movimentacao_escolhida, valor: key},
+                            function(resposta) {
+                                location.reload();
+                            });
                         }
                         if (key == 'excluir') {
-                            $.post("{{route('excluir_movimentacao')}}", {id: movimentacao_escolhida});
+                            $.post("{{route('excluir_movimentacao')}}", {id: movimentacao_escolhida},
+                            function(resposta) {
+                                location.reload();
+                            });
                         }
                     },
                     items: {
-                        "normal": {name: "Normal", icon: "fa-square-o"},
+                        "planejado": {name: "Planejado", icon: "fa-square-o"},
                         "definido": {name: "Definido", icon: "fa-check-square-o"},
                         "pago": {name: "Pago", icon: "fa-check-square"},
                         "sep1": "---",
@@ -103,10 +133,6 @@
                     }
                 });
 
-                $('.context-menu-one').on('click', function(e){
-                    console.log('clicked', this);
-                });
-
                 $(".td_save").dblclick(function() {
                     $(this).html("<input type='text' id='save' style='height:20px;width:50px;color:#000' value="+$(this).html()+">");
                     $("#save").focus();
@@ -114,10 +140,62 @@
 
                 $(".td_save").on("keypress", "#save", function(e) {
                     if (e.which == 13) {
-                        $.post("{{route('atualizar_save')}}", {mes: "{{$movimentacoes_mes[0]['numero_mes']}}", valor: $("#save").val()});
-                        $(".td_save").html($("#save").val());
+                        $.post("{{route('atualizar_save')}}", {mes: "{{$movimentacoes_mes[0]['numero_mes']}}", valor: $("#save").val()},
+                        function(resposta) {
+                            location.reload();
+                        });
                     }
                 });
+
+                $("#tipo").change(function() {
+                    if ($(this).val() == 'terceiros') {
+                        $("#select_status").fadeOut('normal', function() {
+                            $("#text_status").fadeIn();
+                        });
+                    }
+                    else {
+                        $("#text_status").fadeOut('normal', function() {
+                            $("#select_status").fadeIn();
+                        })
+                    }
+                });
+
+                $("#exibir_terceiros").click(function() {
+                    $(".tabela_terceiros").toggle();
+                });
+
+                sortable('.tabela_mes tbody', {
+                    items: 'tr',
+                    placeholder: "<tr><td colspan=2>&nbsp;</td></tr>",
+                    forcePlaceholderSize: false
+                });
+
+                for (var i=0;i<=5;i++) {
+                    sortable('.tabela_mes tbody')[i].addEventListener('sortupdate', updateFunction);
+                    sortable('.tabela_terceiros tbody')[i].addEventListener('sortupdate', updateFunction);
+                }
+
+                function updateFunction(e) {
+                    var gastos = [];
+                    var rendas = [];
+                    var terceiros = [];
+                    $(this).find('tr').each(function(i, e) {
+                        if ($(e).hasClass('linha_gasto')) {
+                            gastos.push($(e).find('.id_movimentacao').val());
+                        }
+                        if ($(e).hasClass('linha_renda')) {
+                            rendas.push($(e).find('.id_movimentacao').val());
+                        }
+                        if ($(e).hasClass('linha_terceiros')) {
+                            terceiros.push($(e).find('.id_movimentacao').val());
+                        }
+                    });
+                    $.post("{{route('atualizar_posicoes')}}", {
+                        gastos: gastos,
+                        rendas: rendas,
+                        terceiros: terceiros,
+                    });
+                }
             });
         </script>
     </head>
@@ -146,11 +224,18 @@
                                         <div class="col-md-12 topo_cartoes">
                                             <span class="valores_topo">
                                                 R$ {{
-                                                    $helper->format($total_movimentacoes
-                                                        ->where('id_cartao', $cartao->id)
-                                                        ->whereIn('status', ['normal', 'definido', ])
-                                                        ->whereIn('tipo', ['gasto', 'terceiros'])
-                                                            ->sum('valor'))
+                                                    $helper->format(
+                                                        $total_movimentacoes
+                                                        ->where(function ($query) use ($cartao) {
+                                                            $query->where('id_cartao', $cartao->id)
+                                                                    ->whereIn('status', ['planejado', 'definido'])
+                                                                    ->where('tipo', 'gasto');
+                                                        })->orWhere(function($query) use ($cartao) {
+                                                            $query->where('id_cartao', $cartao->id)
+                                                                    ->where('status', '!=', 'pago')
+                                                                    ->where('tipo', 'terceiros');
+                                                        })
+                                                        ->sum('valor'))
                                                     }} / {{$helper->format($cartao->credito)}}<br>{{$cartao->numero}}
                                             </span>
                                         </div>
@@ -161,6 +246,7 @@
                     </ul>
                     &nbsp;
                     &nbsp;
+                    <i class="fa fa-user fa-inverse fa-lg" id="exibir_terceiros" style="margin-top: 22px; cursor: pointer"></i>
                     <i class="fa fa-table fa-inverse fa-lg" id="exportar" style="margin-top: 22px; cursor: pointer"></i>
                     <i class="fa fa-circle-notch fa-inverse slow-spin fa-2x fa-fw" style="display: none"></i>
                 </div>
@@ -192,7 +278,6 @@
                             <h4 class="modal-title titulo_consolidado_modal"></h4>
                         </div>
                         <div class="modal-body row">
-                            <form id="form_movimentacao">
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label style="display:block">Valor</label>
@@ -246,6 +331,9 @@
                                                     {{$movimentacoes_mes[$m]['movimentacoes'][$i]->nome}}
                                                     @if ($movimentacoes_mes[$m]['movimentacoes'][$i]->id_cartao != '')
                                                         <i class="fa fa-cc {{$modelCartoes::find($movimentacoes_mes[$m]['movimentacoes'][$i]->id_cartao)->sigla}}"></i>
+                                                    @endif
+                                                    @if ($movimentacoes_mes[$m]['movimentacoes'][$i]->tipo == 'terceiros' && !in_array($movimentacoes_mes[$m]['movimentacoes'][$i]->status, ['planejado', 'definido', 'pago']))
+                                                        [{{$movimentacoes_mes[$m]['movimentacoes'][$i]->status}}]
                                                     @endif
                                                 </td>
                                                 <td class="text-right td_valor td_@Model.Movimentacoes[i].Status td_@Model.Movimentacoes[i].Tipo">{{$helper->format($movimentacoes_mes[$m]['movimentacoes'][$i]->valor)}}</td>
@@ -307,6 +395,43 @@
                                     </tr>
                                 @endif
                             </tfoot>
+                        </table>
+                    </div>
+                @endfor
+                @for ($t=0;$t<=5;$t++)
+                    <div class="col-md-2">
+                        <table class="table table-condensed table-bordered tabela_mes tabela_terceiros" style='display: none'>
+                            <tbody>
+                                @if (count($movimentacoes_terceiros[$t]) > 0)
+                                    @for ($i=0;$i<$maximo_movimentacoes_terceiros;$i++)
+                                        @isset($movimentacoes_terceiros[$t][$i])
+                                            <tr class="linha_{{$movimentacoes_terceiros[$t][$i]->status}} linha_{{$movimentacoes_terceiros[$t][$i]->tipo}}">
+                                                <input type="hidden" class="id_movimentacao" value="{{$movimentacoes_terceiros[$t][$i]->id}}" />
+                                                <td>
+                                                    {{$movimentacoes_terceiros[$t][$i]->nome}}
+                                                    @if ($movimentacoes_terceiros[$t][$i]->id_cartao != '')
+                                                        <i class="fa fa-cc {{$modelCartoes::find($movimentacoes_terceiros[$t][$i]->id_cartao)->sigla}}"></i>
+                                                    @endif
+                                                    @if ($movimentacoes_terceiros[$t][$i]->tipo == 'terceiros' && !in_array($movimentacoes_terceiros[$t][$i]->status, ['planejado', 'definido', 'pago']))
+                                                        [{{$movimentacoes_terceiros[$t][$i]->status}}]
+                                                    @endif
+                                                </td>
+                                                <td class="text-right td_valor td_@Model.Movimentacoes[i].Status td_@Model.Movimentacoes[i].Tipo">{{$helper->format($movimentacoes_terceiros[$t][$i]->valor)}}</td>
+                                            </tr>
+                                        @endisset
+                                        @empty($movimentacoes_terceiros[$t][$i])
+                                            <tr>
+                                                <td>&nbsp;</td>
+                                                <td class="text-right">&nbsp;</td>
+                                            </tr>
+                                        @endempty
+                                    @endfor
+                                @endif
+                                <tr>
+                                    <td>&nbsp;</td>
+                                    <td class="text-right">&nbsp;</td>
+                                </tr>
+                            </tbody>
                         </table>
                     </div>
                 @endfor

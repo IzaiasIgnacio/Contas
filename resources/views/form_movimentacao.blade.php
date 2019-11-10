@@ -25,7 +25,8 @@
         </div>
         <div class="form-group">
             <label style="display:block">Status</label>
-            <select name='status' id='status' class="form-control">
+            <input class="form-control" type="text" name='text_status' id='text_status' style="display:none" />
+            <select name='select_status' id='select_status' class="form-control">
                 @foreach ($lista_status as $status)
                     <option value="{{$status}}">{{$status}}</option>
                 @endforeach

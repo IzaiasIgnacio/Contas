@@ -59,7 +59,7 @@ body {
     font-style: italic;
 }
 
-.td_normal {
+.td_planejado {
     font-style: normal;
     font-weight: bold;
     background-color: grey !important;
@@ -150,12 +150,24 @@ body {
     color: blue;
 }
 
-.linha_normal td {
+.linha_planejado td {
     background-color: gray !important;
 }
 
-.linha_pago td, .linha_renda td {
+.linha_renda td {
+    background-color: #1657e9 !important;
+}
+
+.linha_pago td {
     background-color: green !important;
+}
+
+.linha_terceiros td, .tabela_terceiros td {
+    background-color: purple !important;
+}
+
+.linha_terceiros.linha_pago td {
+    background-color: #2c072c !important;
 }
 
 .row_cartoes {

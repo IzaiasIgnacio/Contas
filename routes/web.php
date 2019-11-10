@@ -18,3 +18,4 @@ Route::post('salvar_movimentacao', 'IndexController@salvarMovimentacao')->name('
 Route::post('atualizar_movimentacao', 'IndexController@AtualizarMovimentacao')->name('atualizar_movimentacao');
 Route::post('excluir_movimentacao', 'IndexController@ExcluirMovimentacao')->name('excluir_movimentacao');
 Route::post('atualizar_save', 'IndexController@AtualizarSave')->name('atualizar_save');
+Route::post('atualizar_posicoes', 'IndexController@AtualizarPosicoes')->name('atualizar_posicoes');
