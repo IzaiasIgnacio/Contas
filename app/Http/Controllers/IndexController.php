@@ -7,6 +7,7 @@ use App\Models\Cartao;
 use App\Models\Consolidado;
 use App\Models\Movimentacao;
 use App\Models\Status;
+use App\Models\Responsavel;
 use App\Models\Tipo;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -22,7 +23,7 @@ class IndexController extends Controller {
         
         $data = \Carbon\Carbon::createFromFormat('d/m/Y', '01/'.$consolidado->where('nome', 'mes_atual')->first()->valor);
 
-        for ($i=0;$i<=5;$i++) {
+        for ($i=0;$i<=6;$i++) {
             $this->definirValoresFixosMes($data, $movimentacao);
             $movimentacoes_mes[$i] = [
                 'mes' => ucfirst($data->locale('pt-br')->monthName),
@@ -61,10 +62,11 @@ class IndexController extends Controller {
             'helper' => new \App\Models\Helper(),
             'tipos' => Tipo::get(),
             'lista_status' => Status::get(),
+            'lista_responsavel' => Responsavel::get(),
             'total_atual' => number_format($total_atual, 2),
             'maximo_movimentacoes' => $maximo_movimentacoes,
             'maximo_movimentacoes_terceiros' => $maximo_movimentacoes_terceiros,
-            'cartoes' => $cartao->get(),
+            'cartoes' => $cartao,
             'modelCartoes' => $cartao,
             'consolidado' => $consolidado,
             'movimentacoes' => $movimentacao->whereRaw("data >= '".$data->format('Y-m-d')."'")->get(),
@@ -80,12 +82,14 @@ class IndexController extends Controller {
             "netflix" => 45.9,
             "m" => 1500,
             "fiesta" => 531.6,
+            'merc' => 600,
             "vivo" => 49.99,
             'gpm' => 16.9,
             'gp' =>	13.99,
-            'merc' => 600
+            'seg' => 4.49
         ];
 
+        $p = 1;
         foreach ($valores_fixos as $nome => $valor) {
             if ($movimentacao->whereRaw("data = '".$data->format('Y-m-d')."'")->where('nome', $nome)->where('tipo', 'gasto')->count() == 0) {
                 $mov = new Movimentacao();
@@ -94,7 +98,9 @@ class IndexController extends Controller {
                 $mov->tipo = 'gasto';
                 $mov->data = $data->format('Y-m-d');
                 $mov->status = 'definido';
+                $mov->posicao = $p;
                 $mov->save();
+                $p++;
             }
         }
 
@@ -107,6 +113,7 @@ class IndexController extends Controller {
             'luz' => null
         ];
 
+        $p = 1;
         foreach ($valores_fixos as $nome => $valor) {
             if ($movimentacao->whereRaw("data = '".$data->format('Y-m-d')."'")->where('nome', $nome)->where('tipo', 'terceiros')->count() == 0) {
                 $mov = new Movimentacao();
@@ -114,14 +121,23 @@ class IndexController extends Controller {
                 $mov->valor = $valor;
                 $mov->tipo = 'terceiros';
                 $mov->data = $data->format('Y-m-d');
-                $mov->status = 'mae';
+                $mov->status = 'definido';
+                $mov->responsavel = 'mae';
+                $mov->posicao = $p;
                 $mov->save();
+                $p++;
             }
         }
     }
 
     public function salvarConsolidado(Request $request) {
         $consolidado = Consolidado::where('nome', $request['tipo'])->first();
+        if ($request['tipo'] != 'mes_atual') {
+            $consolidado->valor = str_replace(",", ".", $request['valor']);
+        }
+        else {
+            $consolidado->valor = $request['valor'];
+        }
         $consolidado->valor = str_replace(",", ".", $request['valor']);
         $consolidado->save();
     }
@@ -154,6 +170,7 @@ class IndexController extends Controller {
             $movimentacao->tipo = $request['tipo'];
             $movimentacao->valor = $request['valor'];
             $movimentacao->status = $request['status'];
+            $movimentacao->responsavel = $request['responsavel'];
             $movimentacao->id_cartao = $id_cartao;
             $movimentacao->save();
         }
@@ -182,6 +199,22 @@ class IndexController extends Controller {
             break;
         }
         $movimentacao->save();
+    }
+
+    public function atualizarValorMovimentacao(Request $request) {
+        $movimentacao = Movimentacao::find($request['id']);
+        $movimentacao->valor = $request['valor'];
+        $movimentacao->save();
+    }
+
+    public function atualizarNomeMovimentacao(Request $request) {
+        $movimentacao = Movimentacao::find($request['id']);
+        $movimentacao->nome = $request['nome'];
+        $movimentacao->save();
+    }
+
+    public function getNomeMovimentacao(Request $request) {
+        return Movimentacao::find($request['id'])->nome;
     }
 
     public function ExcluirMovimentacao(Request $request) {

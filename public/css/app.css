@@ -146,8 +146,16 @@ body {
     color: #FF00FF;
 }
 
+.nm {
+    color: #f94bf9;
+}
+
 .vp {
     color: blue;
+}
+
+.vb {
+    color: dodgerblue;
 }
 
 .linha_planejado td {
@@ -176,4 +184,8 @@ body {
 
 .row_cartoes .col-md-4 {
     margin-right: -15px;
+}
+
+.col-md-2-mes {
+    width: 14%;
 }

@@ -33,6 +33,10 @@
                             $(".titulo_consolidado_modal").html('Savings');
                             $(".valor_consolidado_modal").val("{{$consolidado::where('nome', 'savings')->first()->valor}}");
                         break;
+                        case 'mes_atual':
+                            $(".titulo_consolidado_modal").html('Mês Atual');
+                            $(".valor_consolidado_modal").val("{{$consolidado::where('nome', 'mes_atual')->first()->valor}}");
+                        break;
                     }
 
                     tipo_consolidado = $(this).attr('tipo');
@@ -41,10 +45,12 @@
 
                 $('#modal_consolidado').on('shown.bs.modal', function (e) {
                     $(".valor_consolidado_modal").focus();
+                    $(".valor_consolidado_modal").select();
                 });
 
                 $('#modal_movimentacao').on('shown.bs.modal', function (e) {
                     $("#nome").focus();
+                    $("#nome").select();
                 });
 
                 $(".div_movimentacoes").on('click','.tabela_mes thead .fa-plus-square',function() {
@@ -65,20 +71,13 @@
                 });
 
                 $("#modal_movimentacao .salvar").click(function() {
-                    var status;
-                    if ($("#tipo").val() == 'terceiros') {
-                        status = $("#text_status").val();
-                    }
-                    else {
-                        status = $("#select_status").val();
-                    }
-
                     $.post("{{route('salvar_movimentacao')}}", {
                         nome: $("#nome").val(),
                         data: $("#data").val(),
                         tipo: $("#tipo").val(),
                         valor: $("#valor").val(),
-                        status: status,
+                        status: $("#status").val(),
+                        responsavel: $("#responsavel").val(),
                         cartao: $("#cartao").val(),
                         parcelas: $("#parcelas").val()
                     },
@@ -95,17 +94,21 @@
                         }
                     },
                     callback: function(key, options) {
-                        if (key != 'excluir') {
-                            $.post("{{route('atualizar_movimentacao')}}", {id: movimentacao_escolhida, valor: key},
-                            function(resposta) {
-                                location.reload();
-                            });
-                        }
-                        if (key == 'excluir') {
-                            $.post("{{route('excluir_movimentacao')}}", {id: movimentacao_escolhida},
-                            function(resposta) {
-                                location.reload();
-                            });
+                        switch (key) {
+                            case 'excluir':
+                                $.post("{{route('excluir_movimentacao')}}", {id: movimentacao_escolhida},
+                                function(resposta) {
+                                    location.reload();
+                                });
+                            break;
+                            case 'descricao':
+                            break;
+                            default:
+                                $.post("{{route('atualizar_movimentacao')}}", {id: movimentacao_escolhida, valor: key},
+                                function(resposta) {
+                                    location.reload();
+                                });
+                            break;
                         }
                     },
                     items: {
@@ -122,20 +125,40 @@
                             "icon": "fa-cc",
                             "items": {
                                 "nenhum": {"name": "Nenhum"},
-                                @foreach ($cartoes as $cartao)
+                                @foreach ($cartoes->get() as $cartao)
                                 {{$cartao->nome}}: {"name": "{{$cartao->nome}}"},
                                 @endforeach
                             }
                         },
                         "sep3": "---",
-                        // "editar": {name: "Editar", icon: "edit"},
-                        "excluir": {name: "Excluir", icon: "delete"},
+                        "descricao": {name: "Descrição", icon: "fa-edit"},
+                        "sep4": "---",
+                        "excluir": {name: "Excluir", icon: "fa-trash"},
                     }
                 });
 
                 $(".td_save").dblclick(function() {
                     $(this).html("<input type='text' id='save' style='height:20px;width:50px;color:#000' value="+$(this).html()+">");
                     $("#save").focus();
+                    $("#save").select();
+                });
+
+                $(".td_valor").dblclick(function() {
+                    movimentacao_escolhida = $(this).prev().prev().val();
+                    $(this).html("<input type='text' id='novo_valor' style='height:20px;width:50px;color:#000' value="+$(this).html()+">");
+                    $("#novo_valor").focus();
+                    $("#novo_valor").select();
+                });
+
+                $(".td_nome_movimentacao").dblclick(function() {
+                    movimentacao_escolhida = $(this).prev().val();
+                    var element = $(this);
+                    $.post("{{route('nome_movimentacao')}}", {id: movimentacao_escolhida},
+                    function(resposta) {
+                        element.html("<input type='text' id='novo_nome' style='height:20px;width:150px;color:#000' value='"+resposta+"'>");
+                        $("#novo_nome").focus();
+                        $("#novo_nome").select();
+                    });
                 });
 
                 $(".td_save").on("keypress", "#save", function(e) {
@@ -147,16 +170,30 @@
                     }
                 });
 
-                $("#tipo").change(function() {
-                    if ($(this).val() == 'terceiros') {
-                        $("#select_status").fadeOut('normal', function() {
-                            $("#text_status").fadeIn();
+                $(".td_valor").on("keypress", "#novo_valor", function(e) {
+                    if (e.which == 13) {
+                        $.post("{{route('atualizar_valor_movimentacao')}}", {id: movimentacao_escolhida, valor: $("#novo_valor").val()},
+                        function(resposta) {
+                            location.reload();
                         });
                     }
+                });
+
+                $(".td_nome_movimentacao").on("keypress", "#novo_nome", function(e) {
+                    if (e.which == 13) {
+                        $.post("{{route('atualizar_nome_movimentacao')}}", {id: movimentacao_escolhida, nome: $("#novo_nome").val()},
+                        function(resposta) {
+                            location.reload();
+                        });
+                    }
+                });
+
+                $("#tipo").change(function() {
+                    if ($(this).val() == 'terceiros') {
+                        $("#div_responsavel").fadeIn();
+                    }
                     else {
-                        $("#text_status").fadeOut('normal', function() {
-                            $("#select_status").fadeIn();
-                        })
+                        $("#div_responsavel").fadeOut();
                     }
                 });
 
@@ -170,7 +207,7 @@
                     forcePlaceholderSize: false
                 });
 
-                for (var i=0;i<=5;i++) {
+                for (var i=0;i<=6;i++) {
                     sortable('.tabela_mes tbody')[i].addEventListener('sortupdate', updateFunction);
                     sortable('.tabela_terceiros tbody')[i].addEventListener('sortupdate', updateFunction);
                 }
@@ -196,6 +233,19 @@
                         terceiros: terceiros,
                     });
                 }
+
+                $(function () {
+                    $('[data-toggle="tooltip"]').tooltip({
+                        trigger: "click"
+                    });
+                });
+
+                $('[data-toggle="tooltip"]').on('shown.bs.tooltip', function () {
+                    setTimeout(function() {
+                        $('[data-toggle="tooltip"]').tooltip('hide');
+                        }, 5000
+                    );
+                })
             });
         </script>
     </head>
@@ -207,12 +257,13 @@
                 </ul>
                 <div class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
+                        <li><span class="valores_topo"><img class='icone_consolidado' tipo='mes_atual' src="{{URL::asset('public/imagens/calendar.png')}}" /> {{$consolidado::where('nome', 'mes_atual')->first()->valor}}</span></li>
                         <li><span class="valores_topo"><img class='icone_consolidado' tipo='casa' src="{{URL::asset('public/imagens/casa.png')}}" /> R$ {{$helper->format($consolidado->where('nome', 'casa')->first()->valor)}}</span></li>
                         <li><span class="valores_topo"><img class='icone_consolidado' tipo='itau' src="{{URL::asset('public/imagens/itau.png')}}" /> R$ {{$helper->format($consolidado->where('nome', 'itau')->first()->valor)}}</span></li>
                         <li class="divisor">&nbsp;</li>
                         <li><span class="valores_topo"><img class='icone_consolidado' tipo='savings' src="{{URL::asset('public/imagens/safe.png')}}" /> R$ {{$helper->format($consolidado->where('nome', 'savings')->first()->valor)}}</span></li>
                         <li class="divisor">&nbsp;</li>
-                        @foreach ($cartoes as $cartao)
+                        @foreach ($cartoes->where('nome', '!=', 'nubankMae')->get() as $cartao)
                             <li>
                                 <div class="row row_cartoes">
                                     <div class="col-md-4 topo_cartoes">
@@ -247,8 +298,8 @@
                     &nbsp;
                     &nbsp;
                     <i class="fa fa-user fa-inverse fa-lg" id="exibir_terceiros" style="margin-top: 22px; cursor: pointer"></i>
-                    <i class="fa fa-table fa-inverse fa-lg" id="exportar" style="margin-top: 22px; cursor: pointer"></i>
-                    <i class="fa fa-circle-notch fa-inverse slow-spin fa-2x fa-fw" style="display: none"></i>
+                    <!-- <i class="fa fa-table fa-inverse fa-lg" id="exportar" style="margin-top: 22px; cursor: pointer"></i>
+                    <i class="fa fa-circle-notch fa-inverse slow-spin fa-2x fa-fw" style="display: none"></i> -->
                 </div>
             </div>
         </nav>
@@ -293,8 +344,8 @@
                 </div>
             </div>
             <div class="row div_movimentacoes">
-                @for ($m=0;$m<=5;$m++)
-                    <div class="col-md-2">
+                @for ($m=0;$m<=6;$m++)
+                    <div class="col-md-2 col-md-2-mes">
                         <table class="table table-condensed table-bordered tabela_mes">
                             <thead>
                                 <tr>
@@ -322,12 +373,13 @@
                                     @php
                                         $total_mes = 0;
                                         $renda_mes = 0;
+                                        $total_planejado = 0;
                                     @endphp
                                     @for ($i=0;$i<$maximo_movimentacoes;$i++)
                                         @isset($movimentacoes_mes[$m]['movimentacoes'][$i])
                                             <tr class="linha_{{$movimentacoes_mes[$m]['movimentacoes'][$i]->status}} linha_{{$movimentacoes_mes[$m]['movimentacoes'][$i]->tipo}}">
                                                 <input type="hidden" class="id_movimentacao" value="{{$movimentacoes_mes[$m]['movimentacoes'][$i]->id}}" />
-                                                <td>
+                                                <td class='td_nome_movimentacao' data-toggle="tooltip" data-container="body" title="{{$movimentacoes_mes[$m]['movimentacoes'][$i]->descricao}}">
                                                     {{$movimentacoes_mes[$m]['movimentacoes'][$i]->nome}}
                                                     @if ($movimentacoes_mes[$m]['movimentacoes'][$i]->id_cartao != '')
                                                         <i class="fa fa-cc {{$modelCartoes::find($movimentacoes_mes[$m]['movimentacoes'][$i]->id_cartao)->sigla}}"></i>
@@ -336,12 +388,15 @@
                                                         [{{$movimentacoes_mes[$m]['movimentacoes'][$i]->status}}]
                                                     @endif
                                                 </td>
-                                                <td class="text-right td_valor td_@Model.Movimentacoes[i].Status td_@Model.Movimentacoes[i].Tipo">{{$helper->format($movimentacoes_mes[$m]['movimentacoes'][$i]->valor)}}</td>
+                                                <td class="text-right td_valor">{{$helper->format($movimentacoes_mes[$m]['movimentacoes'][$i]->valor)}}</td>
                                             </tr>
                                             @php
                                                 if ($movimentacoes_mes[$m]['movimentacoes'][$i]->status != 'pago') {
                                                     if ($movimentacoes_mes[$m]['movimentacoes'][$i]->tipo == 'gasto') {
                                                         $total_mes += $movimentacoes_mes[$m]['movimentacoes'][$i]->valor;
+                                                        if ($movimentacoes_mes[$m]['movimentacoes'][$i]->status == 'planejado') {
+                                                            $total_planejado += $movimentacoes_mes[$m]['movimentacoes'][$i]->valor;
+                                                        }
                                                     }
                                                     if ($movimentacoes_mes[$m]['movimentacoes'][$i]->tipo == 'renda') {
                                                         $renda_mes += $movimentacoes_mes[$m]['movimentacoes'][$i]->valor;
@@ -364,7 +419,17 @@
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <td><input type="hidden" class="id_movimentacao" value="@Model.SaveId" />Save</td>
+                                    <td>Total</td>
+                                    <td class="text-right"><span class="valor_total">{{$helper->format($total_mes-$renda_mes)}}</span></td>
+                                </tr>
+                                @if ($m > 0)
+                                <tr>
+                                    <td>Definido</td>
+                                    <td class="text-right"><span class="valor_total">{{$helper->format($total_mes-$renda_mes-$total_planejado)}}</span></td>
+                                </tr>
+                                @endif
+                                <tr>
+                                    <td>Save</td>
                                     @php
                                         if ($m == 0) {
                                             $sobra = str_replace(",","",$total_atual)-$total_mes+$renda_mes-@$movimentacoes_mes[$m]['save']->valor;    
@@ -380,26 +445,20 @@
                                         <td class="text-right">{{$helper->format($save_mes[$m])}}</td>
                                     @endif
                                 </tr>
-                                <tr>
-                                    <td>Total</td>
-                                    <td class="text-right"><span class="valor_total">{{$helper->format($total_mes-$renda_mes)}}</span></td>
-                                </tr>
+                                @if ($m == 0)
                                 <tr>
                                     <td>Sobra</td>
                                     <td class="text-right"><span class="valor_sobra">{{$helper->format($sobra)}}</span></td>
                                 </tr>
-                                @if ($m > 0)
-                                    <tr>
-                                        <td>dif. salario</td>
-                                        <td class="text-right"><span class="valor_sobra">{{$helper->format($consolidado->where('nome', 'salario')->first()->valor-($total_mes-$renda_mes))}}</span></td>
-                                    </tr>
                                 @endif
                             </tfoot>
                         </table>
                     </div>
                 @endfor
-                @for ($t=0;$t<=5;$t++)
-                    <div class="col-md-2">
+            </div>
+            <div class="row div_movimentacoes">
+                @for ($t=0;$t<=6;$t++)
+                    <div class="col-md-2 col-md-2-mes">
                         <table class="table table-condensed table-bordered tabela_mes tabela_terceiros" style='display: none'>
                             <tbody>
                                 @if (count($movimentacoes_terceiros[$t]) > 0)
@@ -407,16 +466,14 @@
                                         @isset($movimentacoes_terceiros[$t][$i])
                                             <tr class="linha_{{$movimentacoes_terceiros[$t][$i]->status}} linha_{{$movimentacoes_terceiros[$t][$i]->tipo}}">
                                                 <input type="hidden" class="id_movimentacao" value="{{$movimentacoes_terceiros[$t][$i]->id}}" />
-                                                <td>
+                                                <td class='td_nome_movimentacao' data-toggle="tooltip" data-container="body" title="{{$movimentacoes_mes[$t]['movimentacoes'][$i]->descricao}}">
                                                     {{$movimentacoes_terceiros[$t][$i]->nome}}
                                                     @if ($movimentacoes_terceiros[$t][$i]->id_cartao != '')
                                                         <i class="fa fa-cc {{$modelCartoes::find($movimentacoes_terceiros[$t][$i]->id_cartao)->sigla}}"></i>
                                                     @endif
-                                                    @if ($movimentacoes_terceiros[$t][$i]->tipo == 'terceiros' && !in_array($movimentacoes_terceiros[$t][$i]->status, ['planejado', 'definido', 'pago']))
-                                                        [{{$movimentacoes_terceiros[$t][$i]->status}}]
-                                                    @endif
+                                                    [{{$movimentacoes_terceiros[$t][$i]->responsavel}}]
                                                 </td>
-                                                <td class="text-right td_valor td_@Model.Movimentacoes[i].Status td_@Model.Movimentacoes[i].Tipo">{{$helper->format($movimentacoes_terceiros[$t][$i]->valor)}}</td>
+                                                <td class="text-right td_valor">{{$helper->format($movimentacoes_terceiros[$t][$i]->valor)}}</td>
                                             </tr>
                                         @endisset
                                         @empty($movimentacoes_terceiros[$t][$i])
@@ -435,7 +492,9 @@
                         </table>
                     </div>
                 @endfor
-                @for ($s=0;$s<=5;$s++)
+            </div>
+            <div class="row div_movimentacoes">
+                @for ($s=0;$s<=6;$s++)
                     @php
                         if ($s == 0) {
                             $savings_mes[$s] = $consolidado->where('nome', 'savings')->first()->valor+@$movimentacoes_mes[$s]['save']->valor;
@@ -444,7 +503,7 @@
                             $savings_mes[$s] = $savings_mes[$s-1]+$save_mes[$s];
                         }
                     @endphp
-                    <div class="col-md-2 tabela_saving_@i">
+                    <div class="col-md-2 col-md-2-mes">
                         <table class="table table-condensed table-bordered">
                             <thead>
                                 <tr>

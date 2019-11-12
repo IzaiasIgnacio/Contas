@@ -17,6 +17,14 @@
                 @endforeach
             </select>
         </div>
+        <div class="form-group" id="div_responsavel" style="display:none">
+            <label style="display:block">Responsável</label>
+            <select name='responsavel' id='responsavel' class="form-control">
+                @foreach ($lista_responsavel as $valor => $label)
+                    <option value="{{$valor}}">{{$label}}</option>
+                @endforeach
+            </select>
+        </div>
     </div>
     <div class="col-md-6">
         <div class="form-group">
@@ -25,8 +33,7 @@
         </div>
         <div class="form-group">
             <label style="display:block">Status</label>
-            <input class="form-control" type="text" name='text_status' id='text_status' style="display:none" />
-            <select name='select_status' id='select_status' class="form-control">
+            <select name='status' id='status' class="form-control">
                 @foreach ($lista_status as $status)
                     <option value="{{$status}}">{{$status}}</option>
                 @endforeach
@@ -36,7 +43,7 @@
             <label style="display:block">Cartão</label>
             <select name='cartao' id='cartao' class="form-control">
                 <option value="">Nenhum</option>
-                @foreach ($cartoes as $cartao)
+                @foreach ($cartoes->get() as $cartao)
                     <option value="{{$cartao->id}}">{{$cartao->nome}}</option>
                 @endforeach
             </select>

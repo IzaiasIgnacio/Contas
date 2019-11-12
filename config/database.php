@@ -46,7 +46,7 @@ return [
             'driver' => 'mysql',
             'host' => '127.0.0.1',
             'port' => '3306',
-            'database' => 'contas',
+            'database' => env('DB_CONTAS', 'contas'),
             'username' => 'root',
             'password' => '',
             'unix_socket' => '',
