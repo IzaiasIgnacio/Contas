@@ -78,23 +78,51 @@ class IndexController extends Controller {
 
     private function definirValoresFixosMes($data, $movimentacao) {
         $valores_fixos = [
-            "virtua" => 200,
-            "netflix" => 45.9,
-            "m" => 1500,
-            "fiesta" => 531.6,
-            'merc' => 600,
-            "vivo" => 49.99,
-            'gpm' => 16.9,
-            'gp' =>	13.99,
-            'seg' => 4.49
+            "virtua" => [
+                'valor' => 200,
+                'descricao' => null
+            ],
+            "netflix" => [
+                'valor' => 45.9,
+                'descricao' => null
+            ],
+            "m" => [
+                'valor' => 1500,
+                'descricao' => 'Mãe'
+            ],
+            "fiesta" => [
+                'valor' => 531.6,
+                'descricao' => null
+            ],
+            'merc' => [
+                'valor' => 600,
+                'descricao' => 'Mercado'
+            ],
+            "vivo" => [
+                'valor' => 49.99,
+                'descricao' => null
+            ],
+            'gpm' => [
+                'valor' => 16.9,
+                'descricao' => 'Google Play Music'
+            ],
+            'gp' =>	[
+                'valor' => 13.99,
+                'descricao' => 'Xbox Game Pass'
+            ],
+            'seg' => [
+                'valor' => 4.49,
+                'descricao' => 'Seguro Cartão Itaú'
+            ]
         ];
 
         $p = 1;
-        foreach ($valores_fixos as $nome => $valor) {
+        foreach ($valores_fixos as $nome => $valores) {
             if ($movimentacao->whereRaw("data = '".$data->format('Y-m-d')."'")->where('nome', $nome)->where('tipo', 'gasto')->count() == 0) {
                 $mov = new Movimentacao();
                 $mov->nome = $nome;
-                $mov->valor = $valor;
+                $mov->descricao = $valores['descricao'];
+                $mov->valor = $valores['valor'];
                 $mov->tipo = 'gasto';
                 $mov->data = $data->format('Y-m-d');
                 $mov->status = 'definido';
@@ -166,12 +194,14 @@ class IndexController extends Controller {
             if ($p > 1) {
                 $data = date_add($data, date_interval_create_from_date_string("1 month"));
             }
+            $movimentacao->descricao = $request['descricao'];
             $movimentacao->data = $data->format('Y-m-d');
             $movimentacao->tipo = $request['tipo'];
             $movimentacao->valor = $request['valor'];
             $movimentacao->status = $request['status'];
             $movimentacao->responsavel = $request['responsavel'];
             $movimentacao->id_cartao = $id_cartao;
+            $movimentacao->posicao = 999;
             $movimentacao->save();
         }
     }

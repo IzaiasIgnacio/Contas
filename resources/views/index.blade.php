@@ -73,6 +73,7 @@
                 $("#modal_movimentacao .salvar").click(function() {
                     $.post("{{route('salvar_movimentacao')}}", {
                         nome: $("#nome").val(),
+                        descricao: $("#descricao").val(),
                         data: $("#data").val(),
                         tipo: $("#tipo").val(),
                         valor: $("#valor").val(),

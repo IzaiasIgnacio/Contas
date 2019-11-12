@@ -6,8 +6,12 @@
             <input class="form-control" type="text" name='nome' id='nome' />
         </div>
         <div class="form-group">
+            <label style="display:block">Descrição</label>
+            <input class="form-control" type="text" name='descricao' id='descricao' />
+        </div>
+        <div class="form-group">
             <label style="display:block">Data</label>
-            <input class="form-control" type="text" name='data' id='data' value="{{date('d/m/Y')}}" />
+            <input class="form-control" type="text" name='data' id='data' />
         </div>
         <div class="form-group">
             <label style="display:block">Tipo</label>
