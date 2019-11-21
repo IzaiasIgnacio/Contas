@@ -12,6 +12,7 @@
 */
 
 Route::get('/', 'IndexController@exibirContas');
+Route::get('/terceiros/{data}', 'IndexController@exibirTerceiros');
 
 Route::post('salvar_consolidado', 'IndexController@salvarConsolidado')->name('salvar_consolidado');
 Route::post('salvar_movimentacao', 'IndexController@salvarMovimentacao')->name('salvar_movimentacao');

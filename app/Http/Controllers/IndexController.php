@@ -294,4 +294,26 @@ class IndexController extends Controller {
         }
     }
 
+    public function exibirTerceiros(Request $request) {
+        $d = explode(".", $request['data']);
+        $data = \Carbon\Carbon::createFromFormat('d/m/Y', '01/'.$d[0]."/".$d[1]);
+
+        $helper = new \App\Models\Helper();
+        $movimentacao = new Movimentacao();
+
+        $movimentacoes = $movimentacao->whereMonth('data', $data->format('m'))
+                                       ->whereYear('data', $data->format('Y'))
+                                       ->where('tipo', 'terceiros')
+                                        ->get();
+
+        echo "<table>";
+        foreach ($movimentacoes as $movimentacao) {
+            echo "<tr>";
+            echo "  <td>".$movimentacao->nome."</td>";
+            echo "  <td>".$helper->format($movimentacao->valor)."</td>";
+            echo "</tr>";
+        }
+        echo "</table>";
+    }
+
 }

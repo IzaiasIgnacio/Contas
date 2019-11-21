@@ -5,6 +5,10 @@ body {
     font-size: 15px;
 }
 
+html::-webkit-scrollbar {
+    width: 0px;
+}
+
 .body-content {
     padding-left: 15px;
     padding-right: 15px;
@@ -168,6 +172,10 @@ body {
 
 .linha_pago td {
     background-color: green !important;
+}
+
+.linha_renda.linha_pago td {
+    background-color: #127de0 !important;
 }
 
 .linha_terceiros td, .tabela_terceiros td {

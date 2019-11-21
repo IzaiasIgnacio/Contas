@@ -275,20 +275,22 @@
                                     <div class="col-md-8 topo_cartoes col_valores">
                                         <div class="col-md-12 topo_cartoes">
                                             <span class="valores_topo">
-                                                R$ {{
-                                                    $helper->format(
+                                                @php
+                                                    $gastos_cartao =
                                                         $total_movimentacoes
                                                         ->where(function ($query) use ($cartao) {
                                                             $query->where('id_cartao', $cartao->id)
-                                                                    ->whereIn('status', ['planejado', 'definido'])
+                                                                    ->where('status', 'definido')
                                                                     ->where('tipo', 'gasto');
                                                         })->orWhere(function($query) use ($cartao) {
                                                             $query->where('id_cartao', $cartao->id)
                                                                     ->where('status', '!=', 'pago')
                                                                     ->where('tipo', 'terceiros');
                                                         })
-                                                        ->sum('valor'))
-                                                    }} / {{$helper->format($cartao->credito)}}<br>{{$cartao->numero}}
+                                                        ->sum('valor');
+                                                    if ($cartao->id == 1) { $gastos_cartao += 16.9+13.99; }
+                                                @endphp
+                                                R$ {{$helper->format($cartao->credito-$gastos_cartao)}} / {{$helper->format($cartao->credito)}}<br>{{$cartao->numero}}
                                             </span>
                                         </div>
                                     </div>  
