@@ -9,7 +9,7 @@ class Responsavel {
             'tia_cacilda' => 'Tia Cacilda',
             'cristiane' => 'Cristiane',
             'junior' => 'Júnior',
-            'chah' => 'Chayane',
+            'chah' => 'Chayane'
         ];
     }
 

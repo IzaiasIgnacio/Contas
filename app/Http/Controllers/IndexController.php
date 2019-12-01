@@ -95,7 +95,7 @@ class IndexController extends Controller {
                 'descricao' => null
             ],
             'merc' => [
-                'valor' => 600,
+                'valor' => 750,
                 'descricao' => 'Mercado'
             ],
             "vivo" => [
@@ -295,25 +295,102 @@ class IndexController extends Controller {
     }
 
     public function exibirTerceiros(Request $request) {
+        return view('terceiros', []);
         $d = explode(".", $request['data']);
         $data = \Carbon\Carbon::createFromFormat('d/m/Y', '01/'.$d[0]."/".$d[1]);
 
         $helper = new \App\Models\Helper();
         $movimentacao = new Movimentacao();
+        $responsaveis = Responsavel::get();
+        $responsaveis['izaias'] = 'Izaias';
+        $gastos = [];
+        $total = 0;
+        $total_com_atrasado = 0;
+        $total_chah = 0;
 
         $movimentacoes = $movimentacao->whereMonth('data', $data->format('m'))
                                        ->whereYear('data', $data->format('Y'))
                                        ->where('tipo', 'terceiros')
                                         ->get();
+        
+        $izaias = $movimentacao->whereMonth('data', $data->format('m'))
+                                        ->whereYear('data', $data->format('Y'))
+                                        ->where('tipo', 'gasto')
+                                        ->where('id_cartao', 4)
+                                         ->get();
 
-        echo "<table>";
         foreach ($movimentacoes as $movimentacao) {
+            $gastos[$movimentacao->responsavel][] = $movimentacao;
+            if ($movimentacao->responsavel == 'chah') {
+                $total_chah += $movimentacao->valor;
+            }
+            else {
+                $total += $movimentacao->valor;
+            }
+        }
+
+        $antigo_chah = new Movimentacao();
+        $antigo_chah->nome = 'Antigo';
+        $antigo_chah->valor = 348.54;
+        $gastos['chah'][] = $antigo_chah;
+
+        $atrasado = new Movimentacao();
+        $atrasado->nome = 'Atrasado';
+        $atrasado->valor = 1485;
+        $gastos['mae'][] = $atrasado;
+
+        $mes = new Movimentacao();
+        $mes->nome = 'Mês';
+        $mes->valor = 1300;
+        $gastos['izaias'][] = $mes;
+
+        foreach ($izaias as $i) {
+            $gastos['izaias'][] = $i;
+            $total -= $i->valor;
+        }
+
+        $total_com_atrasado = $total + $atrasado->valor;
+
+        echo "<table border='1px solid #000' cellpadding='0' cellspacing='0'>";
+        foreach ($gastos as $responsavel => $movimentacoes) {
+            if ($responsavel == 'chah') { continue; }
             echo "<tr>";
-            echo "  <td>".$movimentacao->nome."</td>";
-            echo "  <td>".$helper->format($movimentacao->valor)."</td>";
+            echo "  <td colspan='2' align='center'>".$responsaveis[$responsavel]."</td>";
+            echo "</tr>";
+            foreach ($movimentacoes as $mov) {
+                echo "<tr>";
+                echo "  <td>".$mov->nome."</td>";
+                echo "  <td>".$helper->format($mov->valor)."</td>";
+                echo "</tr>";
+            }
+        }
+        echo "<tr>";
+        echo "  <td colspan='2' align='center'>&nbsp;</td>";
+        echo "</tr>";
+        echo "<tr>";
+        echo "  <td>Total</td>";
+        echo "  <td>".$helper->format($total_com_atrasado)."</td>";
+        echo "</tr>";
+        echo "<tr>";
+        echo "  <td>Total - atrasado</td>";
+        echo "  <td>".$helper->format($total)."</td>";
+        echo "</tr>";
+        echo "</table>";
+
+        echo "<table border='1px solid #000' cellpadding='0' cellspacing='0' style='margin-top: 50px'>";
+        echo "<tr>";
+        echo "  <td colspan='2' align='center'>Chayane</td>";
+        echo "</tr>";
+        foreach ($gastos['chah'] as $mov) {
+            echo "<tr>";
+            echo "  <td>".$mov->nome."</td>";
+            echo "  <td>".$helper->format($mov->valor)."</td>";
             echo "</tr>";
         }
-        echo "</table>";
+        echo "<tr>";
+        echo "  <td>Total - Antigo</td>";
+        echo "  <td>".$helper->format($total_chah)."</td>";
+        echo "</tr>";
     }
 
 }
