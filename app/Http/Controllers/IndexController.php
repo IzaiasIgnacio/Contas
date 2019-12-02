@@ -295,7 +295,6 @@ class IndexController extends Controller {
     }
 
     public function exibirTerceiros(Request $request) {
-        return view('terceiros', []);
         $d = explode(".", $request['data']);
         $data = \Carbon\Carbon::createFromFormat('d/m/Y', '01/'.$d[0]."/".$d[1]);
 
@@ -351,46 +350,14 @@ class IndexController extends Controller {
 
         $total_com_atrasado = $total + $atrasado->valor;
 
-        echo "<table border='1px solid #000' cellpadding='0' cellspacing='0'>";
-        foreach ($gastos as $responsavel => $movimentacoes) {
-            if ($responsavel == 'chah') { continue; }
-            echo "<tr>";
-            echo "  <td colspan='2' align='center'>".$responsaveis[$responsavel]."</td>";
-            echo "</tr>";
-            foreach ($movimentacoes as $mov) {
-                echo "<tr>";
-                echo "  <td>".$mov->nome."</td>";
-                echo "  <td>".$helper->format($mov->valor)."</td>";
-                echo "</tr>";
-            }
-        }
-        echo "<tr>";
-        echo "  <td colspan='2' align='center'>&nbsp;</td>";
-        echo "</tr>";
-        echo "<tr>";
-        echo "  <td>Total</td>";
-        echo "  <td>".$helper->format($total_com_atrasado)."</td>";
-        echo "</tr>";
-        echo "<tr>";
-        echo "  <td>Total - atrasado</td>";
-        echo "  <td>".$helper->format($total)."</td>";
-        echo "</tr>";
-        echo "</table>";
-
-        echo "<table border='1px solid #000' cellpadding='0' cellspacing='0' style='margin-top: 50px'>";
-        echo "<tr>";
-        echo "  <td colspan='2' align='center'>Chayane</td>";
-        echo "</tr>";
-        foreach ($gastos['chah'] as $mov) {
-            echo "<tr>";
-            echo "  <td>".$mov->nome."</td>";
-            echo "  <td>".$helper->format($mov->valor)."</td>";
-            echo "</tr>";
-        }
-        echo "<tr>";
-        echo "  <td>Total - Antigo</td>";
-        echo "  <td>".$helper->format($total_chah)."</td>";
-        echo "</tr>";
+        return view('terceiros', [
+            'helper' => $helper,
+            'responsaveis' => $responsaveis,
+            'gastos' => $gastos,
+            'total_com_atrasado' => $total_com_atrasado,
+            'total' => $total,
+            'total_chah' => $total_chah
+        ]);
     }
 
 }

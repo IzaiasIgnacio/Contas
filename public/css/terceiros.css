@@ -1,6 +1,29 @@
+body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+    background-color: #ccc;
+    font-size: 15px;
+}
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+    margin-top: 15px;
+}
+.body-content, .menu_container {
+    width: 90%;
+}
 .table {
     width: 80%;
+    box-shadow: 5px 5px 5px #333;
 }
 .td_responsavel {
     text-align: center;
+    background-color: #000;
+    color: #fff;
+}
+.table-striped > tbody > tr:nth-of-type(even) {
+    background-color: #fff;
+}
+.table > tbody > tr > td:nth-child(1) {
+    width: 70%;
 }
