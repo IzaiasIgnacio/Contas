@@ -342,12 +342,13 @@ class IndexController extends Controller {
         $mes->nome = 'Mês';
         $mes->valor = 1300;
         $gastos['izaias'][] = $mes;
-
+        $total -= $mes->valor;
+        
         foreach ($izaias as $i) {
             $gastos['izaias'][] = $i;
             $total -= $i->valor;
         }
-
+        
         $total_com_atrasado = $total + $atrasado->valor;
 
         return view('terceiros', [
