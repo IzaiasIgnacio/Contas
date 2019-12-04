@@ -27,3 +27,11 @@ body {
 .table > tbody > tr > td:nth-child(1) {
     width: 70%;
 }
+.tr_total_responsavel {
+    background-color: cornflowerblue !important;
+    color: #fff;
+}
+.tr_renda_itau {
+    background-color: green !important;
+    color: #fff;
+}

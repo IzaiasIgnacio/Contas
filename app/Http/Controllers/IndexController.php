@@ -80,39 +80,48 @@ class IndexController extends Controller {
         $valores_fixos = [
             "virtua" => [
                 'valor' => 200,
-                'descricao' => null
+                'descricao' => null,
+                'itau' => 1
             ],
             "netflix" => [
                 'valor' => 45.9,
-                'descricao' => null
+                'descricao' => null,
+                'itau' => 1
             ],
             "m" => [
                 'valor' => 1500,
-                'descricao' => 'Mãe'
+                'descricao' => 'Mãe',
+                'itau' => null
             ],
             "fiesta" => [
                 'valor' => 531.6,
-                'descricao' => null
+                'descricao' => null,
+                'itau' => 1
             ],
             'merc' => [
                 'valor' => 750,
-                'descricao' => 'Mercado'
+                'descricao' => 'Mercado',
+                'itau' => null
             ],
             "vivo" => [
                 'valor' => 49.99,
-                'descricao' => null
+                'descricao' => null,
+                'itau' => 1
             ],
             'gpm' => [
                 'valor' => 16.9,
-                'descricao' => 'Google Play Music'
+                'descricao' => 'Google Play Music',
+                'itau' => 1
             ],
             'gp' =>	[
                 'valor' => 13.99,
-                'descricao' => 'Xbox Game Pass'
+                'descricao' => 'Xbox Game Pass',
+                'itau' => 1
             ],
             'seg' => [
                 'valor' => 4.49,
-                'descricao' => 'Seguro Cartão Itaú'
+                'descricao' => 'Seguro Cartão Itaú',
+                'itau' => 1
             ]
         ];
 
@@ -126,6 +135,7 @@ class IndexController extends Controller {
                 $mov->tipo = 'gasto';
                 $mov->data = $data->format('Y-m-d');
                 $mov->status = 'definido';
+                $mov->itau = $valores['itau'];
                 $mov->posicao = $p;
                 $mov->save();
                 $p++;
@@ -318,6 +328,23 @@ class IndexController extends Controller {
                                         ->where('id_cartao', 4)
                                          ->get();
 
+        $itau = $movimentacao->whereMonth('data', $data->format('m'))
+                                         ->whereYear('data', $data->format('Y'))
+                                         ->whereIn('tipo', ['gasto', 'renda'])
+                                         ->where('itau', true)
+                                         ->where('status', '!=', 'pago')
+                                          ->get();
+        $total_itau = 0;
+        foreach ($itau as $it) {
+            if ($it->tipo == 'gasto') {
+                $total_itau += $it->valor;
+            }
+            if ($it->tipo == 'renda') {
+                $total_itau -= $it->valor;
+            }
+        }
+        $valor_itau = Consolidado::where('nome', 'itau')->first()->valor;
+
         foreach ($movimentacoes as $movimentacao) {
             $gastos[$movimentacao->responsavel][] = $movimentacao;
             if ($movimentacao->responsavel == 'chah') {
@@ -357,7 +384,10 @@ class IndexController extends Controller {
             'gastos' => $gastos,
             'total_com_atrasado' => $total_com_atrasado,
             'total' => $total,
-            'total_chah' => $total_chah
+            'total_chah' => $total_chah,
+            'itau' => $itau,
+            'total_itau' => $total_itau,
+            'valor_itau' => $valor_itau
         ]);
     }
 

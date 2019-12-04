@@ -251,7 +251,7 @@
         </script>
     </head>
     <body>
-        <nav class="navbar navbar-inverse navbar-fixed-top">
+        <nav class="navbar navbar-inverse navbar-fixed-top" @php if (getenv('DB_CONTAS') == 'contas_hmg') { echo "style='background-color: #950000'"; } @endphp>
             <div class="container menu_container">
                 <ul class="nav navbar-brand">
                     <li>Contas</li>
