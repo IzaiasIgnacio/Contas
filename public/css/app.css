@@ -162,6 +162,11 @@ html::-webkit-scrollbar {
     color: dodgerblue;
 }
 
+.linha_gasto .fa-info-circle {
+    font-size: 12px !important;
+    color: darkorange !important;
+}
+
 .linha_planejado td {
     background-color: gray !important;
 }

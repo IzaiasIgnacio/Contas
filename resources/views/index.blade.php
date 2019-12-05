@@ -102,6 +102,12 @@
                                     location.reload();
                                 });
                             break;
+                            case 'itau':
+                                $.post("{{route('definir_itau')}}", {id: movimentacao_escolhida},
+                                function(resposta) {
+                                    location.reload();
+                                });
+                            break;
                             case 'descricao':
                             break;
                             default:
@@ -132,8 +138,10 @@
                             }
                         },
                         "sep3": "---",
-                        "descricao": {name: "Descrição", icon: "fa-edit"},
+                        "itau": {name: "Itaú", icon: "fa-info-circle"},
                         "sep4": "---",
+                        "descricao": {name: "Descrição", icon: "fa-edit"},
+                        "sep5": "---",
                         "excluir": {name: "Excluir", icon: "fa-trash"},
                     }
                 });
@@ -386,6 +394,9 @@
                                                     {{$movimentacoes_mes[$m]['movimentacoes'][$i]->nome}}
                                                     @if ($movimentacoes_mes[$m]['movimentacoes'][$i]->id_cartao != '')
                                                         <i class="fa fa-cc {{$modelCartoes::find($movimentacoes_mes[$m]['movimentacoes'][$i]->id_cartao)->sigla}}"></i>
+                                                    @endif
+                                                    @if ($movimentacoes_mes[$m]['movimentacoes'][$i]->itau)
+                                                        <i class="fa fa-info-circle"></i>
                                                     @endif
                                                     @if ($movimentacoes_mes[$m]['movimentacoes'][$i]->tipo == 'terceiros' && !in_array($movimentacoes_mes[$m]['movimentacoes'][$i]->status, ['planejado', 'definido', 'pago']))
                                                         [{{$movimentacoes_mes[$m]['movimentacoes'][$i]->status}}]

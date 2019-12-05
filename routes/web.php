@@ -23,3 +23,4 @@ Route::post('excluir_movimentacao', 'IndexController@ExcluirMovimentacao')->name
 Route::post('atualizar_save', 'IndexController@AtualizarSave')->name('atualizar_save');
 Route::post('atualizar_posicoes', 'IndexController@AtualizarPosicoes')->name('atualizar_posicoes');
 Route::post('nome_movimentacao', 'IndexController@getNomeMovimentacao')->name('nome_movimentacao');
+Route::post('definir_itau', 'IndexController@definirItau')->name('definir_itau');

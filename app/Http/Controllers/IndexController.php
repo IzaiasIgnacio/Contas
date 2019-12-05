@@ -260,6 +260,13 @@ class IndexController extends Controller {
     public function ExcluirMovimentacao(Request $request) {
         Movimentacao::find($request['id'])->delete();
     }
+
+    public function definirItau(Request $request) {
+        $mov = Movimentacao::find($request['id']);
+        $mov->itau = !$mov->itau;
+        $mov->save();
+    }
+
     public function AtualizarSave(Request $request) {
         $movimentacao = Movimentacao::where(
             [
@@ -332,7 +339,6 @@ class IndexController extends Controller {
                                          ->whereYear('data', $data->format('Y'))
                                          ->whereIn('tipo', ['gasto', 'renda'])
                                          ->where('itau', true)
-                                         ->where('status', '!=', 'pago')
                                           ->get();
         $total_itau = 0;
         foreach ($itau as $it) {
