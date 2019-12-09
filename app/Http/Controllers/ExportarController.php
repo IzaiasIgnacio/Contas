@@ -2,14 +2,23 @@
 
 namespace App\Http\Controllers;
 
-error_reporting(0);
-
 use App\Http\Controllers\Controller;
 use App\Models\Movimentacao;
 
 class ExportarController extends Controller {
 
     private $id_planilha = '1I6SEQnarqrTfe2uiyiaBgpxSdof8KE5DQaK4g7f15e4';
+    private $service;
+    private $data;
+    private $posicao_mes = [
+        '0' => 'B2:C',
+        '1' => 'E2:F',
+        '2' => 'H2:I',
+        '3' => 'K2:L',
+        '4' => 'N2:O',
+        '5' => 'Q2:R',
+        '6' => 'T2:S',
+    ];
 
     private function getClient() {
         $client = new \Google_Client();
@@ -64,40 +73,73 @@ class ExportarController extends Controller {
     public function exportar() {
         // Get the API client and construct the service object.
         $client = $this->getClient();
-        $service = new \Google_Service_Sheets($client);
-
-        // The A1 notation of the values to clear.
-        $range = '!A1:Z1000';  // TODO: Update placeholder value.
+        $this->service = new \Google_Service_Sheets($client);
 
         // TODO: Assign values to desired properties of `requestBody`:
         $requestBody = new \Google_Service_Sheets_ClearValuesRequest();
 
-        $response = $service->spreadsheets_values->clear($this->id_planilha, $range, $requestBody);
-
-        $range = '!B1:C40';
+        // The A1 notation of the values to clear.
+        $range = '!A1:Z1000';  // TODO: Update placeholder value.
+        $response = $this->service->spreadsheets_values->clear($this->id_planilha, $range, $requestBody);
 
         $d = explode(".", '12.2019');
-        $data = \Carbon\Carbon::createFromFormat('d/m/Y', '01/'.$d[0]."/".$d[1]);
-        $movimentacoes = Movimentacao::select('nome', 'valor')
-                                        ->whereMonth('data', $data->format('m'))
-                                        ->whereYear('data', $data->format('Y'))
-                                        ->where('tipo', 'terceiros')
-                                            ->get();
+        $this->data = \Carbon\Carbon::createFromFormat('d/m/Y', '01/'.$d[0]."/".$d[1]);
+        $valores = [];
+        $maximo = 0;
+        for ($i=0;$i<=6;$i++) {
+            $valores[$i] = $this->getValoresMes();
+            if (count($valores[$i]) > $maximo) {
+                $maximo = count($valores[$i]);
+            }
+            $this->data->addMonth();
+        }
+
+        $maximo++;
+        foreach ($valores as $mes => $valor) {
+            $range = '!'.$this->posicao_mes[$mes].$maximo;
+            $this->inserirDadosPlanilha($range, $valor);
+        }
+
+        for ($i=0;$i<=6;$i++) {
+            $save = [
+                ['save', 'col 2'],
+                ['total', 'col 2'],
+                ['sobra', 'col 2']
+            ];
+            $range = '!'.str_replace('2', $maximo+2, $this->posicao_mes[$i]).($maximo+4);
+            $this->inserirDadosPlanilha($range, $save);
+        }
+    }
+
+    private function getValoresMes() {
+        // $movimentacoes = Movimentacao::select('nome', 'valor')
+        //                                 ->whereMonth('data', $this->data->format('m'))
+        //                                 ->whereYear('data', $this->data->format('Y'))
+        //                                 ->where('tipo', 'terceiros')
+        //                                     ->get();
 
         $values = [];
-        foreach ($movimentacoes as $movimentacao) {
-            $values[] = [$movimentacao->nome, $movimentacao->valor];
+        $values[] = ['Mês', '00000'];
+        $total = 0;
+        // foreach ($movimentacoes as $movimentacao) {
+        for ($i=0;$i<=5;$i++) {
+            $values[] = ['col 1', '5'];
+            $total += 5;
+            // $values[] = [$movimentacao->nome, $movimentacao->valor];
         }
-        // $values = [
-        //     ['col 1', 'col 2'],
-        //     ['col 1', 'col 2'],
-        //     ['col 1', 'col 2']
-        // ];
+        $values[] = ['Save', '00000'];
+        $values[] = ['Total', $total];
 
-        $requestBody = new \Google_Service_Sheets_ValueRange(['values' => $values]);
-        $params = ['valueInputOption' => 'RAW'];
-
-        $response = $service->spreadsheets_values->update($this->id_planilha, $range, $requestBody, $params);
+        return $values;
+    }
+    
+    private function inserirDadosPlanilha($range, $valores) {
+        return $this->service->spreadsheets_values->update(
+            $this->id_planilha,
+            $range,
+            new \Google_Service_Sheets_ValueRange(['values' => $valores]),
+            ['valueInputOption' => 'RAW']
+        );
     }
     
 }
