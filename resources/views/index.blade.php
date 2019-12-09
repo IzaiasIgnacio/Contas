@@ -236,6 +236,7 @@
                             terceiros.push($(e).find('.id_movimentacao').val());
                         }
                     });
+
                     $.post("{{route('atualizar_posicoes')}}", {
                         gastos: gastos,
                         rendas: rendas,
@@ -254,7 +255,16 @@
                         $('[data-toggle="tooltip"]').tooltip('hide');
                         }, 5000
                     );
-                })
+                });
+
+                $("#exportar").click(function() {
+                    $(".fa-circle-notch").fadeIn();
+
+                    $.post("{{route('exportar')}}", {},
+                    function(resposta) {
+                        $(".fa-circle-notch").fadeOut();
+                    });
+                });
             });
         </script>
     </head>
@@ -309,8 +319,9 @@
                     &nbsp;
                     &nbsp;
                     <i class="fa fa-user fa-inverse fa-lg" id="exibir_terceiros" style="margin-top: 22px; cursor: pointer"></i>
-                    <!-- <i class="fa fa-table fa-inverse fa-lg" id="exportar" style="margin-top: 22px; cursor: pointer"></i>
-                    <i class="fa fa-circle-notch fa-inverse slow-spin fa-2x fa-fw" style="display: none"></i> -->
+                    <i class="fa fa-book fa-inverse fa-lg" id="exibir_extra" style="margin-top: 22px; cursor: pointer" onclick="window.open('{{route('exibir_extra', ['data' => '12.2019'])}}')"></i>
+                    <i class="fa fa-table fa-inverse fa-lg" id="exportar" style="margin-top: 22px; cursor: pointer"></i>
+                    <i class="fa fa-circle-notch fa-inverse slow-spin fa-2x fa-fw" style="display: none"></i>
                 </div>
             </div>
         </nav>

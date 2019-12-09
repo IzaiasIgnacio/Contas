@@ -311,7 +311,7 @@ class IndexController extends Controller {
         }
     }
 
-    public function exibirTerceiros(Request $request) {
+    public function exibirExtra(Request $request) {
         $d = explode(".", $request['data']);
         $data = \Carbon\Carbon::createFromFormat('d/m/Y', '01/'.$d[0]."/".$d[1]);
 
@@ -384,7 +384,7 @@ class IndexController extends Controller {
         
         $total_com_atrasado = $total + $atrasado->valor;
 
-        return view('terceiros', [
+        return view('extra', [
             'helper' => $helper,
             'responsaveis' => $responsaveis,
             'gastos' => $gastos,

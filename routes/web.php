@@ -12,7 +12,7 @@
 */
 
 Route::get('/', 'IndexController@exibirContas');
-Route::get('/terceiros/{data}', 'IndexController@exibirTerceiros');
+Route::get('/extra/{data}', 'IndexController@exibirExtra')->name('exibir_extra');
 
 Route::post('salvar_consolidado', 'IndexController@salvarConsolidado')->name('salvar_consolidado');
 Route::post('salvar_movimentacao', 'IndexController@salvarMovimentacao')->name('salvar_movimentacao');
@@ -24,3 +24,4 @@ Route::post('atualizar_save', 'IndexController@AtualizarSave')->name('atualizar_
 Route::post('atualizar_posicoes', 'IndexController@AtualizarPosicoes')->name('atualizar_posicoes');
 Route::post('nome_movimentacao', 'IndexController@getNomeMovimentacao')->name('nome_movimentacao');
 Route::post('definir_itau', 'IndexController@definirItau')->name('definir_itau');
+Route::any('exportar', 'ExportarController@exportar')->name('exportar');
