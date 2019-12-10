@@ -114,13 +114,14 @@ class ExportarController extends Controller {
     }
 
     private function getValoresMes($i) {
-        $movimentacoes = Movimentacao::select('nome', 'valor')
+        $movimentacoes = Movimentacao::select('nome', 'valor', 'tipo')
                                         ->whereMonth('data', $this->data->format('m'))
                                         ->whereYear('data', $this->data->format('Y'))
                                         ->whereNotIN('tipo', ['save', 'terceiros'])
                                             ->orderBy('tipo')
                                             ->orderBy('posicao')
                                                 ->get();
+
         $save = Movimentacao::whereMonth('data', $this->data->format('m'))
                               ->whereYear('data', $this->data->format('Y'))
                               ->where('tipo', 'save')
@@ -138,14 +139,27 @@ class ExportarController extends Controller {
             break;
         }
         
-        $values[] = [ucfirst($this->data->locale('pt-br')->monthName),$total_atual];
+        $values[] = [ucfirst($this->data->locale('pt-br')->monthName), $total_atual];
         $total = 0;
+        $renda = 0;
         foreach ($movimentacoes as $movimentacao) {
             $values[] = [$movimentacao->nome, $movimentacao->valor];
-            $total += $movimentacao->valor;
+            if ($movimentacao->tipo != 'renda') {
+                $total += $movimentacao->valor;
+            }
+            else {
+                $renda += $movimentacao->valor;
+            }
+        }
+
+        $values[] = ['Total', $total];
+        if ($i > 0) {
+            $values[] = ['Definido', 0];
         }
         $values[] = ['Save', $save['valor']];
-        $values[] = ['Total', $total];
+        if ($i == 0) {
+            $values[] = ['Sobra', $total_atual-$total+$renda-$save['valor']];
+        }
 
         return $values;
     }
