@@ -89,27 +89,30 @@ class ExportarController extends Controller {
         $valores = [];
         $maximo = 0;
         for ($i=0;$i<=6;$i++) {
-            $valores[$i] = $this->getValoresMes($i);
+            $mes = $this->getValoresMes($i);
+            $valores[$i] = $mes['valores'];
+            $totais[$i] = $mes['totais'];
+            $save[$i] = $mes['save'];
             if (count($valores[$i]) > $maximo) {
                 $maximo = count($valores[$i]);
             }
             $this->data->addMonth();
         }
-
+        
         $maximo++;
-        foreach ($valores as $mes => $valor) {
-            $range = '!'.$this->posicao_mes[$mes].$maximo;
+        foreach ($valores as $p => $valor) {
+            $range = '!'.$this->posicao_mes[$p].$maximo;
+            $this->inserirDadosPlanilha($range, $valor);
+        }
+        
+        foreach ($totais as $p => $valor) {
+            $range = '!'.str_replace('2', $maximo+1, $this->posicao_mes[$p]).($maximo+3);
             $this->inserirDadosPlanilha($range, $valor);
         }
 
-        for ($i=0;$i<=6;$i++) {
-            $save = [
-                ['save', 'col 2'],
-                ['total', 'col 2'],
-                ['sobra', 'col 2']
-            ];
-            $range = '!'.str_replace('2', $maximo+2, $this->posicao_mes[$i]).($maximo+4);
-            $this->inserirDadosPlanilha($range, $save);
+        foreach ($save as $p => $valor) {
+            $range = '!'.str_replace('2', $maximo+5, $this->posicao_mes[$p]).($maximo+7);
+            $this->inserirDadosPlanilha($range, $valor);
         }
     }
 
@@ -152,16 +155,32 @@ class ExportarController extends Controller {
             }
         }
 
-        $values[] = ['Total', $total];
+        $totais = [];
+        $totais[] = ['Total', $total];
         if ($i > 0) {
-            $values[] = ['Definido', 0];
+            $totais[] = ['Definido', 0];
         }
-        $values[] = ['Save', $save['valor']];
+        $totais[] = ['Save', $save['valor']];
         if ($i == 0) {
-            $values[] = ['Sobra', $total_atual-$total+$renda-$save['valor']];
+            $totais[] = ['Sobra', $total_atual-$total+$renda-$save['valor']];
         }
 
-        return $values;
+        $save = 0;
+        if ($i == 0) {
+            $save = Consolidado::where('nome', 'savings')->first()->valor+@$totais[$i]['Save'];
+        }
+        
+        $save = [
+            ['save', $save],
+            ['total', 'col 2'],
+            ['sobra', 'col 2']
+        ];
+
+        return [
+            'valores' => $values,
+            'totais' => $totais,
+            'save' => $save
+        ];
     }
     
     private function inserirDadosPlanilha($range, $valores) {
