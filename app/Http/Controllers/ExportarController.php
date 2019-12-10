@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Movimentacao;
+use App\Models\Consolidado;
 
 class ExportarController extends Controller {
 
@@ -19,6 +20,7 @@ class ExportarController extends Controller {
         '5' => 'Q2:R',
         '6' => 'T2:S',
     ];
+    private $sobra;
 
     private function getClient() {
         $client = new \Google_Client();
@@ -87,7 +89,7 @@ class ExportarController extends Controller {
         $valores = [];
         $maximo = 0;
         for ($i=0;$i<=6;$i++) {
-            $valores[$i] = $this->getValoresMes();
+            $valores[$i] = $this->getValoresMes($i);
             if (count($valores[$i]) > $maximo) {
                 $maximo = count($valores[$i]);
             }
@@ -111,23 +113,38 @@ class ExportarController extends Controller {
         }
     }
 
-    private function getValoresMes() {
-        // $movimentacoes = Movimentacao::select('nome', 'valor')
-        //                                 ->whereMonth('data', $this->data->format('m'))
-        //                                 ->whereYear('data', $this->data->format('Y'))
-        //                                 ->where('tipo', 'terceiros')
-        //                                     ->get();
-
+    private function getValoresMes($i) {
+        $movimentacoes = Movimentacao::select('nome', 'valor')
+                                        ->whereMonth('data', $this->data->format('m'))
+                                        ->whereYear('data', $this->data->format('Y'))
+                                        ->whereNotIN('tipo', ['save', 'terceiros'])
+                                            ->orderBy('tipo')
+                                            ->orderBy('posicao')
+                                                ->get();
+        $save = Movimentacao::whereMonth('data', $this->data->format('m'))
+                              ->whereYear('data', $this->data->format('Y'))
+                              ->where('tipo', 'save')
+                                ->first();
         $values = [];
-        $values[] = ['Mês', '00000'];
-        $total = 0;
-        // foreach ($movimentacoes as $movimentacao) {
-        for ($i=0;$i<=5;$i++) {
-            $values[] = ['col 1', '5'];
-            $total += 5;
-            // $values[] = [$movimentacao->nome, $movimentacao->valor];
+        switch ($i) {
+            case 0:
+                $total_atual = Consolidado::where('nome', 'itau')->first()->valor + Consolidado::where('nome', 'casa')->first()->valor;
+            break;
+            case 1:
+                $total_atual = Consolidado::where('nome', 'salario')->first()->valor + $this->sobra;
+            break;
+            default:
+                $total_atual = Consolidado::where('nome', 'salario')->first()->valor;
+            break;
         }
-        $values[] = ['Save', '00000'];
+        
+        $values[] = [ucfirst($this->data->locale('pt-br')->monthName),$total_atual];
+        $total = 0;
+        foreach ($movimentacoes as $movimentacao) {
+            $values[] = [$movimentacao->nome, $movimentacao->valor];
+            $total += $movimentacao->valor;
+        }
+        $values[] = ['Save', $save['valor']];
         $values[] = ['Total', $total];
 
         return $values;
