@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Contas</title>
         <link rel="stylesheet" href="{{URL::asset('public/css/bootstrap/bootstrap.min.css')}}" />
-        <link rel="stylesheet" href="{{URL::asset('public/css/terceiros.css')}}" />
+        <link rel="stylesheet" href="{{URL::asset('public/css/extra.css')}}" />
         <script src="{{URL::asset('public/js/jquery.min.js')}}"></script>
         <script src="{{URL::asset('public/js/bootstrap.min.js')}}"></script>
     </head>

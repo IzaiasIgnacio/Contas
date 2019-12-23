@@ -88,6 +88,21 @@ class IndexController extends Controller {
                 'descricao' => null,
                 'itau' => 1
             ],
+            'prime' => [
+                'valor' => 9.9,
+                'descricao' => 'Amazon Prime',
+                'itau' => null
+            ],
+            'gpm' => [
+                'valor' => 16.9,
+                'descricao' => 'Google Play Music',
+                'itau' => 1
+            ],
+            'gp' =>	[
+                'valor' => 13.99,
+                'descricao' => 'Xbox Game Pass',
+                'itau' => 1
+            ],
             "m" => [
                 'valor' => 1500,
                 'descricao' => 'Mãe',
@@ -106,16 +121,6 @@ class IndexController extends Controller {
             "vivo" => [
                 'valor' => 49.99,
                 'descricao' => null,
-                'itau' => 1
-            ],
-            'gpm' => [
-                'valor' => 16.9,
-                'descricao' => 'Google Play Music',
-                'itau' => 1
-            ],
-            'gp' =>	[
-                'valor' => 13.99,
-                'descricao' => 'Xbox Game Pass',
                 'itau' => 1
             ],
             'seg' => [

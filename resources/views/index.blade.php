@@ -306,7 +306,7 @@
                                                                     ->where('tipo', 'terceiros');
                                                         })
                                                         ->sum('valor');
-                                                    if ($cartao->id == 1) { $gastos_cartao += 16.9+13.99; }
+                                                    if ($cartao->id == 1) { $gastos_cartao += 16.9+13.99+9.9; }
                                                 @endphp
                                                 R$ {{$helper->format($cartao->credito-$gastos_cartao)}} / {{$helper->format($cartao->credito)}}<br>{{$cartao->numero}}
                                             </span>
@@ -319,7 +319,7 @@
                     &nbsp;
                     &nbsp;
                     <i class="fa fa-user fa-inverse fa-lg" id="exibir_terceiros" style="margin-top: 22px; cursor: pointer"></i>
-                    <i class="fa fa-book fa-inverse fa-lg" id="exibir_extra" style="margin-top: 22px; cursor: pointer" onclick="window.open('{{route('exibir_extra', ['data' => '12.2019'])}}')"></i>
+                    <i class="fa fa-book fa-inverse fa-lg" id="exibir_extra" style="margin-top: 22px; cursor: pointer" onclick="window.open('{{route('exibir_extra', ['data' => '01.2020'])}}')"></i>
                     <i class="fa fa-table fa-inverse fa-lg" id="exportar" style="margin-top: 22px; cursor: pointer"></i>
                     <i class="fa fa-circle-notch fa-inverse slow-spin fa-2x fa-fw" style="display: none"></i>
                 </div>
