@@ -32,11 +32,13 @@ class IndexController extends Controller {
                 'movimentacoes' => $movimentacao
                                     ->whereMonth('data', $data->format('m'))
                                     ->whereYear('data', $data->format('Y'))
-                                    ->whereNotIN('tipo', ['save', 'terceiros'])
+                                    ->whereNotIn('tipo', ['save', 'terceiros'])
+                                    ->where('nome', '!=', 'salario')
                                         ->orderBy('tipo')
                                         ->orderBy('posicao')
                                             ->get(),
-                'save' => $movimentacao->whereMonth('data', $data->format('m'))->whereYear('data', $data->format('Y'))->where('tipo', 'save')->first()
+                'save' => $movimentacao->whereMonth('data', $data->format('m'))->whereYear('data', $data->format('Y'))->where('tipo', 'save')->first(),
+                'salario' => $movimentacao->whereMonth('data', $data->format('m'))->whereYear('data', $data->format('Y'))->where('nome', 'salario')->first()
             ];
             
             if (count($movimentacoes_mes[$i]['movimentacoes']) > $maximo_movimentacoes) {
@@ -78,6 +80,11 @@ class IndexController extends Controller {
 
     private function definirValoresFixosMes($data, $movimentacao) {
         $valores_fixos = [
+            "salario" => [
+                'valor' => 6000,
+                'descricao' => null,
+                'itau' => null
+            ],
             "virtua" => [
                 'valor' => 200,
                 'descricao' => null,
@@ -132,18 +139,20 @@ class IndexController extends Controller {
 
         $p = 1;
         foreach ($valores_fixos as $nome => $valores) {
-            if ($movimentacao->whereRaw("data = '".$data->format('Y-m-d')."'")->where('nome', $nome)->where('tipo', 'gasto')->count() == 0) {
+            if ($movimentacao->whereRaw("data = '".$data->format('Y-m-d')."'")->where('nome', $nome)->whereIn('tipo', ['gasto', 'renda'])->count() == 0) {
                 $mov = new Movimentacao();
                 $mov->nome = $nome;
                 $mov->descricao = $valores['descricao'];
                 $mov->valor = $valores['valor'];
-                $mov->tipo = 'gasto';
+                $mov->tipo = ($nome != 'salario') ? 'gasto' :  'renda';
                 $mov->data = $data->format('Y-m-d');
                 $mov->status = 'definido';
                 $mov->itau = $valores['itau'];
-                $mov->posicao = $p;
+                $mov->posicao = ($nome != 'salario') ? 0 : $p;
                 $mov->save();
-                $p++;
+                if ($nome != 'salario') {
+                    $p++;
+                }
             }
         }
 

@@ -397,6 +397,16 @@
                                         $renda_mes = 0;
                                         $total_planejado = 0;
                                     @endphp
+                                    <tr class="linha_definido linha_renda">
+                                        <input type="hidden" class="id_movimentacao" value="{{$movimentacoes_mes[$m]['salario']->id}}" />
+                                        <td class='td_nome_movimentacao' data-toggle="tooltip" data-container="body">salario</td>
+                                        <td class="text-right td_valor">{{$helper->format($movimentacoes_mes[$m]['salario']->valor)}}</td>
+                                        @php
+                                            if ($movimentacoes_mes[$m]['salario']->status != 'pago') {
+                                                $renda_mes += $movimentacoes_mes[$m]['salario']->valor;
+                                            }
+                                        @endphp
+                                    </tr>
                                     @for ($i=0;$i<$maximo_movimentacoes;$i++)
                                         @isset($movimentacoes_mes[$m]['movimentacoes'][$i])
                                             <tr class="linha_{{$movimentacoes_mes[$m]['movimentacoes'][$i]->status}} linha_{{$movimentacoes_mes[$m]['movimentacoes'][$i]->tipo}}">
