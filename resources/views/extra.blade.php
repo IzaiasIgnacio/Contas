@@ -34,13 +34,13 @@
                                         <td>{{$helper->format($mov->valor)}}</td>
                                     </tr>
                                     @php
-                                        if ($mov->nome != 'Atrasado') {
+                                        if ($mov->nome != 'Atrasado' && $mov->nome != 'pago') {
                                             $total_responsavel += $mov->valor;
                                         }
                                     @endphp
                                 @endforeach
                                 <tr class='tr_total_responsavel'>
-                                    <td>Total {{$responsaveis[$responsavel]}} @php if ($responsavel == 'mae') { echo '- Atrasado'; }@endphp</td>
+                                    <td>Total {{$responsaveis[$responsavel]}}</td>
                                     <td>{{$helper->format($total_responsavel)}}</td>
                                 </tr>
                             @endforeach
@@ -50,10 +50,6 @@
                         <tbody>
                             <tr>
                                 <td>Total</td>
-                                <td>{{$helper->format($total_com_atrasado)}}</td>
-                            </tr>
-                            <tr>
-                                <td>Total - atrasado</td>
                                 <td>{{$helper->format($total)}}</td>
                             </tr>
                         </tbody>

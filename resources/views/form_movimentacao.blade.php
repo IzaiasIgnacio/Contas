@@ -24,6 +24,7 @@
         <div class="form-group" id="div_responsavel" style="display:none">
             <label style="display:block">Responsável</label>
             <select name='responsavel' id='responsavel' class="form-control">
+                <option value="">Selecione</option>
                 @foreach ($lista_responsavel as $valor => $label)
                     <option value="{{$valor}}">{{$label}}</option>
                 @endforeach

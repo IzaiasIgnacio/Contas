@@ -87,53 +87,43 @@ class IndexController extends Controller {
             ],
             "virtua" => [
                 'valor' => 200,
-                'descricao' => null,
-                'itau' => 1
+                'descricao' => null
             ],
             "netflix" => [
                 'valor' => 45.9,
-                'descricao' => null,
-                'itau' => 1
+                'descricao' => null
             ],
             'prime' => [
                 'valor' => 9.9,
-                'descricao' => 'Amazon Prime',
-                'itau' => null
+                'descricao' => 'Amazon Prime'
             ],
             'gpm' => [
                 'valor' => 16.9,
-                'descricao' => 'Google Play Music',
-                'itau' => 1
+                'descricao' => 'Google Play Music'
             ],
             'gp' =>	[
                 'valor' => 13.99,
-                'descricao' => 'Xbox Game Pass',
-                'itau' => 1
+                'descricao' => 'Xbox Game Pass'
             ],
             "m" => [
                 'valor' => 1500,
-                'descricao' => 'Mãe',
-                'itau' => null
+                'descricao' => 'Mãe'
             ],
             "fiesta" => [
                 'valor' => 531.6,
-                'descricao' => null,
-                'itau' => 1
+                'descricao' => null
             ],
             'merc' => [
                 'valor' => 750,
-                'descricao' => 'Mercado',
-                'itau' => null
+                'descricao' => 'Mercado'
             ],
             "vivo" => [
                 'valor' => 49.99,
-                'descricao' => null,
-                'itau' => 1
+                'descricao' => null
             ],
             'seg' => [
                 'valor' => 4.49,
-                'descricao' => 'Seguro Cartão Itaú',
-                'itau' => 1
+                'descricao' => 'Seguro Cartão Itaú'
             ]
         ];
 
@@ -147,7 +137,6 @@ class IndexController extends Controller {
                 $mov->tipo = ($nome != 'salario') ? 'gasto' :  'renda';
                 $mov->data = $data->format('Y-m-d');
                 $mov->status = 'definido';
-                $mov->itau = $valores['itau'];
                 $mov->posicao = ($nome != 'salario') ? 0 : $p;
                 $mov->save();
                 if ($nome != 'salario') {
@@ -355,6 +344,11 @@ class IndexController extends Controller {
                                          ->where('itau', true)
                                           ->get();
         $total_itau = 0;
+        $deposito = new Movimentacao();
+        $deposito->nome = 'deposito';
+        $deposito->valor = 270;
+        $deposito->tipo = 'renda';
+        $itau[] = $deposito;
         foreach ($itau as $it) {
             if ($it->tipo == 'gasto') {
                 $total_itau += $it->valor;
@@ -380,29 +374,27 @@ class IndexController extends Controller {
         $antigo_chah->valor = 348.54;
         $gastos['chah'][] = $antigo_chah;
 
-        $atrasado = new Movimentacao();
-        $atrasado->nome = 'Atrasado';
-        $atrasado->valor = 1485;
-        $gastos['mae'][] = $atrasado;
-
         $mes = new Movimentacao();
-        $mes->nome = 'Mês';
+        $mes->nome = 'mês';
         $mes->valor = 1300;
         $gastos['izaias'][] = $mes;
         $total -= $mes->valor;
+
+        $pago = new Movimentacao();
+        $pago->nome = 'pago';
+        $pago->valor = 1800;
+        $gastos['mae'][] = $pago;
+        $total -= $pago->valor;
         
         foreach ($izaias as $i) {
             $gastos['izaias'][] = $i;
             $total -= $i->valor;
         }
         
-        $total_com_atrasado = $total + $atrasado->valor;
-
         return view('extra', [
             'helper' => $helper,
             'responsaveis' => $responsaveis,
             'gastos' => $gastos,
-            'total_com_atrasado' => $total_com_atrasado,
             'total' => $total,
             'total_chah' => $total_chah,
             'itau' => $itau,
