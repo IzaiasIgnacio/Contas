@@ -372,16 +372,6 @@
                             <thead>
                                 <tr>
                                     <th>{{$movimentacoes_mes[$m]['mes']}}</th>
-                                    @switch ($m)
-                                        @case (0)
-                                        @break
-                                        @case (1)
-                                            @php $total_atual = $consolidado->where('nome', 'salario')->first()->valor+$sobra @endphp
-                                        @break
-                                        @default
-                                            @php $total_atual = $consolidado->where('nome', 'salario')->first()->valor @endphp
-                                        @break
-                                    @endswitch
                                     <th class="text-right">
                                         <i class="fas fa-plus-square"></i>
                                         <input type="hidden" class="mes_clicado" value="{{$movimentacoes_mes[$m]['numero_mes']}}">
@@ -391,22 +381,32 @@
                             </thead>
                             <tbody>
                                 @if (count($movimentacoes_mes[$m]['movimentacoes']) > 0)
+                                    @switch ($m)
+                                        @case (0)
+                                        @break
+                                        @case (1)
+                                            @php $total_atual = $movimentacoes_mes[$m]['salario']->valor+$sobra @endphp
+                                        @break
+                                        @default
+                                            @php $total_atual = $movimentacoes_mes[$m]['salario']->valor @endphp
+                                        @break
+                                    @endswitch
                                     @php
                                         $total_mes = 0;
                                         $renda_mes = 0;
                                         $total_planejado = 0;
                                     @endphp
-                                    <tr class="linha_definido linha_renda">
+                                    <tr class="linha_{{$movimentacoes_mes[$m]['salario']->status}} linha_renda">
                                         <input type="hidden" class="id_movimentacao" value="{{$movimentacoes_mes[$m]['salario']->id}}" />
                                         <td class='td_nome_movimentacao' data-toggle="tooltip" data-container="body">salario{{($m == 1) ? ' + sobra' : ''}}</td>
                                         @php $salario = $movimentacoes_mes[$m]['salario']->valor @endphp
                                         @if ($m == 1)
-                                            @php $salario += $sobra @endphp
+                                            <td class="text-right td_valor">{{$helper->format($salario+$sobra)}}</td>
+                                        @else
+                                            <td class="text-right td_valor">{{$helper->format($salario)}}</td>
                                         @endif
-                                        <td class="text-right td_valor">{{$helper->format($salario)}}</td>
                                         @php
                                             if ($movimentacoes_mes[$m]['salario']->status != 'pago') {
-                                                $renda_mes += $movimentacoes_mes[$m]['salario']->valor;
                                             }
                                         @endphp
                                     </tr>
