@@ -82,8 +82,7 @@ class IndexController extends Controller {
         $valores_fixos = [
             "salario" => [
                 'valor' => 6000,
-                'descricao' => null,
-                'itau' => null
+                'descricao' => null
             ],
             "virtua" => [
                 'valor' => 200,

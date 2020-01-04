@@ -371,12 +371,7 @@
                         <table class="table table-condensed table-bordered tabela_mes">
                             <thead>
                                 <tr>
-                                    <th>
-                                        {{$movimentacoes_mes[$m]['mes']}}
-                                        <i class="fas fa-plus-square"></i>
-                                        <input type="hidden" class="mes_clicado" value="{{$movimentacoes_mes[$m]['numero_mes']}}">
-                                        <input type="hidden" class="ano_clicado" value="{{$movimentacoes_mes[$m]['ano']}}">
-                                    </th>
+                                    <th>{{$movimentacoes_mes[$m]['mes']}}</th>
                                     @switch ($m)
                                         @case (0)
                                         @break
@@ -387,7 +382,11 @@
                                             @php $total_atual = $consolidado->where('nome', 'salario')->first()->valor @endphp
                                         @break
                                     @endswitch
-                                    <th class="text-right">{{$helper->format($total_atual)}}</th>
+                                    <th class="text-right">
+                                        <i class="fas fa-plus-square"></i>
+                                        <input type="hidden" class="mes_clicado" value="{{$movimentacoes_mes[$m]['numero_mes']}}">
+                                        <input type="hidden" class="ano_clicado" value="{{$movimentacoes_mes[$m]['ano']}}">
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -399,8 +398,12 @@
                                     @endphp
                                     <tr class="linha_definido linha_renda">
                                         <input type="hidden" class="id_movimentacao" value="{{$movimentacoes_mes[$m]['salario']->id}}" />
-                                        <td class='td_nome_movimentacao' data-toggle="tooltip" data-container="body">salario</td>
-                                        <td class="text-right td_valor">{{$helper->format($movimentacoes_mes[$m]['salario']->valor)}}</td>
+                                        <td class='td_nome_movimentacao' data-toggle="tooltip" data-container="body">salario{{($m == 1) ? ' + sobra' : ''}}</td>
+                                        @php $salario = $movimentacoes_mes[$m]['salario']->valor @endphp
+                                        @if ($m == 1)
+                                            @php $salario += $sobra @endphp
+                                        @endif
+                                        <td class="text-right td_valor">{{$helper->format($salario)}}</td>
                                         @php
                                             if ($movimentacoes_mes[$m]['salario']->status != 'pago') {
                                                 $renda_mes += $movimentacoes_mes[$m]['salario']->valor;
