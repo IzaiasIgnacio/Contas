@@ -491,7 +491,7 @@
                                         @isset($movimentacoes_terceiros[$t][$i])
                                             <tr class="linha_{{$movimentacoes_terceiros[$t][$i]->status}} linha_{{$movimentacoes_terceiros[$t][$i]->tipo}}">
                                                 <input type="hidden" class="id_movimentacao" value="{{$movimentacoes_terceiros[$t][$i]->id}}" />
-                                                <td class='td_nome_movimentacao' data-toggle="tooltip" data-container="body" title="{{$movimentacoes_mes[$t]['movimentacoes'][$i]->descricao}}">
+                                                <td class='td_nome_movimentacao' data-toggle="tooltip" data-container="body">
                                                     {{$movimentacoes_terceiros[$t][$i]->nome}}
                                                     @if ($movimentacoes_terceiros[$t][$i]->id_cartao != '')
                                                         <i class="fa fa-cc {{$modelCartoes::find($movimentacoes_terceiros[$t][$i]->id_cartao)->sigla}}"></i>

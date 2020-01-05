@@ -337,7 +337,7 @@ class IndexController extends Controller {
         $total_itau = 0;
         $deposito = new Movimentacao();
         $deposito->nome = 'deposito';
-        $deposito->valor = 270;
+        $deposito->valor = 170;
         $deposito->tipo = 'renda';
         $itau[] = $deposito;
         foreach ($itau as $it) {
@@ -373,7 +373,7 @@ class IndexController extends Controller {
 
         $pago = new Movimentacao();
         $pago->nome = 'pago';
-        $pago->valor = 1800;
+        $pago->valor = 1866.61;
         $gastos['mae'][] = $pago;
         $total -= $pago->valor;
         
