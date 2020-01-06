@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Contas</title>
         <link rel="stylesheet" href="{{URL::asset('public/css/bootstrap/bootstrap.min.css')}}" />
-        <link rel="stylesheet" href="{{URL::asset('public/css/extra.css')}}" />
+        <link rel="stylesheet" href="{{URL::asset('public/css/calculos.css')}}" />
         <script src="{{URL::asset('public/js/jquery.min.js')}}"></script>
         <script src="{{URL::asset('public/js/bootstrap.min.js')}}"></script>
     </head>
@@ -18,7 +18,7 @@
             </div>
         </nav>
         <div class="container body-content">
-            <form id="form_data" method='POST' action="{{route('exibir_extra')}}">
+            <form id="form_data" method='POST' action="{{route('exibir_calculos')}}">
                 <input type='hidden' name='full' id='full' value='{{(Request::get('full'))}}' />
                 <div class="col-sm-4">
                     <div class="form-group">

@@ -212,7 +212,7 @@ html::-webkit-scrollbar {
     .collapse {
         display: inline-block;
     }
-    #exibir_terceiros, #exibir_extra, #exportar {
+    #exibir_terceiros, #exibir_calculos, #exportar {
         display: none;
     }
     .tabela_terceiros {

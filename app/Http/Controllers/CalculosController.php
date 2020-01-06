@@ -8,7 +8,7 @@ use App\Models\Movimentacao;
 use App\Models\Responsavel;
 use Symfony\Component\HttpFoundation\Request;
 
-class ExtraController extends Controller {
+class CalculosController extends Controller {
 
     private function atualizarBanco() {
         if (file_exists('dump.sql')) {
@@ -17,9 +17,9 @@ class ExtraController extends Controller {
         }
     }
 
-    public function exibirExtra(Request $request) {
+    public function exibirCalculos(Request $request) {
         if (empty($request['mes']) || empty($request['ano'])) {
-            return view('selecionar_data_extra');
+            return view('selecionar_data_calculos');
         }
 
         $data = $request['mes'].'.'.$request['ano'];
@@ -109,7 +109,7 @@ class ExtraController extends Controller {
             $total -= $i->valor;
         }
         
-        return view('extra', [
+        return view('calculos', [
             'helper' => $helper,
             'responsaveis' => $responsaveis,
             'gastos' => $gastos,
