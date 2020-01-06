@@ -95,12 +95,13 @@ class ExtraController extends Controller {
         $gastos['izaias'][] = $mes;
         $total -= $mes->valor;
 
+        $pago = 0;
         if ($d[0] == date('m') && $d[1] == date('Y')) {
-            $pago = new Movimentacao();
-            $pago->nome = 'pago';
-            $pago->valor = 1800;
-            $gastos['mae'][] = $pago;
-            $total -= $pago->valor;
+            $pago = 1800;
+            // $pago = new Movimentacao();
+            // $pago->nome = 'pago';
+            // $gastos['mae'][] = $pago;
+            // $total -= $pago->valor;
         }
         
         foreach ($izaias as $i) {
@@ -112,6 +113,7 @@ class ExtraController extends Controller {
             'helper' => $helper,
             'responsaveis' => $responsaveis,
             'gastos' => $gastos,
+            'pago' => $pago,
             'total' => $total,
             'total_chah' => $total_chah,
             'total_cristiane' => $total_cristiane,

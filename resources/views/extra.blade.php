@@ -49,8 +49,12 @@
                     <table class="table table-condensed table-bordered table-striped">
                         <tbody>
                             <tr>
+                                <td>Pago</td>
+                                <td>{{$helper->format($pago)}}</td>
+                            </tr>
+                            <tr>
                                 <td>Total - Pago</td>
-                                <td>{{$helper->format($total)}}</td>
+                                <td>{{$helper->format($total - $pago)}}</td>
                             </tr>
                         </tbody>
                     </table>
