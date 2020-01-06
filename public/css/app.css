@@ -1,5 +1,5 @@
 body {
-    padding-top: 50px;
+    /* padding-top: 50px; */
     padding-bottom: 20px;
     background-color: #ccc;
     font-size: 15px;
@@ -199,6 +199,23 @@ html::-webkit-scrollbar {
     margin-right: -15px;
 }
 
-.col-md-2-mes {
-    width: 14%;
+@media screen and (min-width: 1000px) {
+    .col-sm-2-mes {
+        width: 14%;
+    }
+}
+
+@media screen and (max-width: 1000px) {
+    .navbar-brand {
+        display: none;
+    }
+    .collapse {
+        display: inline-block;
+    }
+    #exibir_terceiros, #exibir_extra, #exportar {
+        display: none;
+    }
+    .tabela_terceiros {
+        display: block !important;
+    }
 }
