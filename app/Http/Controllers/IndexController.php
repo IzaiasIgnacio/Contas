@@ -19,6 +19,7 @@ class IndexController extends Controller {
             unlink('dump.sql');
         }
     }
+    
     public function exibirContas() {
         // $this->atualizarBanco();
         $cartao = new Cartao();
