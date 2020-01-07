@@ -97,11 +97,7 @@ class CalculosController extends Controller {
 
         $pago = 0;
         if ($d[0] == date('m') && $d[1] == date('Y')) {
-            $pago = 1800;
-            // $pago = new Movimentacao();
-            // $pago->nome = 'pago';
-            // $gastos['mae'][] = $pago;
-            // $total -= $pago->valor;
+            $pago = 2000;
         }
         
         foreach ($izaias as $i) {
