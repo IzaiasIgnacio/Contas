@@ -21,9 +21,10 @@ class CalculosController extends Controller {
         if (empty($request['mes']) || empty($request['ano'])) {
             return view('selecionar_data_calculos');
         }
-
+        
+        $this->atualizarBanco();
+        
         $data = $request['mes'].'.'.$request['ano'];
-        // $this->atualizarBanco();
         $d = explode(".", $data);
         $data = \Carbon\Carbon::createFromFormat('d/m/Y', '01/'.$d[0]."/".$d[1]);
 
@@ -97,7 +98,7 @@ class CalculosController extends Controller {
 
         $pago = 0;
         if ($d[0] == date('m') && $d[1] == date('Y')) {
-            $pago = 2000;
+            $pago = Consolidado::where('nome', 'pago')->first()->valor;
         }
         
         foreach ($izaias as $i) {

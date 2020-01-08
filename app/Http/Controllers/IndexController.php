@@ -21,7 +21,7 @@ class IndexController extends Controller {
     }
     
     public function exibirContas() {
-        // $this->atualizarBanco();
+        $this->atualizarBanco();
         $cartao = new Cartao();
         $consolidado = new Consolidado();
         $movimentacao = new Movimentacao();
