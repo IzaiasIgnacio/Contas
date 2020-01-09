@@ -56,8 +56,8 @@ class CalculosController extends Controller {
                                           ->get();
         $total_itau = 0;
         $deposito = new Movimentacao();
-        $deposito->nome = 'deposito';
-        $deposito->valor = 170;
+        $deposito->nome = 'entrada';
+        $deposito->valor = Consolidado::where('nome', 'entrada')->first()->valor;
         $deposito->tipo = 'renda';
         $itau[] = $deposito;
         foreach ($itau as $it) {
