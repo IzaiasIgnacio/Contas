@@ -64,6 +64,14 @@ return [
             'url' => env('AWS_URL'),
         ],
 
+        'ftp' => [		
+            'driver' => 'sftp',		
+            'host' => 'izaiasignacio.atwebpages.com',
+            'username' => '3280436_izaias',
+            'password' => 'BdxD33uMzMjX',
+            'port'     => 221
+        ],
+
     ],
 
 ];

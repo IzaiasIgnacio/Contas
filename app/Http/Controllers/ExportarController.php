@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Movimentacao;
 use App\Models\Consolidado;
+use File;
+use Illuminate\Support\Facades\Storage;
 
 class ExportarController extends Controller {
 
@@ -73,47 +75,52 @@ class ExportarController extends Controller {
     }
 
     public function exportar() {
+        $dump = "I:\\xampp\\htdocs\\contas\dump_local.sql";
+        shell_exec("I:\\xampp\\mysql\\bin\\mysqldump -u root contas > ".$dump);
+        Storage::disk('ftp')->put('/izaiasignacio.atwebpages.com/contas/dump.sql', File::get($dump));
+        unlink($dump);
+
         // Get the API client and construct the service object.
-        $client = $this->getClient();
-        $this->service = new \Google_Service_Sheets($client);
+        // $client = $this->getClient();
+        // $this->service = new \Google_Service_Sheets($client);
 
-        // TODO: Assign values to desired properties of `requestBody`:
-        $requestBody = new \Google_Service_Sheets_ClearValuesRequest();
+        // // TODO: Assign values to desired properties of `requestBody`:
+        // $requestBody = new \Google_Service_Sheets_ClearValuesRequest();
 
-        // The A1 notation of the values to clear.
-        $range = '!A1:Z1000';  // TODO: Update placeholder value.
-        $response = $this->service->spreadsheets_values->clear($this->id_planilha, $range, $requestBody);
+        // // The A1 notation of the values to clear.
+        // $range = '!A1:Z1000';  // TODO: Update placeholder value.
+        // $response = $this->service->spreadsheets_values->clear($this->id_planilha, $range, $requestBody);
 
-        $d = explode(".", '12.2019');
-        $this->data = \Carbon\Carbon::createFromFormat('d/m/Y', '01/'.$d[0]."/".$d[1]);
-        $valores = [];
-        $maximo = 0;
-        for ($i=0;$i<=6;$i++) {
-            $mes = $this->getValoresMes($i);
-            $valores[$i] = $mes['valores'];
-            $totais[$i] = $mes['totais'];
-            $save[$i] = $mes['save'];
-            if (count($valores[$i]) > $maximo) {
-                $maximo = count($valores[$i]);
-            }
-            $this->data->addMonth();
-        }
+        // $d = explode(".", '12.2019');
+        // $this->data = \Carbon\Carbon::createFromFormat('d/m/Y', '01/'.$d[0]."/".$d[1]);
+        // $valores = [];
+        // $maximo = 0;
+        // for ($i=0;$i<=6;$i++) {
+        //     $mes = $this->getValoresMes($i);
+        //     $valores[$i] = $mes['valores'];
+        //     $totais[$i] = $mes['totais'];
+        //     $save[$i] = $mes['save'];
+        //     if (count($valores[$i]) > $maximo) {
+        //         $maximo = count($valores[$i]);
+        //     }
+        //     $this->data->addMonth();
+        // }
         
-        $maximo++;
-        foreach ($valores as $p => $valor) {
-            $range = '!'.$this->posicao_mes[$p].$maximo;
-            $this->inserirDadosPlanilha($range, $valor);
-        }
+        // $maximo++;
+        // foreach ($valores as $p => $valor) {
+        //     $range = '!'.$this->posicao_mes[$p].$maximo;
+        //     $this->inserirDadosPlanilha($range, $valor);
+        // }
         
-        foreach ($totais as $p => $valor) {
-            $range = '!'.str_replace('2', $maximo+1, $this->posicao_mes[$p]).($maximo+3);
-            $this->inserirDadosPlanilha($range, $valor);
-        }
+        // foreach ($totais as $p => $valor) {
+        //     $range = '!'.str_replace('2', $maximo+1, $this->posicao_mes[$p]).($maximo+3);
+        //     $this->inserirDadosPlanilha($range, $valor);
+        // }
 
-        foreach ($save as $p => $valor) {
-            $range = '!'.str_replace('2', $maximo+5, $this->posicao_mes[$p]).($maximo+7);
-            $this->inserirDadosPlanilha($range, $valor);
-        }
+        // foreach ($save as $p => $valor) {
+        //     $range = '!'.str_replace('2', $maximo+5, $this->posicao_mes[$p]).($maximo+7);
+        //     $this->inserirDadosPlanilha($range, $valor);
+        // }
     }
 
     private function getValoresMes($i) {

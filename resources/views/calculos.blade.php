@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Contas</title>
         <link rel="stylesheet" href="{{URL::asset('public/css/bootstrap/bootstrap.min.css')}}" />
-        <link rel="stylesheet" href="{{URL::asset('public/css/extra.css')}}" />
+        <link rel="stylesheet" href="{{URL::asset('public/css/calculos.css')}}" />
         <script src="{{URL::asset('public/js/jquery.min.js')}}"></script>
         <script src="{{URL::asset('public/js/bootstrap.min.js')}}"></script>
     </head>
@@ -18,12 +18,12 @@
             </div>
         </nav>
         <div class="container body-content">
-            <div class="col-md-2">
+            <div class="col-sm-2">
                 <div class="row">
                     <table class="table table-condensed table-bordered table-striped">
                         <tbody>
                             @foreach ($gastos as $responsavel => $movimentacoes)
-                                @if ($responsavel == 'chah') @continue; @endif
+                                @if ($responsavel == 'chah' || $responsavel == 'cristiane') @continue; @endif
                                 <tr>
                                     <td colspan="2" class='td_responsavel'>{{$responsaveis[$responsavel]}}</td>
                                 </tr>
@@ -49,14 +49,44 @@
                     <table class="table table-condensed table-bordered table-striped">
                         <tbody>
                             <tr>
-                                <td>Total</td>
-                                <td>{{$helper->format($total)}}</td>
+                                <td>Pago</td>
+                                <td>{{$helper->format($pago)}}</td>
+                            </tr>
+                            <tr>
+                                <td>Total - Pago</td>
+                                <td>{{$helper->format($total - $pago)}}</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
-            <div class="col-md-2">
+            @if (Request::get('full'))
+            <div class="col-sm-2">
+                <div class="row">
+                    <table class="table table-condensed table-bordered table-striped">
+                        <tbody>
+                            <tr>
+                                <td colspan="2" class='td_responsavel'>Cristiane</td>
+                            </tr>
+                            @foreach ($gastos['cristiane'] as $mov)
+                                <tr>
+                                    <td>{{$mov->nome}}</td>
+                                    <td>{{$helper->format($mov->valor)}}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                    <table class="table table-condensed table-bordered table-striped">
+                        <tbody>
+                            <tr>
+                                <td>Total</td>
+                                <td>{{$helper->format($total_cristiane)}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-sm-2">
                 <div class="row">
                     <table class="table table-condensed table-bordered table-striped">
                         <tbody>
@@ -81,7 +111,7 @@
                     </table>
                 </div>
             </div>
-            <div class="col-md-2">
+            <div class="col-sm-2">
                 <div class="row">
                     <table class="table table-condensed table-bordered table-striped">
                         <tbody>
@@ -110,6 +140,7 @@
                     </table>
                 </div>
             </div>
+            @endif
         </div>
     </body>
 </html>

@@ -12,7 +12,8 @@
 */
 
 Route::get('/', 'IndexController@exibirContas');
-Route::get('/extra/{data}', 'IndexController@exibirExtra')->name('exibir_extra');
+
+Route::any('/calculos', 'CalculosController@exibirCalculos')->name('exibir_calculos');
 
 Route::post('salvar_consolidado', 'IndexController@salvarConsolidado')->name('salvar_consolidado');
 Route::post('salvar_movimentacao', 'IndexController@salvarMovimentacao')->name('salvar_movimentacao');

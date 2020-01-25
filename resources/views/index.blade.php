@@ -269,7 +269,7 @@
         </script>
     </head>
     <body>
-        <nav class="navbar navbar-inverse navbar-fixed-top" @php if (getenv('DB_CONTAS') == 'contas_hmg') { echo "style='background-color: #950000'"; } @endphp>
+        <nav class="navbar navbar-inverse navbar-static-top" @php if (getenv('DB_CONTAS') == 'contas_hmg') { echo "style='background-color: #950000'"; } @endphp>
             <div class="container menu_container">
                 <ul class="nav navbar-brand">
                     <li>Contas</li>
@@ -319,8 +319,8 @@
                     &nbsp;
                     &nbsp;
                     <i class="fa fa-user fa-inverse fa-lg" id="exibir_terceiros" style="margin-top: 22px; cursor: pointer"></i>
-                    <i class="fa fa-book fa-inverse fa-lg" id="exibir_extra" style="margin-top: 22px; cursor: pointer" onclick="window.open('{{route('exibir_extra', ['data' => '01.2020'])}}')"></i>
-                    <i class="fa fa-table fa-inverse fa-lg" id="exportar" style="margin-top: 22px; cursor: pointer"></i>
+                    <i class="fa fa-book fa-inverse fa-lg" id="exibir_calculos" style="margin-top: 22px; cursor: pointer" onclick="window.open('{{route('exibir_calculos', ['full' => 1])}}')"></i>
+                    <i class="fa fa-cloud-upload-alt fa-inverse fa-lg" id="exportar" style="margin-top: 22px; cursor: pointer"></i>
                     <i class="fa fa-circle-notch fa-inverse slow-spin fa-2x fa-fw" style="display: none"></i>
                 </div>
             </div>
@@ -367,7 +367,7 @@
             </div>
             <div class="row div_movimentacoes">
                 @for ($m=0;$m<=6;$m++)
-                    <div class="col-md-2 col-md-2-mes">
+                    <div class="col-sm-2 col-sm-2-mes">
                         <table class="table table-condensed table-bordered tabela_mes">
                             <thead>
                                 <tr>
@@ -496,7 +496,7 @@
             </div>
             <div class="row div_movimentacoes">
                 @for ($t=0;$t<=6;$t++)
-                    <div class="col-md-2 col-md-2-mes">
+                    <div class="col-sm-2 col-sm-2-mes">
                         <table class="table table-condensed table-bordered tabela_mes tabela_terceiros" style='display: none'>
                             <tbody>
                                 @if (count($movimentacoes_terceiros[$t]) > 0)
@@ -504,7 +504,7 @@
                                         @isset($movimentacoes_terceiros[$t][$i])
                                             <tr class="linha_{{$movimentacoes_terceiros[$t][$i]->status}} linha_{{$movimentacoes_terceiros[$t][$i]->tipo}}">
                                                 <input type="hidden" class="id_movimentacao" value="{{$movimentacoes_terceiros[$t][$i]->id}}" />
-                                                <td class='td_nome_movimentacao' data-toggle="tooltip" data-container="body" title="{{$movimentacoes_mes[$t]['movimentacoes'][$i]->descricao}}">
+                                                <td class='td_nome_movimentacao' data-toggle="tooltip" data-container="body">
                                                     {{$movimentacoes_terceiros[$t][$i]->nome}}
                                                     @if ($movimentacoes_terceiros[$t][$i]->id_cartao != '')
                                                         <i class="fa fa-cc {{$modelCartoes::find($movimentacoes_terceiros[$t][$i]->id_cartao)->sigla}}"></i>
@@ -541,7 +541,7 @@
                             $savings_mes[$s] = $savings_mes[$s-1]+$save_mes[$s];
                         }
                     @endphp
-                    <div class="col-md-2 col-md-2-mes">
+                    <div class="col-sm-2 col-sm-2-mes">
                         <table class="table table-condensed table-bordered">
                             <thead>
                                 <tr>
