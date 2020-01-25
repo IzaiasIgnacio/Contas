@@ -419,13 +419,15 @@
                                             }
                                         @endphp
                                     </tr>
+                                    @php $max = $maximo_movimentacoes; @endphp
                                     @if ($m == 1)
                                         <tr class="linha_definido linha_renda">
                                             <td class='td_nome_movimentacao'>sobra</td>
                                             <td class="text-right td_valor">{{$helper->format($sobra)}}</td>
                                         </tr>
+                                        @php $max = $maximo_movimentacoes-1; @endphp
                                     @endif
-                                    @for ($i=0;$i<$maximo_movimentacoes;$i++)
+                                    @for ($i=0;$i<$max;$i++)
                                         @isset($movimentacoes_mes[$m]['movimentacoes'][$i])
                                             <tr class="linha_{{$movimentacoes_mes[$m]['movimentacoes'][$i]->status}} linha_{{$movimentacoes_mes[$m]['movimentacoes'][$i]->tipo}}">
                                                 <input type="hidden" class="id_movimentacao" value="{{$movimentacoes_mes[$m]['movimentacoes'][$i]->id}}" />
