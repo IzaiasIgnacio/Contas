@@ -385,10 +385,22 @@
                                         @case (0)
                                         @break
                                         @case (1)
-                                            @php $total_atual = $movimentacoes_mes[$m]['salario']->valor+$sobra @endphp
+                                            @php
+                                                if ($movimentacoes_mes[$m]['salario']->status == 'pago') {
+                                                    $total_atual = $sobra;
+                                                }
+                                                else {
+                                                    $total_atual = $movimentacoes_mes[$m]['salario']->valor+$sobra;
+                                                }
+                                            @endphp
                                         @break
                                         @default
-                                            @php $total_atual = $movimentacoes_mes[$m]['salario']->valor @endphp
+                                            @php
+                                                $sobra = 0;
+                                                if ($movimentacoes_mes[$m]['salario']->status != 'pago') {
+                                                    $total_atual = $movimentacoes_mes[$m]['salario']->valor;
+                                                }
+                                            @endphp
                                         @break
                                     @endswitch
                                     @php
@@ -398,18 +410,21 @@
                                     @endphp
                                     <tr class="linha_{{$movimentacoes_mes[$m]['salario']->status}} linha_renda">
                                         <input type="hidden" class="id_movimentacao" value="{{$movimentacoes_mes[$m]['salario']->id}}" />
-                                        <td class='td_nome_movimentacao' data-toggle="tooltip" data-container="body">salario{{($m == 1) ? ' + sobra' : ''}}</td>
+                                        <td class='td_nome_movimentacao' data-toggle="tooltip" data-container="body">salario</td>
                                         @php $salario = $movimentacoes_mes[$m]['salario']->valor @endphp
-                                        @if ($m == 1)
-                                            <td class="text-right td_valor">{{$helper->format($salario+$sobra)}}</td>
-                                        @else
                                             <td class="text-right td_valor">{{$helper->format($salario)}}</td>
-                                        @endif
                                         @php
                                             if ($movimentacoes_mes[$m]['salario']->status != 'pago') {
+                                                $renda_mes = $movimentacoes_mes[$m]['salario']->valor;
                                             }
                                         @endphp
                                     </tr>
+                                    @if ($m == 1)
+                                        <tr class="linha_definido linha_renda">
+                                            <td class='td_nome_movimentacao'>sobra</td>
+                                            <td class="text-right td_valor">{{$helper->format($sobra)}}</td>
+                                        </tr>
+                                    @endif
                                     @for ($i=0;$i<$maximo_movimentacoes;$i++)
                                         @isset($movimentacoes_mes[$m]['movimentacoes'][$i])
                                             <tr class="linha_{{$movimentacoes_mes[$m]['movimentacoes'][$i]->status}} linha_{{$movimentacoes_mes[$m]['movimentacoes'][$i]->tipo}}">
@@ -421,9 +436,6 @@
                                                     @endif
                                                     @if ($movimentacoes_mes[$m]['movimentacoes'][$i]->itau)
                                                         <i class="fa fa-info-circle"></i>
-                                                    @endif
-                                                    @if ($movimentacoes_mes[$m]['movimentacoes'][$i]->tipo == 'terceiros' && !in_array($movimentacoes_mes[$m]['movimentacoes'][$i]->status, ['planejado', 'definido', 'pago']))
-                                                        [{{$movimentacoes_mes[$m]['movimentacoes'][$i]->status}}]
                                                     @endif
                                                 </td>
                                                 <td class="text-right td_valor">{{$helper->format($movimentacoes_mes[$m]['movimentacoes'][$i]->valor)}}</td>
@@ -458,12 +470,12 @@
                             <tfoot>
                                 <tr>
                                     <td>Total</td>
-                                    <td class="text-right"><span class="valor_total">{{$helper->format($total_mes-$renda_mes)}}</span></td>
+                                    <td class="text-right"><span class="valor_total">{{$helper->format($total_mes)}}</span></td>
                                 </tr>
                                 @if ($m > 0)
                                 <tr>
                                     <td>Definido</td>
-                                    <td class="text-right"><span class="valor_total">{{$helper->format($total_mes-$renda_mes-$total_planejado)}}</span></td>
+                                    <td class="text-right"><span class="valor_total">{{$helper->format($total_mes-$total_planejado)}}</span></td>
                                 </tr>
                                 @endif
                                 <tr>
@@ -473,7 +485,7 @@
                                             $sobra = str_replace(",","",$total_atual)-$total_mes+$renda_mes-@$movimentacoes_mes[$m]['save']->valor;    
                                         }
                                         else {
-                                            $sobra = str_replace(",","",$total_atual)-($total_mes-$renda_mes);
+                                            $sobra = $renda_mes-$total_mes+$sobra;
                                             $save_mes[$m] = $sobra;
                                         }
                                     @endphp
