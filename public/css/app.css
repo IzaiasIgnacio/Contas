@@ -1,5 +1,4 @@
 body {
-    /* padding-top: 50px; */
     padding-bottom: 20px;
     background-color: #ccc;
     font-size: 15px;
@@ -9,10 +8,14 @@ html::-webkit-scrollbar {
     width: 0px;
 }
 
+.navbar {
+    margin-bottom: 0;
+}
+
 .body-content {
     padding-left: 15px;
     padding-right: 15px;
-    margin-top: 15px;
+    margin-top: 10px;
 }
 
 .body-content, .menu_container {

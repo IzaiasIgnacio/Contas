@@ -421,7 +421,7 @@
                                     </tr>
                                     @php $max = $maximo_movimentacoes; @endphp
                                     @if ($m == 1)
-                                        @php $max = $maximo_movimentacoes-1; @endphp
+                                        @php // $max = $maximo_movimentacoes-1; @endphp
                                     @endif
                                     @for ($i=0;$i<$max;$i++)
                                         @isset($movimentacoes_mes[$m]['movimentacoes'][$i])
