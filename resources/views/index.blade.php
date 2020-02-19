@@ -457,13 +457,14 @@
                                                 <td class='td_nome_movimentacao'>sobra</td>
                                                 <td class="text-right td_valor">{{$helper->format($sobra)}}</td>
                                             </tr>
+                                        @else
+                                            @empty($movimentacoes_mes[$m]['movimentacoes'][$i])
+                                                <tr>
+                                                    <td>&nbsp;</td>
+                                                    <td class="text-right">&nbsp;</td>
+                                                </tr>
+                                            @endempty
                                         @endif
-                                        @empty($movimentacoes_mes[$m]['movimentacoes'][$i])
-                                            <tr>
-                                                <td>&nbsp;</td>
-                                                <td class="text-right">&nbsp;</td>
-                                            </tr>
-                                        @endempty
                                     @endfor
                                 @endif
                                 <tr>
