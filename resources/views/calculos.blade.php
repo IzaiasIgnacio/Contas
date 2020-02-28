@@ -61,6 +61,7 @@
                 </div>
             </div>
             @if (Request::get('full'))
+            @isset($gastos['cristiane'])
             <div class="col-sm-2">
                 <div class="row">
                     <table class="table table-condensed table-bordered table-striped">
@@ -86,6 +87,8 @@
                     </table>
                 </div>
             </div>
+            @endisset
+            @isset($gastos['chah'])
             <div class="col-sm-2">
                 <div class="row">
                     <table class="table table-condensed table-bordered table-striped">
@@ -111,6 +114,7 @@
                     </table>
                 </div>
             </div>
+            @endisset
             <div class="col-sm-2">
                 <div class="row">
                     <table class="table table-condensed table-bordered table-striped">
