@@ -157,12 +157,16 @@ html::-webkit-scrollbar {
     color: #ddd;
 }
 
-.vp {
+.ip {
     color: blue;
 }
 
-.vb {
+.ib {
     color: dodgerblue;
+}
+
+.in {
+    color: orangered;
 }
 
 .linha_gasto .fa-info-circle {
