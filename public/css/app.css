@@ -169,6 +169,10 @@ html::-webkit-scrollbar {
     color: orangered;
 }
 
+.c6 {
+    color: #ff0000;
+}
+
 .linha_gasto .fa-info-circle {
     font-size: 12px !important;
     color: darkorange !important;
