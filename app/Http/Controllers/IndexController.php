@@ -156,7 +156,7 @@ class IndexController extends Controller {
             'net' => 110,
             'fone' => null,
             'fiesta' => 200,
-            'claro' => 39.99,
+            'claro' => 41.79,
             'nubank' => null,
             'luz' => null
         ];
