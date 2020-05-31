@@ -55,11 +55,18 @@ class CalculosController extends Controller {
                                          ->where('itau', true)
                                           ->get();
         $total_itau = 0;
+        // $saque = new Movimentacao();
+        // $saque->nome = 'saque';
+        // $saque->valor = 450;
+        // $saque->tipo = 'gasto';
+        
         $deposito = new Movimentacao();
         $deposito->nome = 'entrada';
         $deposito->valor = Consolidado::where('nome', 'entrada')->first()->valor;
         $deposito->tipo = 'renda';
+        
         $itau[] = $deposito;
+        // $itau[] = $saque;
         foreach ($itau as $it) {
             if ($it->tipo == 'gasto') {
                 $total_itau += $it->valor;

@@ -66,9 +66,9 @@ return [
 
         'ftp' => [		
             'driver' => 'sftp',		
-            'host' => 'izaiasignacio.atwebpages.com',
-            'username' => '3280436_izaias',
-            'password' => 'BdxD33uMzMjX',
+            'host' => env('HOST_FTP'),
+            'username' => env('USUARIO_FTP'),
+            'password' => env('SENHA_FTP'),
             'port'     => 221
         ],
 
