@@ -72,6 +72,13 @@ return [
             'port'     => 221
         ],
 
+        'drive' => [
+            'driver' => 'local',
+            'root' => 'I:/Google Drive/db',
+            'url' => 'I:/Google Drive/db',
+            'visibility' => 'public',
+        ],
+
     ],
 
 ];
