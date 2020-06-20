@@ -124,12 +124,8 @@ class IndexController extends Controller {
                 'valor' => 750,
                 'descricao' => 'Mercado'
             ],
-            "vivo" => [
-                'valor' => 49.99,
-                'descricao' => null
-            ],
             'seg' => [
-                'valor' => 4.49,
+                'valor' => 4.59,
                 'descricao' => 'Seguro Cartão Itaú'
             ]
         ];
