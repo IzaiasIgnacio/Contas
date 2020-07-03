@@ -70,7 +70,7 @@
                                 <td colspan="2" class='td_responsavel'>Cristiane</td>
                             </tr>
                             @foreach ($gastos['cristiane'] as $mov)
-                                <tr>
+                            <tr @php if ($mov->status == 'pago') { echo "class='tr_renda_itau'"; } @endphp>
                                     <td>{{$mov->nome}}</td>
                                     <td>{{$helper->format($mov->valor)}}</td>
                                 </tr>
