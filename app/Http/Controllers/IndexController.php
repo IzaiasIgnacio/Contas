@@ -104,9 +104,9 @@ class IndexController extends Controller {
                 'valor' => 9.9,
                 'descricao' => 'Amazon Prime'
             ],
-            'gpm' => [
+            'ytm' => [
                 'valor' => 16.9,
-                'descricao' => 'Google Play Music'
+                'descricao' => 'Youtube Music'
             ],
             'gp' =>	[
                 'valor' => 13.99,
