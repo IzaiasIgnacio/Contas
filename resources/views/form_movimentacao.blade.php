@@ -48,7 +48,7 @@
             <label style="display:block">Cartão</label>
             <select name='cartao' id='cartao' class="form-control">
                 <option value="">Nenhum</option>
-                @foreach ($cartoes->get() as $cartao)
+                @foreach ($cartoes->orderBy('ordem')->get() as $cartao)
                     <option value="{{$cartao->id}}">{{$cartao->nome}}</option>
                 @endforeach
             </select>
