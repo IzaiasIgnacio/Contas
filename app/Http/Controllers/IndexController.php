@@ -109,7 +109,7 @@ class IndexController extends Controller {
                 'descricao' => 'Youtube Music'
             ],
             'gp' =>	[
-                'valor' => 13.99,
+                'valor' => 29.99,
                 'descricao' => 'Xbox Game Pass'
             ],
             "m" => [

@@ -33,9 +33,9 @@
                             <option value="7"{{(date('m') == 7) ? "selected": ""}}>Julho</option>
                             <option value="8"{{(date('m') == 8) ? "selected": ""}}>Agosto</option>
                             <option value="9"{{(date('m') == 9) ? "selected": ""}}>Setembro</option>
-                            <option value="10{{(date('m') == 10) ? "selected": ""}}">Outubro</option>
-                            <option value="11{{(date('m') == 11) ? "selected": ""}}">Novembro</option>
-                            <option value="12{{(date('m') == 12) ? "selected": ""}}">Dezembro</option>
+                            <option value="10"{{(date('m') == 10) ? "selected": ""}}>Outubro</option>
+                            <option value="11"{{(date('m') == 11) ? "selected": ""}}>Novembro</option>
+                            <option value="12"{{(date('m') == 12) ? "selected": ""}}>Dezembro</option>
                         </select>
                     </div>
                     <div class="form-group">
