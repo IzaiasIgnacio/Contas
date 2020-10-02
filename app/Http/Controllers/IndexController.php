@@ -92,8 +92,8 @@ class IndexController extends Controller {
                 'valor' => 6000,
                 'descricao' => null
             ],
-            "virtua" => [
-                'valor' => 210,
+            "oi" => [
+                'valor' => 180,
                 'descricao' => null
             ],
             "netflix" => [
@@ -149,8 +149,7 @@ class IndexController extends Controller {
         }
 
         $valores_fixos = [
-            'net' => 117,
-            'fone' => null,
+            'oi' => 75,
             'fiesta' => 200,
             'claro' => 42.44,
             'nubank' => null,
