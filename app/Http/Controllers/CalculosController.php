@@ -7,6 +7,7 @@ use App\Models\Consolidado;
 use App\Models\Movimentacao;
 use App\Models\Responsavel;
 use Symfony\Component\HttpFoundation\Request;
+use Illuminate\Support\Facades\DB;
 
 class CalculosController extends Controller {
 
@@ -125,6 +126,27 @@ class CalculosController extends Controller {
             'total_itau' => $total_itau,
             'valor_itau' => $valor_itau
         ]);
+    }
+
+    public function fecharMes($args) {
+        $movimentacoes = Movimentacao::whereNotNull('id_cartao')->where('data', 'like', $args.'%');
+        foreach ($movimentacoes->get() as $movimentacao) {
+            $movimentacao->status = 'pago';
+            $movimentacao->save();
+        }
+
+        $cartoes = $movimentacoes->select('cartao.nome', 'cartao.id', DB::raw('sum(movimentacao.valor) as valor'))->join('cartao', 'cartao.id', 'id_cartao')->groupBy('cartao.id')->get();
+        foreach ($cartoes as $cartao) {
+            $mov = new Movimentacao();
+            $mov->nome = $cartao->nome;
+            $mov->data = $args.'-01';
+            $mov->tipo = 'gasto';
+            $mov->valor = $cartao->valor;
+            $mov->status = 'definido';
+            $mov->id_cartao = $cartao->id;
+            $mov->posicao = 999;
+            $mov->save();
+        }
     }
 
 }
