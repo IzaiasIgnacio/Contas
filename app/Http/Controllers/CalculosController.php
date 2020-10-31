@@ -147,6 +147,8 @@ class CalculosController extends Controller {
             $mov->posicao = 999;
             $mov->save();
         }
+
+        Movimentacao::where('responsavel', 'mae')->where('data', 'like', $args.'%')->update(['status' => 'pago']);
     }
 
 }
