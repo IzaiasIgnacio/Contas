@@ -89,7 +89,7 @@ class IndexController extends Controller {
     private function definirValoresFixosMes($data, $movimentacao) {
         $valores_fixos = [
             "salario" => [
-                'valor' => 6000,
+                'valor' => 7200,
                 'descricao' => null
             ],
             "oi" => [
@@ -110,6 +110,10 @@ class IndexController extends Controller {
             ],
             'gp' =>	[
                 'valor' => 29.99,
+                'descricao' => 'Xbox Game Pass'
+            ],
+            'gplay' =>	[
+                'valor' => 11.45,
                 'descricao' => 'Xbox Game Pass'
             ],
             "m" => [
@@ -152,6 +156,7 @@ class IndexController extends Controller {
             'oi' => 75,
             'fiesta' => 200,
             'claro' => 42.44,
+            'globoplay' => 11.45,
             'nubank' => null,
             'luz' => null
         ];
