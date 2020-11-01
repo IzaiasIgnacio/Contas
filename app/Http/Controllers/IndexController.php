@@ -125,7 +125,7 @@ class IndexController extends Controller {
                 'descricao' => null
             ],
             'merc' => [
-                'valor' => 750,
+                'valor' => 900,
                 'descricao' => 'Mercado'
             ],
             'seg' => [
