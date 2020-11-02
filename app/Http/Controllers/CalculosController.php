@@ -100,7 +100,7 @@ class CalculosController extends Controller {
 
         $mes = new Movimentacao();
         $mes->nome = 'mês';
-        $mes->valor = 1300;
+        $mes->valor = Movimentacao::where('nome', 'm')->where('data', 'like', $request['ano'].'-'.$request['mes'].'%')->first()->valor;
         $gastos['izaias'][] = $mes;
         $total -= $mes->valor;
 

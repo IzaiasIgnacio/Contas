@@ -117,8 +117,12 @@ class IndexController extends Controller {
                 'descricao' => 'Xbox Game Pass'
             ],
             "m" => [
-                'valor' => 1500,
+                'valor' => 1300,
                 'descricao' => 'Mãe'
+            ],
+            'luz' => [
+                'valor' => 200,
+                'descricao' => 'luz'
             ],
             "fiesta" => [
                 'valor' => 531.6,
