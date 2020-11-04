@@ -93,7 +93,7 @@ class IndexController extends Controller {
                 'descricao' => null
             ],
             "oi" => [
-                'valor' => 180,
+                'valor' => 179.55,
                 'descricao' => null
             ],
             "netflix" => [
