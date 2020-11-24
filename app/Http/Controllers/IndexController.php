@@ -10,12 +10,14 @@ use App\Models\Status;
 use App\Models\Responsavel;
 use App\Models\Tipo;
 use Symfony\Component\HttpFoundation\Request;
+use Illuminate\Support\Facades\DB;
 
 class IndexController extends Controller {
 
     private function atualizarBanco() {
         if (file_exists('dump.sql')) {
-            exec("mysql -u3280436_contas -pa9TUW813KliNIe -hfdb24.awardspace.net 3280436_contas < dump.sql");
+            DB::unprepared(file_get_contents('dump.sql'));
+            // exec("mysql --verbose -u ".env('DB_USERNAME')." -p ".env('DB_PASSWORD')." -h ".env('DB_HOST')." ".env('DB_DATABASE')." < dump.sql 2>&1", $output);
             @unlink('dump.sql');
         }
     }
@@ -76,7 +78,7 @@ class IndexController extends Controller {
             'total_atual' => number_format($total_atual, 2),
             'maximo_movimentacoes' => $maximo_movimentacoes,
             'maximo_movimentacoes_terceiros' => $maximo_movimentacoes_terceiros,
-            'cartoes' => $cartao,
+            'cartoes' => $cartao->where('ativo', 1),
             'modelCartoes' => $cartao,
             'consolidado' => $consolidado,
             'movimentacoes' => $movimentacao->whereRaw("data >= '".$data->format('Y-m-d')."'")->get(),

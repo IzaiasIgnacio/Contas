@@ -13,7 +13,8 @@ class CalculosController extends Controller {
 
     private function atualizarBanco() {
         if (file_exists('dump.sql')) {
-            exec("mysql -u3280436_contas -pa9TUW813KliNIe -hfdb24.awardspace.net 3280436_contas < dump.sql");
+            DB::unprepared(file_get_contents('dump.sql'));
+            // exec("mysql -u".env('DB_USERNAME')." -p".env('DB_PASSWORD')." -h".env('DB_HOST')." ".env('DB_DATABASE')." < dump.sql");
             @unlink('dump.sql');
         }
     }
