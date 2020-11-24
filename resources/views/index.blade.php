@@ -306,7 +306,7 @@
                                                                     ->where('tipo', 'terceiros');
                                                         })
                                                         ->sum('valor');
-                                                    if ($cartao->id == 1) { $gastos_cartao += 16.9+13.99+9.9; }
+                                                    if ($cartao->id == 1) { $gastos_cartao += 16.9+29.99+9.9; }
                                                 @endphp
                                                 R$ {{$helper->format($cartao->credito-$gastos_cartao)}} / {{$helper->format($cartao->credito)}}<br>{{$cartao->numero}}
                                             </span>
