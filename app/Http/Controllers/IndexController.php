@@ -102,10 +102,6 @@ class IndexController extends Controller {
                 'valor' => 45.9,
                 'descricao' => null
             ],
-            'prime' => [
-                'valor' => 9.9,
-                'descricao' => 'Amazon Prime'
-            ],
             'ytm' => [
                 'valor' => 16.9,
                 'descricao' => 'Youtube Music'
