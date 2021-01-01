@@ -34,7 +34,7 @@
                                         <td>{{$helper->format($mov->valor)}}</td>
                                     </tr>
                                     @php
-                                        if ($mov->nome != 'Atrasado' && $mov->nome != 'pago') {
+                                        if ($mov->nome != 'Atrasado' && $mov->nome != 'pago' && !strstr($mov->nome, 'pago dezembro')) {
                                             $total_responsavel += $mov->valor;
                                         }
                                     @endphp
@@ -70,7 +70,7 @@
                                 <td colspan="2" class='td_responsavel'>Cristiane</td>
                             </tr>
                             @foreach ($gastos['cristiane'] as $mov)
-                            <tr @php if ($mov->status == 'pago') { echo "class='tr_renda_itau'"; } @endphp>
+                            <tr>
                                     <td>{{$mov->nome}}</td>
                                     <td>{{$helper->format($mov->valor)}}</td>
                                 </tr>
