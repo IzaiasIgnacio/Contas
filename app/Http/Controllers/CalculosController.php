@@ -89,7 +89,9 @@ class CalculosController extends Controller {
                     $total_cristiane += $movimentacao->valor;
                 break;
                 default:
-                    $total += $movimentacao->valor;
+                    if (!strstr($movimentacao->nome, 'pago dezembro')) {
+                        $total += $movimentacao->valor;
+                    }
                 break;
             }
         }
