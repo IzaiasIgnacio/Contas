@@ -282,7 +282,7 @@
                         <li class="divisor">&nbsp;</li>
                         <li><span class="valores_topo"><img class='icone_consolidado' tipo='savings' src="{{URL::asset('public/imagens/safe.png')}}" /> R$ {{$helper->format($consolidado->where('nome', 'savings')->first()->valor)}}</span></li>
                         <li class="divisor">&nbsp;</li>
-                        @foreach ($cartoes->where('nome', '!=', 'nubankMae')->orderBy('ordem')->get() as $cartao)
+                        @foreach ($cartoes_topo as $cartao)
                             <li>
                                 <div class="row row_cartoes">
                                     <div class="col-md-4 topo_cartoes">

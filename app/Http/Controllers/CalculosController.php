@@ -36,7 +36,6 @@ class CalculosController extends Controller {
         $responsaveis['izaias'] = 'Izaias';
         $gastos = [];
         $total = 0;
-        $total_com_atrasado = 0;
         $total_chah = 0;
         $total_cristiane = 0;
 
@@ -98,7 +97,7 @@ class CalculosController extends Controller {
 
         $antigo_chah = new Movimentacao();
         $antigo_chah->nome = 'Antigo';
-        $antigo_chah->valor = 177.38;
+        $antigo_chah->valor = 177.28;
         $gastos['chah'][] = $antigo_chah;
 
         $mes = new Movimentacao();

@@ -78,6 +78,7 @@ class IndexController extends Controller {
             'total_atual' => number_format($total_atual, 2),
             'maximo_movimentacoes' => $maximo_movimentacoes,
             'maximo_movimentacoes_terceiros' => $maximo_movimentacoes_terceiros,
+            'cartoes_topo' => $cartao->where('ativo', 1)->where('nome', '!=', 'nubankMae')->orderBy('ordem')->get(),
             'cartoes' => $cartao->where('ativo', 1),
             'modelCartoes' => $cartao,
             'consolidado' => $consolidado,
