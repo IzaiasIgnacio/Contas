@@ -177,6 +177,10 @@ html::-webkit-scrollbar {
     color: #ddd;
 }
 
+.sa {
+    color: #000;
+}
+
 .linha_gasto .fa-info-circle {
     font-size: 12px !important;
     color: darkorange !important;

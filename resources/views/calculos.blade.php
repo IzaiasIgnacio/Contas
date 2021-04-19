@@ -4,6 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Contas</title>
+        <link rel="shortcut icon" href="{{URL::asset('public/favicon.ico')}}">
         <link rel="stylesheet" href="{{URL::asset('public/css/bootstrap/bootstrap.min.css')}}" />
         <link rel="stylesheet" href="{{URL::asset('public/css/calculos.css')}}" />
         <script src="{{URL::asset('public/js/jquery.min.js')}}"></script>
