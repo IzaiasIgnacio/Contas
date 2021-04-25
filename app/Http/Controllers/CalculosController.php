@@ -38,6 +38,7 @@ class CalculosController extends Controller {
         $total = 0;
         $total_chah = 0;
         $total_cristiane = 0;
+        $total_tio_anisio = 0;
 
         $movimentacoes = $movimentacao->whereMonth('data', $data->format('m'))
                                        ->whereYear('data', $data->format('Y'))
@@ -87,10 +88,11 @@ class CalculosController extends Controller {
                 case 'cristiane':
                     $total_cristiane += $movimentacao->valor;
                 break;
+                case 'tio_anisio':
+                    $total_tio_anisio += $movimentacao->valor;
+                break;
                 default:
-                    if (!strstr($movimentacao->nome, 'pago dezembro')) {
-                        $total += $movimentacao->valor;
-                    }
+                    $total += $movimentacao->valor;
                 break;
             }
         }
@@ -124,6 +126,7 @@ class CalculosController extends Controller {
             'total' => $total,
             'total_chah' => $total_chah,
             'total_cristiane' => $total_cristiane,
+            'total_tio_anisio' => $total_tio_anisio,
             'itau' => $itau,
             'total_itau' => $total_itau,
             'valor_itau' => $valor_itau
