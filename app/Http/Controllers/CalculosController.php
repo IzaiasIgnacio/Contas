@@ -99,7 +99,7 @@ class CalculosController extends Controller {
 
         $antigo_chah = new Movimentacao();
         $antigo_chah->nome = 'Antigo';
-        $antigo_chah->valor = 177.28;
+        $antigo_chah->valor = 1273.68;
         $gastos['chah'][] = $antigo_chah;
 
         $mes = new Movimentacao();
@@ -125,6 +125,7 @@ class CalculosController extends Controller {
             'pago' => $pago,
             'total' => $total,
             'total_chah' => $total_chah,
+            'antigo_chah' => $antigo_chah->valor,
             'total_cristiane' => $total_cristiane,
             'total_tio_anisio' => $total_tio_anisio,
             'itau' => $itau,

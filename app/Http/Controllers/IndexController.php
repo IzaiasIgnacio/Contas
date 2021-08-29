@@ -96,24 +96,24 @@ class IndexController extends Controller {
                 'descricao' => null
             ],
             "oi" => [
-                'valor' => 179.55,
+                'valor' => 149.99,
                 'descricao' => null
             ],
             "netflix" => [
-                'valor' => 45.9,
+                'valor' => 55.9,
                 'descricao' => null
             ],
-            'ytm' => [
-                'valor' => 16.9,
-                'descricao' => 'Youtube Music'
+            'yt' => [
+                'valor' => 23.3,
+                'descricao' => 'Youtube Premium'
             ],
-            // 'gp' =>	[
-            //     'valor' => 29.99,
-            //     'descricao' => 'Xbox Game Pass'
-            // ],
             'gplay' =>	[
                 'valor' => 11.45,
                 'descricao' => 'Globoplay'
+            ],
+            'hbo' => [
+                'valor' => 13.95,
+                'descricao' => null
             ],
             "m" => [
                 'valor' => 1300,
@@ -121,7 +121,7 @@ class IndexController extends Controller {
             ],
             'luz' => [
                 'valor' => 200,
-                'descricao' => 'luz'
+                'descricao' => null
             ],
             "fiesta" => [
                 'valor' => 531.6,
@@ -132,7 +132,7 @@ class IndexController extends Controller {
                 'descricao' => 'Mercado'
             ],
             'seg' => [
-                'valor' => 4.59,
+                'valor' => 4.91,
                 'descricao' => 'Seguro Cartão Itaú'
             ]
         ];
@@ -156,10 +156,11 @@ class IndexController extends Controller {
         }
 
         $valores_fixos = [
-            'oi' => 75,
+            'directvgo' => 59.99,
             'fiesta' => 200,
-            'claro' => 42.44,
+            'claro' => 47,
             'globoplay' => 11.45,
+            'youtube' => 8.6,
             'nubank' => null,
             'luz' => null
         ];
@@ -200,8 +201,12 @@ class IndexController extends Controller {
             $id_cartao = $cartao->id;
         }
 
+        $id_parcela = null;
         if ($request['parcelas'] == '') {
             $request['parcelas'] = 1;
+        }
+        else {
+            $id_parcela = time();
         }
 
         $data = date("Y-m-d", strtotime(str_replace('/', '-', $request['data'])));
@@ -224,6 +229,7 @@ class IndexController extends Controller {
             $movimentacao->status = $request['status'];
             $movimentacao->responsavel = $request['responsavel'];
             $movimentacao->id_cartao = $id_cartao;
+            $movimentacao->id_parcela = $id_parcela;
             $movimentacao->posicao = 999;
             $movimentacao->save();
         }
@@ -271,7 +277,16 @@ class IndexController extends Controller {
     }
 
     public function ExcluirMovimentacao(Request $request) {
-        Movimentacao::find($request['id'])->delete();
+        $movimentacao = Movimentacao::find($request['id']);
+        if (empty($movimentacao->id_parcela)) {
+            $movimentacao->delete();
+        }
+        else {
+            $parcelas = Movimentacao::where('id_parcela', $movimentacao->id_parcela)->get();
+            foreach ($parcelas as $parcela) {
+                $parcela->delete();
+            }
+        }
     }
 
     public function definirItau(Request $request) {

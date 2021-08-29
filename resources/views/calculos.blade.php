@@ -108,7 +108,11 @@
                     <table class="table table-condensed table-bordered table-striped">
                         <tbody>
                             <tr>
-                                <td>Total - Antigo</td>
+                                <td>Total</td>
+                                <td>{{$helper->format($total_chah+$antigo_chah)}}</td>
+                            </tr>
+                            <tr>
+                                <td>Total do mês</td>
                                 <td>{{$helper->format($total_chah)}}</td>
                             </tr>
                         </tbody>

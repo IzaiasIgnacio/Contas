@@ -154,7 +154,7 @@ html::-webkit-scrollbar {
 }
 
 .nm {
-    color: #4ec14e;
+    color: #03fcf8;
 }
 
 .ip {
@@ -179,6 +179,10 @@ html::-webkit-scrollbar {
 
 .sa {
     color: #000;
+}
+
+.pp {
+    color: #4ec14e;
 }
 
 .linha_gasto .fa-info-circle {
