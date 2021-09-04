@@ -124,80 +124,80 @@ class ExportarController extends Controller {
         // }
     }
 
-    private function getValoresMes($i) {
-        $movimentacoes = Movimentacao::select('nome', 'valor', 'tipo')
-                                        ->whereMonth('data', $this->data->format('m'))
-                                        ->whereYear('data', $this->data->format('Y'))
-                                        ->whereNotIN('tipo', ['save', 'terceiros'])
-                                            ->orderBy('tipo')
-                                            ->orderBy('posicao')
-                                                ->get();
+    // private function getValoresMes($i) {
+    //     $movimentacoes = Movimentacao::select('nome', 'valor', 'tipo')
+    //                                     ->whereMonth('data', $this->data->format('m'))
+    //                                     ->whereYear('data', $this->data->format('Y'))
+    //                                     ->whereNotIN('tipo', ['save', 'terceiros'])
+    //                                         ->orderBy('tipo')
+    //                                         ->orderBy('posicao')
+    //                                             ->get();
 
-        $save = Movimentacao::whereMonth('data', $this->data->format('m'))
-                              ->whereYear('data', $this->data->format('Y'))
-                              ->where('tipo', 'save')
-                                ->first();
-        $values = [];
-        switch ($i) {
-            case 0:
-                $total_atual = Consolidado::where('nome', 'itau')->first()->valor + Consolidado::where('nome', 'casa')->first()->valor;
-            break;
-            case 1:
-                $total_atual = Consolidado::where('nome', 'salario')->first()->valor + $this->sobra;
-            break;
-            default:
-                $total_atual = Consolidado::where('nome', 'salario')->first()->valor;
-            break;
-        }
+    //     $save = Movimentacao::whereMonth('data', $this->data->format('m'))
+    //                           ->whereYear('data', $this->data->format('Y'))
+    //                           ->where('tipo', 'save')
+    //                             ->first();
+    //     $values = [];
+    //     switch ($i) {
+    //         case 0:
+    //             $total_atual = Consolidado::where('nome', 'itau')->first()->valor + Consolidado::where('nome', 'casa')->first()->valor;
+    //         break;
+    //         case 1:
+    //             $total_atual = Consolidado::where('nome', 'salario')->first()->valor + $this->sobra;
+    //         break;
+    //         default:
+    //             $total_atual = Consolidado::where('nome', 'salario')->first()->valor;
+    //         break;
+    //     }
         
-        $values[] = [ucfirst($this->data->locale('pt-br')->monthName), $total_atual];
-        $total = 0;
-        $renda = 0;
-        foreach ($movimentacoes as $movimentacao) {
-            $values[] = [$movimentacao->nome, $movimentacao->valor];
-            if ($movimentacao->tipo != 'renda') {
-                $total += $movimentacao->valor;
-            }
-            else {
-                $renda += $movimentacao->valor;
-            }
-        }
+    //     $values[] = [ucfirst($this->data->locale('pt-br')->monthName), $total_atual];
+    //     $total = 0;
+    //     $renda = 0;
+    //     foreach ($movimentacoes as $movimentacao) {
+    //         $values[] = [$movimentacao->nome, $movimentacao->valor];
+    //         if ($movimentacao->tipo != 'renda') {
+    //             $total += $movimentacao->valor;
+    //         }
+    //         else {
+    //             $renda += $movimentacao->valor;
+    //         }
+    //     }
 
-        $totais = [];
-        $totais[] = ['Total', $total];
-        if ($i > 0) {
-            $totais[] = ['Definido', 0];
-        }
-        $totais[] = ['Save', $save['valor']];
-        if ($i == 0) {
-            $totais[] = ['Sobra', $total_atual-$total+$renda-$save['valor']];
-        }
+    //     $totais = [];
+    //     $totais[] = ['Total', $total];
+    //     if ($i > 0) {
+    //         $totais[] = ['Definido', 0];
+    //     }
+    //     $totais[] = ['Save', $save['valor']];
+    //     if ($i == 0) {
+    //         $totais[] = ['Sobra', $total_atual-$total+$renda-$save['valor']];
+    //     }
 
-        $save = 0;
-        if ($i == 0) {
-            $save = Consolidado::where('nome', 'savings')->first()->valor+@$totais[$i]['Save'];
-        }
+    //     $save = 0;
+    //     if ($i == 0) {
+    //         $save = Consolidado::where('nome', 'savings')->first()->valor+@$totais[$i]['Save'];
+    //     }
         
-        $save = [
-            ['save', $save],
-            ['total', 'col 2'],
-            ['sobra', 'col 2']
-        ];
+    //     $save = [
+    //         ['save', $save],
+    //         ['total', 'col 2'],
+    //         ['sobra', 'col 2']
+    //     ];
 
-        return [
-            'valores' => $values,
-            'totais' => $totais,
-            'save' => $save
-        ];
-    }
+    //     return [
+    //         'valores' => $values,
+    //         'totais' => $totais,
+    //         'save' => $save
+    //     ];
+    // }
     
-    private function inserirDadosPlanilha($range, $valores) {
-        return $this->service->spreadsheets_values->update(
-            $this->id_planilha,
-            $range,
-            new \Google_Service_Sheets_ValueRange(['values' => $valores]),
-            ['valueInputOption' => 'RAW']
-        );
-    }
+    // private function inserirDadosPlanilha($range, $valores) {
+    //     return $this->service->spreadsheets_values->update(
+    //         $this->id_planilha,
+    //         $range,
+    //         new \Google_Service_Sheets_ValueRange(['values' => $valores]),
+    //         ['valueInputOption' => 'RAW']
+    //     );
+    // }
     
 }

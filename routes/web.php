@@ -25,5 +25,6 @@ Route::post('atualizar_save', 'IndexController@AtualizarSave')->name('atualizar_
 Route::post('atualizar_posicoes', 'IndexController@AtualizarPosicoes')->name('atualizar_posicoes');
 Route::post('nome_movimentacao', 'IndexController@getNomeMovimentacao')->name('nome_movimentacao');
 Route::post('definir_itau', 'IndexController@definirItau')->name('definir_itau');
+Route::post('definir_mercado_pago', 'IndexController@definirMercadoPago')->name('definir_mercado_pago');
 Route::any('exportar', 'ExportarController@exportar')->name('exportar');
 Route::get('fechar_mes/{mes}', 'CalculosController@fecharMes')->name('fechar_mes');

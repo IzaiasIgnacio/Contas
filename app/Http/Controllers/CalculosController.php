@@ -56,7 +56,14 @@ class CalculosController extends Controller {
                                          ->whereIn('tipo', ['gasto', 'renda'])
                                          ->where('itau', true)
                                           ->get();
+        
+        $mp = $movimentacao->whereMonth('data', $data->format('m'))
+                                         ->whereYear('data', $data->format('Y'))
+                                         ->whereIn('tipo', ['gasto', 'renda'])
+                                         ->where('mp', true)
+                                          ->get();
         $total_itau = 0;
+        $total_mp = 0;
         // $saque = new Movimentacao();
         // $saque->nome = 'saque';
         // $saque->valor = 450;
@@ -78,6 +85,16 @@ class CalculosController extends Controller {
             }
         }
         $valor_itau = Consolidado::where('nome', 'itau')->first()->valor;
+
+        foreach ($mp as $m) {
+            if ($m->tipo == 'gasto') {
+                $total_mp += $m->valor;
+            }
+            if ($m->tipo == 'renda') {
+                $total_mp -= $m->valor;
+            }
+        }
+        $valor_mp = Consolidado::where('nome', 'mp')->first()->valor;
 
         foreach ($movimentacoes as $movimentacao) {
             $gastos[$movimentacao->responsavel][] = $movimentacao;
@@ -130,7 +147,10 @@ class CalculosController extends Controller {
             'total_tio_anisio' => $total_tio_anisio,
             'itau' => $itau,
             'total_itau' => $total_itau,
-            'valor_itau' => $valor_itau
+            'valor_itau' => $valor_itau,
+            'mp' => $mp,
+            'total_mp' => $total_mp,
+            'valor_mp' => $valor_mp
         ]);
     }
 

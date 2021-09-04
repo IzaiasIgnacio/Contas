@@ -34,7 +34,7 @@ body {
     background-color: cornflowerblue !important;
     color: #fff;
 }
-.tr_renda_itau {
+.tr_renda_itau, .tr_renda_mp {
     background-color: green !important;
     color: #fff;
 }

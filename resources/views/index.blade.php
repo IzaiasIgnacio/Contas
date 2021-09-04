@@ -109,6 +109,12 @@
                                     location.reload();
                                 });
                             break;
+                            case 'mp':
+                                $.post("{{route('definir_mercado_pago')}}", {id: movimentacao_escolhida},
+                                function(resposta) {
+                                    location.reload();
+                                });
+                            break;
                             case 'descricao':
                             break;
                             default:
@@ -140,6 +146,7 @@
                         },
                         "sep3": "---",
                         "itau": {name: "Itaú", icon: "fa-info-circle"},
+                        "mp": {name: "Mercado Pago", icon: "fab fa-monero"},
                         "sep4": "---",
                         "descricao": {name: "Descrição", icon: "fa-edit"},
                         "sep5": "---",
@@ -272,9 +279,9 @@
     <body>
         <nav class="navbar navbar-inverse navbar-static-top" @php if (getenv('DB_CONTAS') == 'contas_hmg') { echo "style='background-color: #950000'"; } @endphp>
             <div class="container menu_container">
-                <ul class="nav navbar-brand">
+                <!-- <ul class="nav navbar-brand">
                     <li>Contas</li>
-                </ul>
+                </ul> -->
                 <div class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
                         <li><span class="valores_topo"><img class='icone_consolidado' tipo='mes_atual' src="{{URL::asset('public/imagens/calendar.png')}}" /> {{$consolidado::where('nome', 'mes_atual')->first()->valor}}</span></li>
@@ -435,6 +442,9 @@
                                                     @endif
                                                     @if ($movimentacoes_mes[$m]['movimentacoes'][$i]->itau)
                                                         <i class="fa fa-info-circle"></i>
+                                                    @endif
+                                                    @if ($movimentacoes_mes[$m]['movimentacoes'][$i]->mp)
+                                                        <i class="fab fa-monero"></i>
                                                     @endif
                                                 </td>
                                                 <td class="text-right td_valor">{{$helper->format($movimentacoes_mes[$m]['movimentacoes'][$i]->valor)}}</td>

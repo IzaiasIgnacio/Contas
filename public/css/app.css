@@ -59,7 +59,7 @@ html::-webkit-scrollbar {
 }
 
 .divisor {
-    margin-left: 55px;
+    margin-left: 13px;
 }
 
 .td_definido {
@@ -106,30 +106,6 @@ html::-webkit-scrollbar {
     padding-bottom: 5px;
 }
 
-.dot {
-    display: inline-block;
-    vertical-align: middle;
-    border-radius: 50%;
-    height: 15px;
-    width: 15px;
-    border: 1px solid #fff;
-}
-.nubank_dot {
-    background-color: purple;
-}
-
-.digio_dot {
-    background-color: blue;
-}
-
-.inter_dot {
-    background-color: orangered;
-}
-
-.itau_dot {
-    background-color: darkblue;
-}
-
 .slow-spin {
     -webkit-animation: fa-spin 3s infinite linear;
     animation: fa-spin 3s infinite linear;
@@ -145,8 +121,12 @@ html::-webkit-scrollbar {
     margin-top: -5px;
 }
 
-.context-menu-icon::before {
+.context-menu-icon::before, .context-menu-icon > .fa-monero:before {
     color: #000 !important;
+}
+
+.context-menu-icon > span {
+    font-weight: 900;
 }
 
 .n {
@@ -185,9 +165,18 @@ html::-webkit-scrollbar {
     color: #4ec14e;
 }
 
+.mp {
+    color: darkgrey;
+}
+
 .linha_gasto .fa-info-circle {
     font-size: 12px !important;
     color: darkorange !important;
+}
+
+.linha_gasto .fa-monero {
+    font-size: 12px !important;
+    color: #66ccff !important;
 }
 
 .linha_planejado td {

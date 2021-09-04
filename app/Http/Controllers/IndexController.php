@@ -292,6 +292,18 @@ class IndexController extends Controller {
     public function definirItau(Request $request) {
         $mov = Movimentacao::find($request['id']);
         $mov->itau = !$mov->itau;
+        if ($mov->itau) {
+            $mov->mp = false;
+        }
+        $mov->save();
+    }
+
+    public function definirMercadoPago(Request $request) {
+        $mov = Movimentacao::find($request['id']);
+        $mov->mp = !$mov->mp;
+        if ($mov->mp) {
+            $mov->itau = false;
+        }
         $mov->save();
     }
 
