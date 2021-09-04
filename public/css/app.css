@@ -18,8 +18,12 @@ html::-webkit-scrollbar {
     margin-top: 10px;
 }
 
-.body-content, .menu_container {
+.body-content {
     width: 90%;
+}
+
+.menu_container {
+    width: 100%;
 }
 
 .table {

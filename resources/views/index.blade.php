@@ -287,6 +287,7 @@
                         <li><span class="valores_topo"><img class='icone_consolidado' tipo='mes_atual' src="{{URL::asset('public/imagens/calendar.png')}}" /> {{$consolidado::where('nome', 'mes_atual')->first()->valor}}</span></li>
                         <li><span class="valores_topo"><img class='icone_consolidado' tipo='casa' src="{{URL::asset('public/imagens/casa.png')}}" /> R$ {{$helper->format($consolidado->where('nome', 'casa')->first()->valor)}}</span></li>
                         <li><span class="valores_topo"><img class='icone_consolidado' tipo='itau' src="{{URL::asset('public/imagens/itau.png')}}" /> R$ {{$helper->format($consolidado->where('nome', 'itau')->first()->valor)}}</span></li>
+                        <li><span class="valores_topo"><img class='icone_consolidado' tipo='savings' src="{{URL::asset('public/imagens/nu.png')}}" /> R$ {{$helper->format($consolidado->where('nome', 'savings')->first()->valor)}}</span></li>
                         <li class="divisor">&nbsp;</li>
                         <li><span class="valores_topo"><img class='icone_consolidado' tipo='savings' src="{{URL::asset('public/imagens/safe.png')}}" /> R$ {{$helper->format($consolidado->where('nome', 'savings')->first()->valor)}}</span></li>
                         <li class="divisor">&nbsp;</li>
