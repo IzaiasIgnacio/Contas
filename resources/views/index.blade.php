@@ -30,6 +30,10 @@
                             $(".titulo_consolidado_modal").html('Itaú');
                             $(".valor_consolidado_modal").val("{{$consolidado::where('nome', 'itau')->first()->valor}}");
                         break;
+                        case 'nubank':
+                            $(".titulo_consolidado_modal").html('Nubank');
+                            $(".valor_consolidado_modal").val("{{$consolidado::where('nome', 'nubank')->first()->valor}}");
+                        break;
                         case 'savings':
                             $(".titulo_consolidado_modal").html('Savings');
                             $(".valor_consolidado_modal").val("{{$consolidado::where('nome', 'savings')->first()->valor}}");
@@ -287,7 +291,7 @@
                         <li><span class="valores_topo"><img class='icone_consolidado' tipo='mes_atual' src="{{URL::asset('public/imagens/calendar.png')}}" /> {{$consolidado::where('nome', 'mes_atual')->first()->valor}}</span></li>
                         <li><span class="valores_topo"><img class='icone_consolidado' tipo='casa' src="{{URL::asset('public/imagens/casa.png')}}" /> R$ {{$helper->format($consolidado->where('nome', 'casa')->first()->valor)}}</span></li>
                         <li><span class="valores_topo"><img class='icone_consolidado' tipo='itau' src="{{URL::asset('public/imagens/itau.png')}}" /> R$ {{$helper->format($consolidado->where('nome', 'itau')->first()->valor)}}</span></li>
-                        <li><span class="valores_topo"><img class='icone_consolidado' tipo='savings' src="{{URL::asset('public/imagens/nu.png')}}" /> R$ {{$helper->format($consolidado->where('nome', 'savings')->first()->valor)}}</span></li>
+                        <li><span class="valores_topo"><img class='icone_consolidado' tipo='nubank' src="{{URL::asset('public/imagens/nu.png')}}" /> R$ {{$helper->format($consolidado->where('nome', 'nubank')->first()->valor)}}</span></li>
                         <li class="divisor">&nbsp;</li>
                         <li><span class="valores_topo"><img class='icone_consolidado' tipo='savings' src="{{URL::asset('public/imagens/safe.png')}}" /> R$ {{$helper->format($consolidado->where('nome', 'savings')->first()->valor)}}</span></li>
                         <li class="divisor">&nbsp;</li>
@@ -564,7 +568,7 @@
                 @for ($s=0;$s<=6;$s++)
                     @php
                         if ($s == 0) {
-                            $savings_mes[$s] = $consolidado->where('nome', 'savings')->first()->valor+@$movimentacoes_mes[$s]['save']->valor;
+                            $savings_mes[$s] = $helper->getTotalAtual()+@$movimentacoes_mes[$s]['save']->valor;
                         }
                         else {
                             $savings_mes[$s] = $savings_mes[$s-1]+$save_mes[$s];
@@ -576,7 +580,7 @@
                                 <tr>
                                     <th>{{$movimentacoes_mes[$s]['mes']}}</th>
                                     @if ($s == 0)
-                                        <th class="text-right">{{$helper->format($consolidado->where('nome', 'savings')->first()->valor)}}</th>
+                                        <th class="text-right">{{$helper->format($helper->getTotalAtual())}}</th>
                                     @else
                                         <th class="text-right">{{$helper->format($savings_mes[$s-1])}}</th>
                                     @endif
