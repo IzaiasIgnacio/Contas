@@ -235,3 +235,17 @@ html::-webkit-scrollbar {
         display: block !important;
     }
 }
+
+/* .tabela_mes tfoot {
+    inset-block-end: 0;
+    position: sticky;
+    bottom: 7%;
+    width: 11%;
+} */
+
+/* .div_footer {
+    position: fixed;
+    height: 5%;
+    bottom: 0;
+    width: 90%;
+} */

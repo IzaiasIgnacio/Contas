@@ -16,6 +16,7 @@ Route::get('/', 'IndexController@exibirContas');
 Route::any('/calculos', 'CalculosController@exibirCalculos')->name('exibir_calculos');
 
 Route::post('salvar_consolidado', 'IndexController@salvarConsolidado')->name('salvar_consolidado');
+Route::post('salvar_savings', 'IndexController@salvarSavings')->name('salvar_savings');
 Route::post('salvar_movimentacao', 'IndexController@salvarMovimentacao')->name('salvar_movimentacao');
 Route::post('atualizar_movimentacao', 'IndexController@AtualizarMovimentacao')->name('atualizar_movimentacao');
 Route::post('atualizar_valor_movimentacao', 'IndexController@AtualizarValorMovimentacao')->name('atualizar_valor_movimentacao');

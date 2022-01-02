@@ -116,7 +116,7 @@ class CalculosController extends Controller {
 
         $antigo_chah = new Movimentacao();
         $antigo_chah->nome = 'Antigo';
-        $antigo_chah->valor = 1273.68;
+        $antigo_chah->valor = 1684.74;
         $gastos['chah'][] = $antigo_chah;
 
         $mes = new Movimentacao();
@@ -161,14 +161,14 @@ class CalculosController extends Controller {
             $movimentacao->save();
         }
 
-        $cartoes = $movimentacoes->select('cartao.nome', 'cartao.id', DB::raw('sum(movimentacao.valor) as valor'))->join('cartao', 'cartao.id', 'id_cartao')->groupBy('cartao.id')->get();
+        $cartoes = $movimentacoes->select('cartao.nome', 'cartao.vencimento', 'cartao.id', DB::raw('sum(movimentacao.valor) as valor'))->join('cartao', 'cartao.id', 'id_cartao')->groupBy('cartao.id')->get();
         foreach ($cartoes as $cartao) {
             $mov = new Movimentacao();
-            $mov->nome = $cartao->nome;
+            $mov->nome = $cartao->nome.' ('.$cartao->vencimento.')';
             $mov->data = $args.'-01';
             $mov->tipo = 'gasto';
             $mov->valor = $cartao->valor;
-            $mov->status = 'definido';
+            $mov->status = 'planejado';
             $mov->id_cartao = $cartao->id;
             $mov->posicao = 999;
             $mov->save();

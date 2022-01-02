@@ -92,7 +92,7 @@ class IndexController extends Controller {
     private function definirValoresFixosMes($data, $movimentacao) {
         $valores_fixos = [
             "salario" => [
-                'valor' => 8940,
+                'valor' => 9100,
                 'descricao' => null
             ],
             "oi" => [
@@ -192,6 +192,19 @@ class IndexController extends Controller {
         }
         $consolidado->valor = str_replace(",", ".", $request['valor']);
         $consolidado->save();
+    }
+    public function salvarSavings(Request $request) {
+        $nubank = str_replace(",", ".", $request['nubank']);
+        $sofisa = str_replace(",", ".", $request['sofisa']);
+        $bmg = str_replace(",", ".", $request['bmg']);
+        $nuinvest = str_replace(",", ".", $request['nuinvest']);
+        $savings = number_format($nubank + $sofisa + $bmg + $nuinvest, 2, '.', '');
+
+        Consolidado::where('nome', 'nubank')->update(['valor' => $nubank]);
+        Consolidado::where('nome', 'sofisa')->update(['valor' => $sofisa]);
+        Consolidado::where('nome', 'bmg')->update(['valor' => $bmg]);
+        Consolidado::where('nome', 'nuinvest')->update(['valor' => $nuinvest]);
+        Consolidado::where('nome', 'savings')->update(['valor' => $savings]);
     }
     
     public function salvarMovimentacao(Request $request) {

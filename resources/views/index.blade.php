@@ -35,8 +35,12 @@
                             $(".valor_consolidado_modal").val("{{$consolidado::where('nome', 'nubank')->first()->valor}}");
                         break;
                         case 'savings':
-                            $(".titulo_consolidado_modal").html('Savings');
-                            $(".valor_consolidado_modal").val("{{$consolidado::where('nome', 'savings')->first()->valor}}");
+                            $(".valor_savings_nubank").val("{{$consolidado::where('nome', 'nubank')->first()->valor}}");
+                            $(".valor_savings_sofisa").val("{{$consolidado::where('nome', 'sofisa')->first()->valor}}");
+                            $(".valor_savings_bmg").val("{{$consolidado::where('nome', 'bmg')->first()->valor}}");
+                            $(".valor_savings_nuinvest").val("{{$consolidado::where('nome', 'nuinvest')->first()->valor}}");
+                            $("#modal_savings").modal('show');
+                            return;
                         break;
                         case 'mes_atual':
                             $(".titulo_consolidado_modal").html('Mês Atual');
@@ -51,6 +55,11 @@
                 $('#modal_consolidado').on('shown.bs.modal', function (e) {
                     $(".valor_consolidado_modal").focus();
                     $(".valor_consolidado_modal").select();
+                });
+
+                $('#modal_savings').on('shown.bs.modal', function (e) {
+                    $(".valor_savings_nubank").focus();
+                    $(".valor_savings_nubank").select();
                 });
 
                 $('#modal_movimentacao').on('shown.bs.modal', function (e) {
@@ -70,6 +79,18 @@
 
                 $("#modal_consolidado .salvar").click(function() {
                     $.post("{{route('salvar_consolidado')}}", {tipo: tipo_consolidado, valor: $(".valor_consolidado_modal").val()},
+                    function(resposta) {
+                        location.reload();
+                    });
+                });
+
+                $("#modal_savings .salvar").click(function() {
+                    $.post("{{route('salvar_savings')}}", {
+                        nubank: $(".valor_savings_nubank").val(),
+                        sofisa: $(".valor_savings_sofisa").val(),
+                        bmg: $(".valor_savings_bmg").val(),
+                        nuinvest: $(".valor_savings_nuinvest").val()
+                    },
                     function(resposta) {
                         location.reload();
                     });
@@ -291,7 +312,7 @@
                         <li><span class="valores_topo"><img class='icone_consolidado' tipo='mes_atual' src="{{URL::asset('public/imagens/calendar.png')}}" /> {{$consolidado::where('nome', 'mes_atual')->first()->valor}}</span></li>
                         <li><span class="valores_topo"><img class='icone_consolidado' tipo='casa' src="{{URL::asset('public/imagens/casa.png')}}" /> R$ {{$helper->format($consolidado->where('nome', 'casa')->first()->valor)}}</span></li>
                         <li><span class="valores_topo"><img class='icone_consolidado' tipo='itau' src="{{URL::asset('public/imagens/itau.png')}}" /> R$ {{$helper->format($consolidado->where('nome', 'itau')->first()->valor)}}</span></li>
-                        <li><span class="valores_topo"><img class='icone_consolidado' tipo='nubank' src="{{URL::asset('public/imagens/nu.png')}}" /> R$ {{$helper->format($consolidado->where('nome', 'nubank')->first()->valor)}}</span></li>
+                        <!-- <li><span class="valores_topo"><img class='icone_consolidado' tipo='nubank' src="{{URL::asset('public/imagens/nu.png')}}" /> R$ {{$helper->format($consolidado->where('nome', 'nubank')->first()->valor)}}</span></li> -->
                         <li class="divisor">&nbsp;</li>
                         <li><span class="valores_topo"><img class='icone_consolidado' tipo='savings' src="{{URL::asset('public/imagens/safe.png')}}" /> R$ {{$helper->format($consolidado->where('nome', 'savings')->first()->valor)}}</span></li>
                         <li class="divisor">&nbsp;</li>
@@ -369,6 +390,40 @@
                                     <label style="display:block">Valor</label>
                                     <input class="form-control valor_consolidado_modal" type="text" />
                                 </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer footer_form_movimentacao">
+                            <button type="button" class="btn btn-primary salvar">Salvar</button>
+                            <button type="button" class="btn btn-primary cancelar" data-dismiss="modal">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="modal_savings" role="dialog" tabindex="-1">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"></span></button>
+                            <h4 class="modal-title titulo_savings_modal">Savings</h4>
+                        </div>
+                        <div class="modal-body row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label style="display:block">Nubank</label>
+                                    <input class="form-control valor_savings_nubank" type="text" />
+                                </div>
+                                <div class="form-group">
+                                    <label style="display:block">Sofisa</label>
+                                    <input class="form-control valor_savings_sofisa" type="text" />
+                                </div>
+                                <div class="form-group">
+                                    <label style="display:block">Bmg</label>
+                                    <input class="form-control valor_savings_bmg" type="text" />
+                                </div>
+                                <div class="form-group">
+                                    <label style="display:block">Nuinvest</label>
+                                    <input class="form-control valor_savings_nuinvest" type="text" />
+                                </div>                                
                             </div>
                         </div>
                         <div class="modal-footer footer_form_movimentacao">
@@ -564,11 +619,11 @@
                     </div>
                 @endfor
             </div>
-            <div class="row div_movimentacoes">
+            <div class="row div_movimentacoes div_footer">
                 @for ($s=0;$s<=6;$s++)
                     @php
                         if ($s == 0) {
-                            $savings_mes[$s] = $helper->getTotalAtual()+@$movimentacoes_mes[$s]['save']->valor;
+                            $savings_mes[$s] = $helper->getTotalSavingsAtual()+@$movimentacoes_mes[$s]['save']->valor;
                         }
                         else {
                             $savings_mes[$s] = $savings_mes[$s-1]+$save_mes[$s];
@@ -580,7 +635,7 @@
                                 <tr>
                                     <th>{{$movimentacoes_mes[$s]['mes']}}</th>
                                     @if ($s == 0)
-                                        <th class="text-right">{{$helper->format($helper->getTotalAtual())}}</th>
+                                        <th class="text-right">{{$helper->format($helper->getTotalSavingsAtual())}}</th>
                                     @else
                                         <th class="text-right">{{$helper->format($savings_mes[$s-1])}}</th>
                                     @endif
