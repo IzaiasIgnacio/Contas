@@ -156,9 +156,9 @@ class IndexController extends Controller {
         }
 
         $valores_fixos = [
-            'directvgo' => 59.99,
+            'directvgo' => 39.9,
             'fiesta' => 200,
-            'claro' => 47,
+            'vivo' => 29.99,
             'globoplay' => 11.45,
             'youtube' => 8.6,
             'nubank' => null,
@@ -197,13 +197,11 @@ class IndexController extends Controller {
         $nubank = str_replace(",", ".", $request['nubank']);
         $sofisa = str_replace(",", ".", $request['sofisa']);
         $bmg = str_replace(",", ".", $request['bmg']);
-        $nuinvest = str_replace(",", ".", $request['nuinvest']);
-        $savings = number_format($nubank + $sofisa + $bmg + $nuinvest, 2, '.', '');
+        $savings = number_format($nubank + $sofisa + $bmg, 2, '.', '');
 
         Consolidado::where('nome', 'nubank')->update(['valor' => $nubank]);
         Consolidado::where('nome', 'sofisa')->update(['valor' => $sofisa]);
         Consolidado::where('nome', 'bmg')->update(['valor' => $bmg]);
-        Consolidado::where('nome', 'nuinvest')->update(['valor' => $nuinvest]);
         Consolidado::where('nome', 'savings')->update(['valor' => $savings]);
     }
     

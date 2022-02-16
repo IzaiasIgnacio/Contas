@@ -116,7 +116,7 @@ class CalculosController extends Controller {
 
         $antigo_chah = new Movimentacao();
         $antigo_chah->nome = 'Antigo';
-        $antigo_chah->valor = 1684.74;
+        $antigo_chah->valor = Consolidado::where('nome', 'chah')->first()->valor;
         $gastos['chah'][] = $antigo_chah;
 
         $mes = new Movimentacao();
@@ -124,6 +124,26 @@ class CalculosController extends Controller {
         $mes->valor = @Movimentacao::where('nome', 'm')->where('data', 'like', $request['ano'].'-'.sprintf("%02d", $request['mes']).'%')->first()->valor;
         $gastos['izaias'][] = $mes;
         $total -= $mes->valor;
+
+        if ($d[0] == 2 && $d[1] == 2022) {
+            $mes = new Movimentacao();
+            $mes->nome = 'calcada';
+            $mes->valor = 150;
+            $gastos['izaias'][] = $mes;
+            $total -= $mes->valor;
+
+            $mes = new Movimentacao();
+            $mes->nome = 'iptu';
+            $mes->valor = 367;
+            $gastos['izaias'][] = $mes;
+            $total -= $mes->valor;
+
+            $mes = new Movimentacao();
+            $mes->nome = 'churrasco';
+            $mes->valor = 125;
+            $gastos['izaias'][] = $mes;
+            $total -= $mes->valor;
+        }
 
         $pago = 0;
         if ($d[0] == date('m') && $d[1] == date('Y')) {

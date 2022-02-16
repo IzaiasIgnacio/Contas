@@ -38,7 +38,6 @@
                             $(".valor_savings_nubank").val("{{$consolidado::where('nome', 'nubank')->first()->valor}}");
                             $(".valor_savings_sofisa").val("{{$consolidado::where('nome', 'sofisa')->first()->valor}}");
                             $(".valor_savings_bmg").val("{{$consolidado::where('nome', 'bmg')->first()->valor}}");
-                            $(".valor_savings_nuinvest").val("{{$consolidado::where('nome', 'nuinvest')->first()->valor}}");
                             $("#modal_savings").modal('show');
                             return;
                         break;
@@ -88,8 +87,7 @@
                     $.post("{{route('salvar_savings')}}", {
                         nubank: $(".valor_savings_nubank").val(),
                         sofisa: $(".valor_savings_sofisa").val(),
-                        bmg: $(".valor_savings_bmg").val(),
-                        nuinvest: $(".valor_savings_nuinvest").val()
+                        bmg: $(".valor_savings_bmg").val()
                     },
                     function(resposta) {
                         location.reload();
@@ -420,10 +418,6 @@
                                     <label style="display:block">Bmg</label>
                                     <input class="form-control valor_savings_bmg" type="text" />
                                 </div>
-                                <div class="form-group">
-                                    <label style="display:block">Nuinvest</label>
-                                    <input class="form-control valor_savings_nuinvest" type="text" />
-                                </div>                                
                             </div>
                         </div>
                         <div class="modal-footer footer_form_movimentacao">
