@@ -194,7 +194,20 @@ class CalculosController extends Controller {
             $mov->save();
         }
 
+        $mae = Movimentacao::where('responsavel', 'mae')->whereIn('nome', ['fiesta','luz','vivo','nubank'])->where('data', 'like', $args.'%')->get();
+        foreach ($mae as $m) {
+            $mov = new Movimentacao();
+            $mov->nome = $m->nome.' (m)';
+            $mov->data = $args.'-01';
+            $mov->tipo = 'gasto';
+            $mov->valor = $m->valor;
+            $mov->status = 'planejado';
+            $mov->posicao = 999;
+            $mov->save();
+        }
+
         Movimentacao::where('responsavel', 'mae')->where('data', 'like', $args.'%')->update(['status' => 'pago']);
+        Movimentacao::where('nome', 'm')->where('data', 'like', $args.'%')->update(['status' => 'pago']);
     }
 
 }

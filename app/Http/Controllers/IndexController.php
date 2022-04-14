@@ -96,7 +96,7 @@ class IndexController extends Controller {
                 'descricao' => null
             ],
             "oi" => [
-                'valor' => 149.99,
+                'valor' => 129.99,
                 'descricao' => null
             ],
             "netflix" => [
@@ -120,7 +120,7 @@ class IndexController extends Controller {
                 'descricao' => 'Mãe'
             ],
             'luz' => [
-                'valor' => 200,
+                'valor' => 300,
                 'descricao' => null
             ],
             "fiesta" => [
@@ -128,7 +128,7 @@ class IndexController extends Controller {
                 'descricao' => null
             ],
             'merc' => [
-                'valor' => 900,
+                'valor' => 1000,
                 'descricao' => 'Mercado'
             ],
             'seg' => [
@@ -158,7 +158,7 @@ class IndexController extends Controller {
         $valores_fixos = [
             'directvgo' => 39.9,
             'fiesta' => 200,
-            'vivo' => 29.99,
+            'vivo' => 34.99,
             'globoplay' => 11.45,
             'youtube' => 8.6,
             'nubank' => null,
@@ -195,12 +195,10 @@ class IndexController extends Controller {
     }
     public function salvarSavings(Request $request) {
         $nubank = str_replace(",", ".", $request['nubank']);
-        $sofisa = str_replace(",", ".", $request['sofisa']);
         $bmg = str_replace(",", ".", $request['bmg']);
-        $savings = number_format($nubank + $sofisa + $bmg, 2, '.', '');
+        $savings = number_format($nubank + $bmg, 2, '.', '');
 
         Consolidado::where('nome', 'nubank')->update(['valor' => $nubank]);
-        Consolidado::where('nome', 'sofisa')->update(['valor' => $sofisa]);
         Consolidado::where('nome', 'bmg')->update(['valor' => $bmg]);
         Consolidado::where('nome', 'savings')->update(['valor' => $savings]);
     }

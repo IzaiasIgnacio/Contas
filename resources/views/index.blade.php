@@ -36,7 +36,6 @@
                         break;
                         case 'savings':
                             $(".valor_savings_nubank").val("{{$consolidado::where('nome', 'nubank')->first()->valor}}");
-                            $(".valor_savings_sofisa").val("{{$consolidado::where('nome', 'sofisa')->first()->valor}}");
                             $(".valor_savings_bmg").val("{{$consolidado::where('nome', 'bmg')->first()->valor}}");
                             $("#modal_savings").modal('show');
                             return;
@@ -86,7 +85,6 @@
                 $("#modal_savings .salvar").click(function() {
                     $.post("{{route('salvar_savings')}}", {
                         nubank: $(".valor_savings_nubank").val(),
-                        sofisa: $(".valor_savings_sofisa").val(),
                         bmg: $(".valor_savings_bmg").val()
                     },
                     function(resposta) {
@@ -411,10 +409,6 @@
                                     <input class="form-control valor_savings_nubank" type="text" />
                                 </div>
                                 <div class="form-group">
-                                    <label style="display:block">Sofisa</label>
-                                    <input class="form-control valor_savings_sofisa" type="text" />
-                                </div>
-                                <div class="form-group">
                                     <label style="display:block">Bmg</label>
                                     <input class="form-control valor_savings_bmg" type="text" />
                                 </div>
@@ -445,6 +439,7 @@
                                 @if (count($movimentacoes_mes[$m]['movimentacoes']) > 0)
                                     @switch ($m)
                                         @case (0)
+                                            @php $total_atual = $consolidado::where('nome', 'nubank')->first()->valor + $consolidado::where('nome', 'itau')->first()->valor; @endphp
                                         @break
                                         @case (1)
                                             @php
@@ -552,7 +547,8 @@
                                     <td>Save</td>
                                     @php
                                         if ($m == 0) {
-                                            $sobra = str_replace(",","",$total_atual)-$total_mes+$renda_mes-@$movimentacoes_mes[$m]['save']->valor;    
+                                            $sobra = str_replace(",","",$total_atual)-$total_mes+$renda_mes-@$movimentacoes_mes[$m]['save']->valor;
+                                            $sobra_calculo = $sobra;
                                         }
                                         else {
                                             $sobra = $renda_mes-$total_mes+$sobra;
@@ -566,6 +562,12 @@
                                     @endif
                                 </tr>
                                 @if ($m == 0)
+                                @if (@$movimentacoes_mes[$m]['save']->valor < 0)
+                                <tr class="tr_resgate">
+                                    <td>Resgate</td>
+                                    <td class="text-right"><span class="valor_sobra">{{$helper->format(abs(@$movimentacoes_mes[$m]['save']->valor) - $consolidado::where('nome', 'nubank')->first()->valor)}}</span></td>
+                                </tr>
+                                @endif
                                 <tr>
                                     <td>Sobra</td>
                                     <td class="text-right"><span class="valor_sobra">{{$helper->format($sobra)}}</span></td>
@@ -646,7 +648,11 @@
                                 </tr>
                                 <tr>
                                     <td>Total</td>
-                                    <td class="text-right">{{$helper->format($savings_mes[$s])}}</td>
+                                    @if ($s == 0)
+                                        <td class="text-right">{{$helper->format($savings_mes[$s] + $sobra_calculo)}}</td>
+                                    @else
+                                        <td class="text-right">{{$helper->format($savings_mes[$s])}}</td>
+                                    @endif
                                 </tr>
                             </tfoot>
                         </table>

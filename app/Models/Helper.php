@@ -8,7 +8,7 @@ class Helper {
     }
     
     public function getTotalSavingsAtual() {
-        return Consolidado::get('savings');
+        return Consolidado::get('bmg');
     }
 
 }

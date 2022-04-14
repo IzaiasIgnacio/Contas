@@ -65,7 +65,9 @@ html::-webkit-scrollbar {
 .divisor {
     margin-left: 13px;
 }
-
+.tr_resgate {
+    background-color: darkred;
+}
 .td_definido {
     font-style: italic;
 }
@@ -171,6 +173,10 @@ html::-webkit-scrollbar {
 
 .mp {
     color: darkgrey;
+}
+
+.ic {
+    color: darkorange;
 }
 
 .linha_gasto .fa-info-circle {
