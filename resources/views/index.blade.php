@@ -439,7 +439,7 @@
                                 @if (count($movimentacoes_mes[$m]['movimentacoes']) > 0)
                                     @switch ($m)
                                         @case (0)
-                                            @php $total_atual = $consolidado::where('nome', 'nubank')->first()->valor + $consolidado::where('nome', 'itau')->first()->valor; @endphp
+                                            @php $total_atual = $consolidado::where('nome', 'casa')->first()->valor + $consolidado::where('nome', 'nubank')->first()->valor + $consolidado::where('nome', 'itau')->first()->valor; @endphp
                                         @break
                                         @case (1)
                                             @php

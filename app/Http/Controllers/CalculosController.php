@@ -125,26 +125,6 @@ class CalculosController extends Controller {
         $gastos['izaias'][] = $mes;
         $total -= $mes->valor;
 
-        if ($d[0] == 2 && $d[1] == 2022) {
-            $mes = new Movimentacao();
-            $mes->nome = 'calcada';
-            $mes->valor = 150;
-            $gastos['izaias'][] = $mes;
-            $total -= $mes->valor;
-
-            $mes = new Movimentacao();
-            $mes->nome = 'iptu';
-            $mes->valor = 367;
-            $gastos['izaias'][] = $mes;
-            $total -= $mes->valor;
-
-            $mes = new Movimentacao();
-            $mes->nome = 'churrasco';
-            $mes->valor = 125;
-            $gastos['izaias'][] = $mes;
-            $total -= $mes->valor;
-        }
-
         $pago = 0;
         if ($d[0] == date('m') && $d[1] == date('Y')) {
             $pago = Consolidado::where('nome', 'pago')->first()->valor;
