@@ -76,8 +76,8 @@ class ExportarController extends Controller {
 
     public function exportar() {
         //awardspace
-        $dump = "I:\\xampp\\htdocs\\contas\dump_local.sql";
-        shell_exec("I:\\xampp\\mysql\\bin\\mysqldump -u root contas > ".$dump);
+        $dump = "C:\\xampp\\htdocs\\contas\dump_local.sql";
+        shell_exec("C:\\xampp\\mysql\\bin\\mysqldump -u root contas > ".$dump);
         Storage::disk('ftp')->put('/izaiasignacio.atwebpages.com/contas/dump.sql', File::get($dump));
         Storage::disk('drive')->put('db_contas.sql', File::get($dump));
         unlink($dump);
