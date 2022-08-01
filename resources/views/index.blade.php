@@ -563,10 +563,10 @@
                                 </tr>
                                 @if ($m == 0)
                                 @if (@$movimentacoes_mes[$m]['save']->valor < 0)
-                                <tr class="tr_resgate">
+                                <!-- <tr class="tr_resgate">
                                     <td>Resgate</td>
                                     <td class="text-right"><span class="valor_sobra">{{$helper->format(abs(@$movimentacoes_mes[$m]['save']->valor) - $consolidado::where('nome', 'nubank')->first()->valor)}}</span></td>
-                                </tr>
+                                </tr> -->
                                 @endif
                                 <tr>
                                     <td>Sobra</td>

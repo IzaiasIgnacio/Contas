@@ -96,7 +96,7 @@ class IndexController extends Controller {
                 'descricao' => null
             ],
             "oi" => [
-                'valor' => 129.99,
+                'valor' => 129.84,
                 'descricao' => null
             ],
             "netflix" => [
@@ -136,7 +136,7 @@ class IndexController extends Controller {
                 'descricao' => 'Mercado'
             ],
             'seg' => [
-                'valor' => 4.91,
+                'valor' => 5.46,
                 'descricao' => 'Seguro Cartão Itaú'
             ]
         ];

@@ -12,6 +12,7 @@
 */
 
 Route::get('/', 'IndexController@exibirContas');
+Route::get('/contas', 'IndexController@exibirContas');
 
 Route::any('/calculos', 'CalculosController@exibirCalculos')->name('exibir_calculos');
 
