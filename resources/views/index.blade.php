@@ -563,10 +563,14 @@
                                 </tr>
                                 @if ($m == 0)
                                 @if (@$movimentacoes_mes[$m]['save']->valor < 0)
-                                <!-- <tr class="tr_resgate">
+                                @php
+                                    $resgate = abs(@$movimentacoes_mes[$m]['save']->valor) - $consolidado::where('nome', 'nubank')->first()->valor;
+                                    $sobra_calculo = $resgate;
+                                @endphp
+                                <tr class="tr_resgate">
                                     <td>Resgate</td>
-                                    <td class="text-right"><span class="valor_sobra">{{$helper->format(abs(@$movimentacoes_mes[$m]['save']->valor) - $consolidado::where('nome', 'nubank')->first()->valor)}}</span></td>
-                                </tr> -->
+                                    <td class="text-right"><span class="valor_sobra">{{$helper->format($resgate)}}</span></td>
+                                </tr>
                                 @endif
                                 <tr>
                                     <td>Sobra</td>
@@ -641,7 +645,11 @@
                                 <tr>
                                     <td>Save</td>
                                     @if ($s == 0)
-                                        <td class="text-right">{{$helper->format(@$movimentacoes_mes[$s]['save']->valor)}}</td>
+                                        @if (@$movimentacoes_mes[$s]['save']->valor < 0)
+                                            <td class="text-right">-{{$helper->format($resgate)}}</td>
+                                        @else
+                                            <td class="text-right">{{$helper->format(@$movimentacoes_mes[$s]['save']->valor)}}</td>
+                                        @endif
                                     @else
                                         <td class="text-right">{{$helper->format($save_mes[$s])}}</td>
                                     @endif
@@ -649,7 +657,8 @@
                                 <tr>
                                     <td>Total</td>
                                     @if ($s == 0)
-                                        <td class="text-right">{{$helper->format($savings_mes[$s] + $sobra_calculo)}}</td>
+                                        @php $savings_mes[$s]+=$sobra_calculo @endphp
+                                        <td class="text-right">{{$helper->format($savings_mes[$s])}}</td>
                                     @else
                                         <td class="text-right">{{$helper->format($savings_mes[$s])}}</td>
                                     @endif
