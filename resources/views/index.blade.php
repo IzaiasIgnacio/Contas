@@ -564,7 +564,7 @@
                                 @if ($m == 0)
                                 @if (@$movimentacoes_mes[$m]['save']->valor < 0)
                                 @php
-                                    $resgate = abs(@$movimentacoes_mes[$m]['save']->valor) - $consolidado::where('nome', 'nubank')->first()->valor;
+                                    $resgate = abs(@$movimentacoes_mes[$m]['save']->valor);
                                     $sobra_calculo = $resgate;
                                 @endphp
                                 <tr class="tr_resgate">
@@ -656,12 +656,7 @@
                                 </tr>
                                 <tr>
                                     <td>Total</td>
-                                    @if ($s == 0)
-                                        @php $savings_mes[$s]+=$sobra_calculo @endphp
-                                        <td class="text-right">{{$helper->format($savings_mes[$s])}}</td>
-                                    @else
-                                        <td class="text-right">{{$helper->format($savings_mes[$s])}}</td>
-                                    @endif
+                                    <td class="text-right">{{$helper->format($savings_mes[$s])}}</td>
                                 </tr>
                             </tfoot>
                         </table>
