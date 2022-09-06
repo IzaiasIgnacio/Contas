@@ -198,12 +198,20 @@ class IndexController extends Controller {
         $consolidado->save();
     }
     public function salvarSavings(Request $request) {
-        $nubank = str_replace(",", ".", $request['nubank']);
-        $bmg = str_replace(",", ".", $request['bmg']);
-        $savings = number_format($nubank + $bmg, 2, '.', '');
+        $nubank = floatval(str_replace(",", ".", $request['nubank']));
+        $bmg = floatval(str_replace(",", ".", $request['bmg']));
+        $mp = floatval(str_replace(",", ".", $request['mp']));
+        $casa = floatval(str_replace(",", ".", $request['casa']));
+        $itau = floatval(str_replace(",", ".", $request['itau']));
+        $inter = floatval(str_replace(",", ".", $request['inter']));
+        $savings = number_format($nubank + $bmg + $mp + $casa + $itau + $inter, 2, '.', '');
 
         Consolidado::where('nome', 'nubank')->update(['valor' => $nubank]);
         Consolidado::where('nome', 'bmg')->update(['valor' => $bmg]);
+        Consolidado::where('nome', 'mp')->update(['valor' => $mp]);
+        Consolidado::where('nome', 'casa')->update(['valor' => $casa]);
+        Consolidado::where('nome', 'itau')->update(['valor' => $itau]);
+        Consolidado::where('nome', 'inter')->update(['valor' => $inter]);
         Consolidado::where('nome', 'savings')->update(['valor' => $savings]);
     }
     

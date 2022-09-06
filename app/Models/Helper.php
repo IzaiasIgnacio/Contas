@@ -11,4 +11,8 @@ class Helper {
         return Consolidado::get('bmg');
     }
 
+    public function getTotal() {
+        return $this->format(Consolidado::where('totais', 1)->sum('valor'));
+    }
+
 }

@@ -37,6 +37,10 @@
                         case 'savings':
                             $(".valor_savings_nubank").val("{{$consolidado::where('nome', 'nubank')->first()->valor}}");
                             $(".valor_savings_bmg").val("{{$consolidado::where('nome', 'bmg')->first()->valor}}");
+                            $(".valor_savings_casa").val("{{$consolidado::where('nome', 'casa')->first()->valor}}");
+                            $(".valor_savings_inter").val("{{$consolidado::where('nome', 'inter')->first()->valor}}");
+                            $(".valor_savings_itau").val("{{$consolidado::where('nome', 'itau')->first()->valor}}");
+                            $(".valor_savings_mp").val("{{$consolidado::where('nome', 'mp')->first()->valor}}");
                             $("#modal_savings").modal('show');
                             return;
                         break;
@@ -85,7 +89,11 @@
                 $("#modal_savings .salvar").click(function() {
                     $.post("{{route('salvar_savings')}}", {
                         nubank: $(".valor_savings_nubank").val(),
-                        bmg: $(".valor_savings_bmg").val()
+                        bmg: $(".valor_savings_bmg").val(),
+                        itau: $(".valor_savings_itau").val(),
+                        mp: $(".valor_savings_mp").val(),
+                        casa: $(".valor_savings_casa").val(),
+                        inter: $(".valor_savings_inter").val()
                     },
                     function(resposta) {
                         location.reload();
@@ -300,17 +308,11 @@
     <body>
         <nav class="navbar navbar-inverse navbar-static-top" @php if (getenv('DB_CONTAS') == 'contas_hmg') { echo "style='background-color: #950000'"; } @endphp>
             <div class="container menu_container">
-                <!-- <ul class="nav navbar-brand">
-                    <li>Contas</li>
-                </ul> -->
                 <div class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
                         <li><span class="valores_topo"><img class='icone_consolidado' tipo='mes_atual' src="{{URL::asset('public/imagens/calendar.png')}}" /> {{$consolidado::where('nome', 'mes_atual')->first()->valor}}</span></li>
-                        <li><span class="valores_topo"><img class='icone_consolidado' tipo='casa' src="{{URL::asset('public/imagens/casa.png')}}" /> R$ {{$helper->format($consolidado->where('nome', 'casa')->first()->valor)}}</span></li>
-                        <li><span class="valores_topo"><img class='icone_consolidado' tipo='itau' src="{{URL::asset('public/imagens/itau.png')}}" /> R$ {{$helper->format($consolidado->where('nome', 'itau')->first()->valor)}}</span></li>
-                        <!-- <li><span class="valores_topo"><img class='icone_consolidado' tipo='nubank' src="{{URL::asset('public/imagens/nu.png')}}" /> R$ {{$helper->format($consolidado->where('nome', 'nubank')->first()->valor)}}</span></li> -->
                         <li class="divisor">&nbsp;</li>
-                        <li><span class="valores_topo"><img class='icone_consolidado' tipo='savings' src="{{URL::asset('public/imagens/safe.png')}}" /> R$ {{$helper->format($consolidado->where('nome', 'savings')->first()->valor)}}</span></li>
+                        <li><span class="valores_topo"><img class='icone_consolidado' tipo='savings' src="{{URL::asset('public/imagens/safe.png')}}" /> R$ {{$helper->getTotal()}}</span></li>
                         <li class="divisor">&nbsp;</li>
                         @foreach ($cartoes_topo as $cartao)
                             <li>
@@ -404,14 +406,12 @@
                         </div>
                         <div class="modal-body row">
                             <div class="col-md-12">
+                                @foreach ($consolidado->where('totais', 1)->orderBy('ordem')->get() as $tipo)
                                 <div class="form-group">
-                                    <label style="display:block">Nubank ({{$consolidado::where('nome', 'nubank')->first()->data_atualizacao}})</label>
-                                    <input class="form-control valor_savings_nubank" type="text" />
+                                    <label style="display:block">{{$tipo->rotulo}} ({{$tipo->data_atualizacao}})</label>
+                                    <input class="form-control valor_savings_{{$tipo->nome}}"type="text" />
                                 </div>
-                                <div class="form-group">
-                                    <label style="display:block">Bmg ({{$consolidado::where('nome', 'bmg')->first()->data_atualizacao}})</label>
-                                    <input class="form-control valor_savings_bmg" type="text" />
-                                </div>
+                                @endforeach
                             </div>
                         </div>
                         <div class="modal-footer footer_form_movimentacao">
