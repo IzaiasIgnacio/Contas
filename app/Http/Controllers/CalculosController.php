@@ -57,13 +57,13 @@ class CalculosController extends Controller {
                                          ->where('itau', true)
                                           ->get();
         
-        $mp = $movimentacao->whereMonth('data', $data->format('m'))
+        $nb = $movimentacao->whereMonth('data', $data->format('m'))
                                          ->whereYear('data', $data->format('Y'))
                                          ->whereIn('tipo', ['gasto', 'renda'])
-                                         ->where('mp', true)
+                                         ->where('nb', true)
                                           ->get();
         $total_itau = 0;
-        $total_mp = 0;
+        $total_nb = 0;
         // $saque = new Movimentacao();
         // $saque->nome = 'saque';
         // $saque->valor = 450;
@@ -86,15 +86,15 @@ class CalculosController extends Controller {
         }
         $valor_itau = Consolidado::where('nome', 'itau')->first()->valor;
 
-        foreach ($mp as $m) {
-            if ($m->tipo == 'gasto') {
-                $total_mp += $m->valor;
+        foreach ($nb as $n) {
+            if ($n->tipo == 'gasto') {
+                $total_nb += $n->valor;
             }
-            if ($m->tipo == 'renda') {
-                $total_mp -= $m->valor;
+            if ($n->tipo == 'renda') {
+                $total_nb -= $n->valor;
             }
         }
-        $valor_mp = Consolidado::where('nome', 'mp')->first()->valor;
+        $valor_nb = Consolidado::where('nome', 'nubank')->first()->valor;
 
         foreach ($movimentacoes as $movimentacao) {
             $gastos[$movimentacao->responsavel][] = $movimentacao;
@@ -148,9 +148,9 @@ class CalculosController extends Controller {
             'itau' => $itau,
             'total_itau' => $total_itau,
             'valor_itau' => $valor_itau,
-            'mp' => $mp,
-            'total_mp' => $total_mp,
-            'valor_mp' => $valor_mp
+            'nb' => $nb,
+            'total_nb' => $total_nb,
+            'valor_nb' => $valor_nb
         ]);
     }
 

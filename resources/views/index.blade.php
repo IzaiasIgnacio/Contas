@@ -130,8 +130,8 @@
                                     location.reload();
                                 });
                             break;
-                            case 'mp':
-                                $.post("{{route('definir_mercado_pago')}}", {id: movimentacao_escolhida},
+                            case 'nb':
+                                $.post("{{route('definir_nubank')}}", {id: movimentacao_escolhida},
                                 function(resposta) {
                                     location.reload();
                                 });
@@ -167,7 +167,7 @@
                         },
                         "sep3": "---",
                         "itau": {name: "Itaú", icon: "fa-info-circle"},
-                        "mp": {name: "Mercado Pago", icon: "fab fa-monero"},
+                        "nb": {name: "Nubank", icon: "fa-dollar-sign"},
                         "sep4": "---",
                         "descricao": {name: "Descrição", icon: "fa-edit"},
                         "sep5": "---",
@@ -405,11 +405,11 @@
                         <div class="modal-body row">
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <label style="display:block">Nubank</label>
+                                    <label style="display:block">Nubank ({{$consolidado::where('nome', 'nubank')->first()->data_atualizacao}})</label>
                                     <input class="form-control valor_savings_nubank" type="text" />
                                 </div>
                                 <div class="form-group">
-                                    <label style="display:block">Bmg</label>
+                                    <label style="display:block">Bmg ({{$consolidado::where('nome', 'bmg')->first()->data_atualizacao}})</label>
                                     <input class="form-control valor_savings_bmg" type="text" />
                                 </div>
                             </div>
@@ -492,8 +492,8 @@
                                                     @if ($movimentacoes_mes[$m]['movimentacoes'][$i]->itau)
                                                         <i class="fa fa-info-circle"></i>
                                                     @endif
-                                                    @if ($movimentacoes_mes[$m]['movimentacoes'][$i]->mp)
-                                                        <i class="fab fa-monero"></i>
+                                                    @if ($movimentacoes_mes[$m]['movimentacoes'][$i]->nb)
+                                                        <i class="fas fa-dollar-sign"></i>
                                                     @endif
                                                 </td>
                                                 <td class="text-right td_valor">{{$helper->format($movimentacoes_mes[$m]['movimentacoes'][$i]->valor)}}</td>

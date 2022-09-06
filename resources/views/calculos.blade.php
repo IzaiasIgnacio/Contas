@@ -181,12 +181,12 @@
                     <table class="table table-condensed table-bordered table-striped">
                         <tbody>
                             <tr>
-                                <td colspan="2" class='td_responsavel'>Mercado Pago</td>
+                                <td colspan="2" class='td_responsavel'>Nubank</td>
                             </tr>
-                            @foreach ($mp as $m)
-                                <tr @php if ($m->tipo == 'renda') { echo "class='tr_renda_mp'"; } @endphp>
-                                    <td>{{$m->nome}}</td>
-                                    <td>{{$helper->format($m->valor)}}</td>
+                            @foreach ($nb as $n)
+                                <tr @php if ($n->tipo == 'renda') { echo "class='tr_renda_nb'"; } @endphp>
+                                    <td>{{$n->nome}}</td>
+                                    <td>{{$helper->format($n->valor)}}</td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -195,11 +195,11 @@
                         <tbody>
                             <tr>
                                 <td>Total</td>
-                                <td>{{$helper->format($total_mp)}}</td>
+                                <td>{{$helper->format($total_nb)}}</td>
                             </tr>
                             <tr>
                                 <td>Sobra</td>
-                                <td>{{$helper->format($valor_mp - $total_mp)}}</td>
+                                <td>{{$helper->format($valor_nb - $total_nb)}}</td>
                             </tr>
                         </tbody>
                     </table>

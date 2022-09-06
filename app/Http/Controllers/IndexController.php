@@ -306,15 +306,15 @@ class IndexController extends Controller {
         $mov = Movimentacao::find($request['id']);
         $mov->itau = !$mov->itau;
         if ($mov->itau) {
-            $mov->mp = false;
+            $mov->nb = false;
         }
         $mov->save();
     }
 
-    public function definirMercadoPago(Request $request) {
+    public function definirNubank(Request $request) {
         $mov = Movimentacao::find($request['id']);
-        $mov->mp = !$mov->mp;
-        if ($mov->mp) {
+        $mov->nb = !$mov->nb;
+        if ($mov->nb) {
             $mov->itau = false;
         }
         $mov->save();
