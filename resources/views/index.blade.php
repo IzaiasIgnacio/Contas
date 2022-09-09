@@ -42,6 +42,7 @@
                             $(".valor_savings_itau").val("{{$consolidado::where('nome', 'itau')->first()->valor}}");
                             $(".valor_savings_mp").val("{{$consolidado::where('nome', 'mp')->first()->valor}}");
                             $("#modal_savings").modal('show');
+                            $("#modal_totais").modal('hide');
                             return;
                         break;
                         case 'mes_atual':
@@ -302,6 +303,27 @@
                         $(".fa-circle-notch").fadeOut();
                     });
                 });
+
+                var timeout;
+                $("#icone_totais").bind('mouseenter', function() {
+                    if (!timeout) {
+                        timeout = window.setTimeout(function() {
+                            timeout = null;
+                            if ($("#modal_savings").is(':hidden')) {
+                                $("#modal_totais").modal('show');
+                            }
+                        }, 1000);
+                    }
+                });
+
+                $("#icone_totais").bind('mouseleave', function() {
+                    if (!timeout) {
+                        timeout = window.setTimeout(function() {
+                            timeout = null;
+                            $("#modal_totais").modal('hide');
+                        }, 500);
+                    }
+                })
             });
         </script>
     </head>
@@ -312,7 +334,7 @@
                     <ul class="nav navbar-nav">
                         <li><span class="valores_topo"><img class='icone_consolidado' tipo='mes_atual' src="{{URL::asset('public/imagens/calendar.png')}}" /> {{$consolidado::where('nome', 'mes_atual')->first()->valor}}</span></li>
                         <li class="divisor">&nbsp;</li>
-                        <li><span class="valores_topo"><img class='icone_consolidado' tipo='savings' src="{{URL::asset('public/imagens/safe.png')}}" /> R$ {{$helper->getTotal()}}</span></li>
+                        <li><span class="valores_topo"><img class='icone_consolidado' tipo='savings' id='icone_totais' src="{{URL::asset('public/imagens/safe.png')}}" /> R$ {{$helper->getTotal()}}</span></li>
                         <li class="divisor">&nbsp;</li>
                         @foreach ($cartoes_topo as $cartao)
                             <li>
@@ -417,6 +439,23 @@
                         <div class="modal-footer footer_form_movimentacao">
                             <button type="button" class="btn btn-primary salvar">Salvar</button>
                             <button type="button" class="btn btn-primary cancelar" data-dismiss="modal">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="modal_totais" data-backdrop='false' role="dialog" tabindex="-1">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"></span></button>
+                            <h4 class="modal-title titulo_savings_modal">Totais</h4>
+                        </div>
+                        <div class="modal-body row">
+                            <div class="col-md-12">
+                                @foreach ($consolidado->where('totais', 1)->orderBy('ordem')->get() as $tipo)
+                                    <label style="display:block">{{$tipo->rotulo}} - {{$helper->format($tipo->valor)}}</label>
+                                @endforeach
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -655,8 +694,12 @@
                                     @endif
                                 </tr>
                                 <tr>
-                                    <td>Total</td>
+                                    <td>Total @if ($s == 0 && $sobra_calculo > 0) {{"+ Sobra"}} @endif</td>
+                                    @if ($s == 0)
+                                        <td class="text-right">{{$helper->format($savings_mes[$s]+$sobra_calculo)}}</td>
+                                    @else
                                     <td class="text-right">{{$helper->format($savings_mes[$s])}}</td>
+                                    @endif
                                 </tr>
                             </tfoot>
                         </table>

@@ -108,6 +108,11 @@ html::-webkit-scrollbar {
     padding-bottom: 5px;
 }
 
+#modal_totais {
+    right: 57%;
+    top: 4%
+}
+
 .slow-spin {
     -webkit-animation: fa-spin 3s infinite linear;
     animation: fa-spin 3s infinite linear;
