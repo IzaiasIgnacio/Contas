@@ -15,4 +15,8 @@ class Helper {
         return $this->format(Consolidado::where('totais', 1)->sum('valor'));
     }
 
+    public function getTotalAtual() {
+        return $this->format(Consolidado::where('atual', 1)->sum('valor'));
+    }
+
 }

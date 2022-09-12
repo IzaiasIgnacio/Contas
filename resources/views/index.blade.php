@@ -40,6 +40,7 @@
                             $(".valor_savings_casa").val("{{$consolidado::where('nome', 'casa')->first()->valor}}");
                             $(".valor_savings_inter").val("{{$consolidado::where('nome', 'inter')->first()->valor}}");
                             $(".valor_savings_itau").val("{{$consolidado::where('nome', 'itau')->first()->valor}}");
+                            $(".valor_savings_iti").val("{{$consolidado::where('nome', 'iti')->first()->valor}}");
                             $(".valor_savings_mp").val("{{$consolidado::where('nome', 'mp')->first()->valor}}");
                             $("#modal_savings").modal('show');
                             $("#modal_totais").modal('hide');
@@ -92,6 +93,7 @@
                         nubank: $(".valor_savings_nubank").val(),
                         bmg: $(".valor_savings_bmg").val(),
                         itau: $(".valor_savings_itau").val(),
+                        iti: $(".valor_savings_iti").val(),
                         mp: $(".valor_savings_mp").val(),
                         casa: $(".valor_savings_casa").val(),
                         inter: $(".valor_savings_inter").val()
@@ -452,9 +454,16 @@
                         </div>
                         <div class="modal-body row">
                             <div class="col-md-12">
-                                @foreach ($consolidado->where('totais', 1)->orderBy('ordem')->get() as $tipo)
-                                    <label style="display:block">{{$tipo->rotulo}} - {{$helper->format($tipo->valor)}}</label>
-                                @endforeach
+                                <div class="row">
+                                    @foreach ($consolidado->where('totais', 1)->orderBy('ordem')->get() as $tipo)
+                                        <div class="col-md-1">
+                                            <img src="{{URL::asset('public/imagens/bancos/'.$tipo->nome.'.png')}}" class="img-fluid" style="max-height: 25px; max-width: 25px" />
+                                        </div>
+                                        <div class="col-md-11 linha_totais">
+                                            <label>{{$helper->format($tipo->valor)}}</label>
+                                        </div>
+                                    @endforeach
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -478,7 +487,7 @@
                                 @if (count($movimentacoes_mes[$m]['movimentacoes']) > 0)
                                     @switch ($m)
                                         @case (0)
-                                            @php $total_atual = $consolidado::where('nome', 'casa')->first()->valor + $consolidado::where('nome', 'nubank')->first()->valor + $consolidado::where('nome', 'itau')->first()->valor; @endphp
+                                            @php $total_atual = $consolidado::where('nome', 'casa')->first()->valor + $consolidado::where('nome', 'nubank')->first()->valor + $consolidado::where('nome', 'itau')->first()->valor + $consolidado::where('nome', 'iti')->first()->valor; @endphp
                                         @break
                                         @case (1)
                                             @php

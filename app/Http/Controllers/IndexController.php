@@ -203,14 +203,16 @@ class IndexController extends Controller {
         $mp = floatval(str_replace(",", ".", $request['mp']));
         $casa = floatval(str_replace(",", ".", $request['casa']));
         $itau = floatval(str_replace(",", ".", $request['itau']));
+        $iti = floatval(str_replace(",", ".", $request['iti']));
         $inter = floatval(str_replace(",", ".", $request['inter']));
-        $savings = number_format($nubank + $bmg + $mp + $casa + $itau + $inter, 2, '.', '');
+        $savings = number_format($nubank + $bmg + $mp + $casa + $itau + $iti + $inter, 2, '.', '');
 
         Consolidado::where('nome', 'nubank')->update(['valor' => $nubank]);
         Consolidado::where('nome', 'bmg')->update(['valor' => $bmg]);
         Consolidado::where('nome', 'mp')->update(['valor' => $mp]);
         Consolidado::where('nome', 'casa')->update(['valor' => $casa]);
         Consolidado::where('nome', 'itau')->update(['valor' => $itau]);
+        Consolidado::where('nome', 'iti')->update(['valor' => $iti]);
         Consolidado::where('nome', 'inter')->update(['valor' => $inter]);
         Consolidado::where('nome', 'savings')->update(['valor' => $savings]);
     }

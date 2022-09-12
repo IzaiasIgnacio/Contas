@@ -110,7 +110,7 @@ html::-webkit-scrollbar {
 
 #modal_totais {
     right: 57%;
-    top: 4%
+    top: 3%
 }
 
 .slow-spin {
@@ -180,6 +180,10 @@ html::-webkit-scrollbar {
     color: darkorange;
 }
 
+.it {
+    color: #CC55CC;
+}
+
 .linha_gasto .fa-info-circle {
     font-size: 12px !important;
     color: darkorange !important;
@@ -220,6 +224,11 @@ html::-webkit-scrollbar {
 
 .row_cartoes .col-md-4 {
     margin-right: -15px;
+}
+
+.linha_totais {
+    padding-left: 0;
+    padding-top: 3px;
 }
 
 @media screen and (min-width: 1000px) {
