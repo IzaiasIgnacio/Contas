@@ -116,7 +116,7 @@ class IndexController extends Controller {
                 'descricao' => null
             ],
             'apple' => [
-                'valor' => 9.9,
+                'valor' => 14.9,
                 'descricao' => null
             ],
             "m" => [
