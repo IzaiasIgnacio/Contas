@@ -165,7 +165,7 @@ html::-webkit-scrollbar {
 }
 
 .sa {
-    color: #000;
+    color: #01f;
 }
 
 .pp {
@@ -182,6 +182,10 @@ html::-webkit-scrollbar {
 
 .it {
     color: #CC55CC;
+}
+
+.rp {
+    color: #000;
 }
 
 .linha_gasto .fa-info-circle {
