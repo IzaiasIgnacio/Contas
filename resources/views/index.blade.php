@@ -705,7 +705,7 @@
                                 <tr>
                                     <td>Total @if ($s == 0 && $sobra_calculo > 0) {{"+ Sobra"}} @endif</td>
                                     @if ($s == 0)
-                                        <td class="text-right">{{$helper->format($savings_mes[$s]+$sobra_calculo)}}</td>
+                                        <td class="text-right">{{$saldo_final}}</td>
                                     @else
                                     <td class="text-right">{{$helper->format($savings_mes[$s])}}</td>
                                     @endif

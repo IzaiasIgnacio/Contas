@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Cartao;
 use App\Models\Consolidado;
+use App\Models\Helper;
 use App\Models\Movimentacao;
 use App\Models\Status;
 use App\Models\Responsavel;
@@ -85,8 +86,25 @@ class IndexController extends Controller {
             'movimentacoes' => $movimentacao->whereRaw("data >= '".$data->format('Y-m-d')."'")->get(),
             'total_movimentacoes' => $movimentacao,
             'movimentacoes_mes' => $movimentacoes_mes,
-            'movimentacoes_terceiros' => $movimentacoes_terceiros
+            'movimentacoes_terceiros' => $movimentacoes_terceiros,
+            'saldo_final' => $this->calculoMesAtual()
         ]);
+    }
+
+    private function calculoMesAtual() {
+        $movimentacao = new Movimentacao();
+        $helper = new Helper();
+        $data = \Carbon\Carbon::createFromFormat('d/m/Y', '01/'.Consolidado::where('nome', 'mes_atual')->first()->valor);
+
+        $saldo_atual = Consolidado::where('totais', 1)->sum('valor');
+        $saldo_final = 0;
+        
+        $renda = $movimentacao->whereMonth('data', $data->format('m'))->whereYear('data', $data->format('Y'))->where('tipo', 'renda')->where('status', '<>', 'pago')->sum('valor');
+        $gastos = $movimentacao->whereMonth('data', $data->format('m'))->whereYear('data', $data->format('Y'))->where('tipo', 'gasto')->where('status', '<>', 'pago')->sum('valor');
+        
+        $saldo_final = $saldo_atual - $gastos + $renda;
+
+        return $helper->format($saldo_final);
     }
 
     private function definirValoresFixosMes($data, $movimentacao) {
