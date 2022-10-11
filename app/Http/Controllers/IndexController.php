@@ -110,7 +110,7 @@ class IndexController extends Controller {
     private function definirValoresFixosMes($data, $movimentacao) {
         $valores_fixos = [
             "salario" => [
-                'valor' => 9050,
+                'valor' => 9400,
                 'descricao' => null
             ],
             "oi" => [
@@ -150,7 +150,7 @@ class IndexController extends Controller {
                 'descricao' => null
             ],
             'merc' => [
-                'valor' => 1000,
+                'valor' => 1300,
                 'descricao' => 'Mercado'
             ],
             'seg' => [
