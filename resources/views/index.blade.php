@@ -373,7 +373,6 @@
                         @endforeach
                     </ul>
                     &nbsp;
-                    &nbsp;
                     <i class="fa fa-user fa-inverse fa-lg" id="exibir_terceiros" style="margin-top: 22px; cursor: pointer"></i>
                     <i class="fa fa-book fa-inverse fa-lg" id="exibir_calculos" style="margin-top: 22px; cursor: pointer" onclick="window.open('{{route('exibir_calculos', ['full' => 1])}}')"></i>
                     <i class="fa fa-cloud-upload-alt fa-inverse fa-lg" id="exportar" style="margin-top: 22px; cursor: pointer"></i>

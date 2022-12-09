@@ -145,10 +145,6 @@ class IndexController extends Controller {
                 'valor' => 300,
                 'descricao' => null
             ],
-            "fiesta" => [
-                'valor' => 531.6,
-                'descricao' => null
-            ],
             'merc' => [
                 'valor' => 1300,
                 'descricao' => 'Mercado'
@@ -179,7 +175,6 @@ class IndexController extends Controller {
 
         $valores_fixos = [
             'directvgo' => 39.9,
-            'fiesta' => 200,
             'vivo' => 34.99,
             'globoplay' => 11.45,
             'youtube' => 8.6,
