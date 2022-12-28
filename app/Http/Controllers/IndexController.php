@@ -174,7 +174,7 @@ class IndexController extends Controller {
         }
 
         $valores_fixos = [
-            'directvgo' => 39.9,
+            'directvgo' => 79.9,
             'vivo' => 34.99,
             'globoplay' => 11.45,
             'youtube' => 8.6,
