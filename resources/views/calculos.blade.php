@@ -139,7 +139,7 @@
                     <table class="table table-condensed table-bordered table-striped">
                         <tbody>
                             <tr>
-                                <td>Total - Antigo</td>
+                                <td>Total</td>
                                 <td>{{$helper->format($total_tio_anisio)}}</td>
                             </tr>
                         </tbody>
@@ -200,6 +200,35 @@
                             <tr>
                                 <td>Sobra</td>
                                 <td>{{$helper->format($valor_nb - $total_nb)}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="row">
+                    <table class="table table-condensed table-bordered table-striped">
+                        <tbody>
+                            <tr>
+                                <td colspan="2" class='td_responsavel'>Iti</td>
+                            </tr>
+                            @foreach ($iti as $i)
+                                <tr @php if ($i->tipo == 'renda') { echo "class='tr_renda_iti'"; } @endphp>
+                                    <td>{{$i->nome}}</td>
+                                    <td>{{$helper->format($i->valor)}}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                    <table class="table table-condensed table-bordered table-striped">
+                        <tbody>
+                            <tr>
+                                <td>Total</td>
+                                <td>{{$helper->format($total_iti)}}</td>
+                            </tr>
+                            <tr>
+                                <td>Sobra</td>
+                                <td>{{$helper->format($valor_iti - $total_iti)}}</td>
                             </tr>
                         </tbody>
                     </table>

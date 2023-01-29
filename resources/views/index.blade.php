@@ -147,6 +147,12 @@
                                     location.reload();
                                 });
                             break;
+                            case 'iti':
+                                $.post("{{route('definir_iti')}}", {id: movimentacao_escolhida},
+                                function(resposta) {
+                                    location.reload();
+                                });
+                            break;
                             case 'descricao':
                             break;
                             default:
@@ -179,6 +185,7 @@
                         "sep3": "---",
                         "itau": {name: "Itaú", icon: "fa-info-circle"},
                         "nb": {name: "Nubank", icon: "fa-dollar-sign"},
+                        "iti": {name: "Iti", icon: "fa-info"},
                         "sep4": "---",
                         "descricao": {name: "Descrição", icon: "fa-edit"},
                         "sep5": "---",
@@ -541,6 +548,9 @@
                                                     @endif
                                                     @if ($movimentacoes_mes[$m]['movimentacoes'][$i]->nb)
                                                         <i class="fas fa-dollar-sign"></i>
+                                                    @endif
+                                                    @if ($movimentacoes_mes[$m]['movimentacoes'][$i]->iti)
+                                                        <i class="fa fa-info"></i>
                                                     @endif
                                                 </td>
                                                 <td class="text-right td_valor">{{$helper->format($movimentacoes_mes[$m]['movimentacoes'][$i]->valor)}}</td>

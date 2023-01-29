@@ -343,6 +343,21 @@ class IndexController extends Controller {
         $mov->save();
     }
 
+    public function definirIti(Request $request) {
+        $mov = Movimentacao::find($request['id']);
+        $this->definirNenhum($mov, 'iti');
+        $mov->iti = !$mov->iti;
+        $mov->save();
+    }
+
+    private function definirNenhum($movimentacao, $atual) {
+        $movimentacao->itau = false;
+        $movimentacao->nb = false;
+        if ($atual != 'iti') {
+            $movimentacao->iti = false;
+        }
+    }
+
     public function AtualizarSave(Request $request) {
         $movimentacao = Movimentacao::where(
             [

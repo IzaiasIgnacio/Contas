@@ -28,5 +28,6 @@ Route::post('atualizar_posicoes', 'IndexController@AtualizarPosicoes')->name('at
 Route::post('nome_movimentacao', 'IndexController@getNomeMovimentacao')->name('nome_movimentacao');
 Route::post('definir_itau', 'IndexController@definirItau')->name('definir_itau');
 Route::post('definir_nubank', 'IndexController@definirNubank')->name('definir_nubank');
+Route::post('definir_iti', 'IndexController@definirIti')->name('definir_iti');
 Route::any('exportar', 'ExportarController@exportar')->name('exportar');
 Route::get('fechar_mes/{mes}', 'CalculosController@fecharMes')->name('fechar_mes');

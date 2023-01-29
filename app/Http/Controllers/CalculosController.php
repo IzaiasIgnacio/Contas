@@ -62,8 +62,15 @@ class CalculosController extends Controller {
                                          ->whereIn('tipo', ['gasto', 'renda'])
                                          ->where('nb', true)
                                           ->get();
+
+        $iti = $movimentacao->whereMonth('data', $data->format('m'))
+                                         ->whereYear('data', $data->format('Y'))
+                                         ->whereIn('tipo', ['gasto', 'renda'])
+                                         ->where('iti', true)
+                                          ->get();
         $total_itau = 0;
         $total_nb = 0;
+        $total_iti = 0;
         // $saque = new Movimentacao();
         // $saque->nome = 'saque';
         // $saque->valor = 450;
@@ -95,6 +102,16 @@ class CalculosController extends Controller {
             }
         }
         $valor_nb = Consolidado::where('nome', 'nubank')->first()->valor;
+
+        foreach ($iti as $i) {
+            if ($i->tipo == 'gasto') {
+                $total_iti += $i->valor;
+            }
+            if ($i->tipo == 'renda') {
+                $total_iti -= $i->valor;
+            }
+        }
+        $valor_iti = Consolidado::where('nome', 'iti')->first()->valor;
 
         foreach ($movimentacoes as $movimentacao) {
             $gastos[$movimentacao->responsavel][] = $movimentacao;
@@ -150,7 +167,10 @@ class CalculosController extends Controller {
             'valor_itau' => $valor_itau,
             'nb' => $nb,
             'total_nb' => $total_nb,
-            'valor_nb' => $valor_nb
+            'valor_nb' => $valor_nb,
+            'iti' => $iti,
+            'total_iti' => $total_iti,
+            'valor_iti' => $valor_iti
         ]);
     }
 
