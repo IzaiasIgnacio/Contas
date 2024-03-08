@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 class CalculosController extends Controller {
 
     private function atualizarBanco() {
+        //awardspace
         if (file_exists('dump.sql')) {
             DB::unprepared(file_get_contents('dump.sql'));
             // exec("mysql -u".env('DB_USERNAME')." -p".env('DB_PASSWORD')." -h".env('DB_HOST')." ".env('DB_DATABASE')." < dump.sql");
@@ -143,7 +144,9 @@ class CalculosController extends Controller {
         $total -= $mes->valor;
 
         $pago = 0;
-        if ($d[0] == date('m') && $d[1] == date('Y')) {
+        $data_pago = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', Consolidado::where('nome', 'pago')->first()->data_atualizacao);
+        $mes_atual = \Carbon\Carbon::createFromFormat('m/Y', Consolidado::where('nome', 'mes_atual')->first()->valor);
+        if ($d[0] == date('m') && $d[1] == date('Y') && $data_pago->month == $mes_atual->month) {
             $pago = Consolidado::where('nome', 'pago')->first()->valor;
         }
         
@@ -181,7 +184,7 @@ class CalculosController extends Controller {
             $movimentacao->save();
         }
 
-        $cartoes = $movimentacoes->select('cartao.nome', 'cartao.vencimento', 'cartao.id', DB::raw('sum(movimentacao.valor) as valor'))->join('cartao', 'cartao.id', 'id_cartao')->groupBy('cartao.id')->get();
+        $cartoes = $movimentacoes->select('cartao.nome', 'cartao.vencimento', 'cartao.id', DB::raw('sum(movimentacao.valor) as valor'))->join('cartao', 'cartao.id', 'id_cartao')->where('tipo', '<>', 'renda')->groupBy('cartao.id')->get();
         foreach ($cartoes as $cartao) {
             $mov = new Movimentacao();
             $mov->nome = $cartao->nome.' ('.$cartao->vencimento.')';
@@ -194,7 +197,19 @@ class CalculosController extends Controller {
             $mov->save();
         }
 
-        $mae = Movimentacao::where('responsavel', 'mae')->whereIn('nome', ['fiesta','luz','vivo','nubank'])->where('data', 'like', $args.'%')->get();
+        $mae = Movimentacao::where('responsavel', 'mae')->whereIn('nome', ['luz','vivo','nubank'])->where('data', 'like', $args.'%')->get();
+        foreach ($mae as $m) {
+            $mov = new Movimentacao();
+            $mov->nome = $m->nome.' (m)';
+            $mov->data = $args.'-01';
+            $mov->tipo = 'gasto';
+            $mov->valor = $m->valor;
+            $mov->status = 'planejado';
+            $mov->posicao = 999;
+            $mov->save();
+        }
+
+        $mae = Movimentacao::where('responsavel', 'mae')->where('nome', 'like', 'pulse%')->where('data', 'like', $args.'%')->get();
         foreach ($mae as $m) {
             $mov = new Movimentacao();
             $mov->nome = $m->nome.' (m)';

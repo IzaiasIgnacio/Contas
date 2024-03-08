@@ -19,4 +19,11 @@ class Helper {
         return $this->format(Consolidado::where('atual', 1)->sum('valor'));
     }
 
+    public function data_fechamento($vencimento, $dias_fechamento) {
+        $data = \Carbon\Carbon::createFromFormat('d/m/Y', $vencimento.'/'.Consolidado::where('nome', 'mes_atual')->first()->valor);
+        $data->addMonth();
+
+        return $data->subDays($dias_fechamento)->format('d/m');
+    }
+
 }

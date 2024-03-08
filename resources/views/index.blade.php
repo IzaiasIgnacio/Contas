@@ -36,6 +36,7 @@
                         break;
                         case 'savings':
                             $(".valor_savings_nubank").val("{{$consolidado::where('nome', 'nubank')->first()->valor}}");
+                            $(".valor_savings_caixinha").val("{{$consolidado::where('nome', 'caixinha')->first()->valor}}");
                             $(".valor_savings_bmg").val("{{$consolidado::where('nome', 'bmg')->first()->valor}}");
                             $(".valor_savings_casa").val("{{$consolidado::where('nome', 'casa')->first()->valor}}");
                             $(".valor_savings_inter").val("{{$consolidado::where('nome', 'inter')->first()->valor}}");
@@ -91,6 +92,7 @@
                 $("#modal_savings .salvar").click(function() {
                     $.post("{{route('salvar_savings')}}", {
                         nubank: $(".valor_savings_nubank").val(),
+                        caixinha: $(".valor_savings_caixinha").val(),
                         bmg: $(".valor_savings_bmg").val(),
                         itau: $(".valor_savings_itau").val(),
                         iti: $(".valor_savings_iti").val(),
@@ -369,9 +371,16 @@
                                                                     ->where('tipo', 'terceiros');
                                                         })
                                                         ->sum('valor');
-                                                    if ($cartao->id == 3) { $gastos_cartao += 25.5+29.99+22.9; }
+                                                    $renda_cartao =
+                                                        $total_movimentacoes
+                                                        ->where(function ($query) use ($cartao) {
+                                                            $query->where('id_cartao', $cartao->id)
+                                                                    ->where('status', 'definido')
+                                                                    ->where('tipo', 'renda');
+                                                        })
+                                                        ->sum('valor');
                                                 @endphp
-                                                R$ {{$helper->format($cartao->credito-$gastos_cartao)}} / {{$helper->format($cartao->credito)}}<br>{{$cartao->numero}}
+                                                R$ {{$helper->format($cartao->credito-$gastos_cartao+$renda_cartao)}} / {{$helper->format($cartao->credito)}}<br>{{$helper->data_fechamento($cartao->vencimento, $cartao->dias_fechamento)}} | {{$cartao->vencimento}}/{{$proximo_mes}}
                                             </span>
                                         </div>
                                     </div>  
@@ -493,7 +502,7 @@
                                 @if (count($movimentacoes_mes[$m]['movimentacoes']) > 0)
                                     @switch ($m)
                                         @case (0)
-                                            @php $total_atual = $consolidado::where('nome', 'casa')->first()->valor + $consolidado::where('nome', 'nubank')->first()->valor + $consolidado::where('nome', 'itau')->first()->valor + $consolidado::where('nome', 'iti')->first()->valor; @endphp
+                                            @php $total_atual = $consolidado::where('nome', 'casa')->first()->valor + $consolidado::where('nome', 'nubank')->first()->valor + $consolidado::where('nome', 'itau')->first()->valor + $consolidado::where('nome', 'inter')->first()->valor + $consolidado::where('nome', 'caixinha')->first()->valor + $consolidado::where('nome', 'mp')->first()->valor; @endphp
                                         @break
                                         @case (1)
                                             @php
@@ -541,7 +550,8 @@
                                                 <td class='td_nome_movimentacao' data-toggle="tooltip" data-container="body" title="{{$movimentacoes_mes[$m]['movimentacoes'][$i]->descricao}}">
                                                     {{$movimentacoes_mes[$m]['movimentacoes'][$i]->nome}}
                                                     @if ($movimentacoes_mes[$m]['movimentacoes'][$i]->id_cartao != '')
-                                                        <i class="fa fa-cc {{$modelCartoes::find($movimentacoes_mes[$m]['movimentacoes'][$i]->id_cartao)->sigla}}"></i>
+                                                        <!-- <i class="fa fa-cc {{$modelCartoes::find($movimentacoes_mes[$m]['movimentacoes'][$i]->id_cartao)->sigla}}"></i> -->
+                                                        <img style="max-height: 12px;" title="{{$modelCartoes::find($movimentacoes_mes[$m]['movimentacoes'][$i]->id_cartao)->rotulo}}"  src="http://localhost/contas/public/imagens/{{$modelCartoes::find($movimentacoes_mes[$m]['movimentacoes'][$i]->id_cartao)->nome}}.png">
                                                     @endif
                                                     @if ($movimentacoes_mes[$m]['movimentacoes'][$i]->itau)
                                                         <i class="fa fa-info-circle"></i>
@@ -639,43 +649,6 @@
                     </div>
                 @endfor
             </div>
-            <div class="row div_movimentacoes">
-                @for ($t=0;$t<=6;$t++)
-                    <div class="col-sm-2 col-sm-2-mes">
-                        <table class="table table-condensed table-bordered tabela_mes tabela_terceiros" style='display: none'>
-                            <tbody>
-                                @if (count($movimentacoes_terceiros[$t]) > 0)
-                                    @for ($i=0;$i<$maximo_movimentacoes_terceiros;$i++)
-                                        @isset($movimentacoes_terceiros[$t][$i])
-                                            <tr class="linha_{{$movimentacoes_terceiros[$t][$i]->status}} linha_{{$movimentacoes_terceiros[$t][$i]->tipo}}">
-                                                <input type="hidden" class="id_movimentacao" value="{{$movimentacoes_terceiros[$t][$i]->id}}" />
-                                                <td class='td_nome_movimentacao' data-toggle="tooltip" data-container="body">
-                                                    {{$movimentacoes_terceiros[$t][$i]->nome}}
-                                                    @if ($movimentacoes_terceiros[$t][$i]->id_cartao != '')
-                                                        <i class="fa fa-cc {{$modelCartoes::find($movimentacoes_terceiros[$t][$i]->id_cartao)->sigla}}"></i>
-                                                    @endif
-                                                    [{{$movimentacoes_terceiros[$t][$i]->responsavel}}]
-                                                </td>
-                                                <td class="text-right td_valor">{{$helper->format($movimentacoes_terceiros[$t][$i]->valor)}}</td>
-                                            </tr>
-                                        @endisset
-                                        @empty($movimentacoes_terceiros[$t][$i])
-                                            <tr>
-                                                <td>&nbsp;</td>
-                                                <td class="text-right">&nbsp;</td>
-                                            </tr>
-                                        @endempty
-                                    @endfor
-                                @endif
-                                <tr>
-                                    <td>&nbsp;</td>
-                                    <td class="text-right">&nbsp;</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                @endfor
-            </div>
             <div class="row div_movimentacoes div_footer">
                 @for ($s=0;$s<=6;$s++)
                     @php
@@ -716,10 +689,55 @@
                                     @if ($s == 0)
                                         <td class="text-right">{{$saldo_final}}</td>
                                     @else
-                                    <td class="text-right">{{$helper->format($savings_mes[$s])}}</td>
+                                        <td class="text-right">{{$helper->format($savings_mes[$s])}}</td>
+                                    @endif
+                                </tr>
+                                <tr>
+                                    <td>&nbsp;</td>
+                                    @if ($s == 0)
+                                        <td class="text-right">{{$helper->format(str_replace(',','.', $saldo_final)-4000)}}</td>
+                                    @else
+                                        <td class="text-right">{{$helper->format($savings_mes[$s]-(4000+$s*1000)+1000-$objetivo)}}</td>
                                     @endif
                                 </tr>
                             </tfoot>
+                        </table>
+                    </div>
+                @endfor
+            </div>
+            <div class="row div_movimentacoes">
+                @for ($t=0;$t<=6;$t++)
+                    <div class="col-sm-2 col-sm-2-mes">
+                        <table class="table table-condensed table-bordered tabela_mes tabela_terceiros">
+                            <tbody>
+                                @if (count($movimentacoes_terceiros[$t]) > 0)
+                                    @for ($i=0;$i<$maximo_movimentacoes_terceiros;$i++)
+                                        @isset($movimentacoes_terceiros[$t][$i])
+                                            <tr class="linha_{{$movimentacoes_terceiros[$t][$i]->status}} linha_{{$movimentacoes_terceiros[$t][$i]->tipo}}">
+                                                <input type="hidden" class="id_movimentacao" value="{{$movimentacoes_terceiros[$t][$i]->id}}" />
+                                                <td class='td_nome_movimentacao' data-toggle="tooltip" data-container="body">
+                                                    {{$movimentacoes_terceiros[$t][$i]->nome}}
+                                                    @if ($movimentacoes_terceiros[$t][$i]->id_cartao != '')
+                                                        <i class="fa fa-cc {{$modelCartoes::find($movimentacoes_terceiros[$t][$i]->id_cartao)->sigla}}"></i>
+                                                    @endif
+                                                    [{{$movimentacoes_terceiros[$t][$i]->responsavel}}]
+                                                </td>
+                                                <td class="text-right td_valor">{{$helper->format($movimentacoes_terceiros[$t][$i]->valor)}}</td>
+                                            </tr>
+                                        @endisset
+                                        @empty($movimentacoes_terceiros[$t][$i])
+                                            <tr>
+                                                <td>&nbsp;</td>
+                                                <td class="text-right">&nbsp;</td>
+                                            </tr>
+                                        @endempty
+                                    @endfor
+                                @endif
+                                <tr>
+                                    <td>&nbsp;</td>
+                                    <td class="text-right">&nbsp;</td>
+                                </tr>
+                            </tbody>
                         </table>
                     </div>
                 @endfor

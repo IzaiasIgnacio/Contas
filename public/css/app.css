@@ -136,14 +136,7 @@ html::-webkit-scrollbar {
     font-weight: 900;
 }
 
-.n {
-    color: #FF00FF;
-}
-
-.nm {
-    color: #03fcf8;
-}
-
+/* old */
 .ip {
     color: blue;
 }
@@ -152,12 +145,32 @@ html::-webkit-scrollbar {
     color: dodgerblue;
 }
 
-.in {
-    color: orangered;
-}
-
 .c6 {
     color: #ff0000;
+}
+
+.pp {
+    color: #4ec14e;
+}
+
+.it {
+    color: #CC55CC;
+}
+
+.rp {
+    color: darkgrey;
+}
+/* cartoes */
+.n {
+    color: #FF00FF;
+}
+
+.nm {
+    color: #03fcf8;
+}
+
+.in {
+    color: orangered;
 }
 
 .cr {
@@ -168,28 +181,24 @@ html::-webkit-scrollbar {
     color: #01f;
 }
 
-.pp {
-    color: #4ec14e;
+.ps {
+    color: #5482f5;
 }
 
 .mp {
-    color: darkgrey;
+    color: #000;
 }
 
 .ic {
     color: darkorange;
 }
 
-.it {
-    color: #CC55CC;
-}
-
-.rp {
-    color: #000;
-}
-
 .me {
     color: #eee;
+}
+
+.am {
+    color: #777;
 }
 
 .linha_gasto .fa-info-circle {
@@ -216,6 +225,10 @@ html::-webkit-scrollbar {
 
 .linha_renda.linha_pago td {
     background-color: #127de0 !important;
+}
+
+.linha_renda.linha_planejado td {
+    background-color: purple !important;
 }
 
 .linha_terceiros td, .tabela_terceiros td {

@@ -32,7 +32,13 @@ class IndexController extends Controller {
         $maximo_movimentacoes = 0;
         $maximo_movimentacoes_terceiros = 0;
         
+        date_default_timezone_set('America/Sao_Paulo');
         $data = \Carbon\Carbon::createFromFormat('d/m/Y', '01/'.$consolidado->where('nome', 'mes_atual')->first()->valor);
+        $dia = date('d');
+        
+        if (date('m') != $data->month) {
+            $dia = 0;
+        }
 
         for ($i=0;$i<=6;$i++) {
             $this->definirValoresFixosMes($data, $movimentacao);
@@ -87,7 +93,9 @@ class IndexController extends Controller {
             'total_movimentacoes' => $movimentacao,
             'movimentacoes_mes' => $movimentacoes_mes,
             'movimentacoes_terceiros' => $movimentacoes_terceiros,
-            'saldo_final' => $this->calculoMesAtual()
+            'saldo_final' => $this->calculoMesAtual(),
+            'objetivo' => (1000/30)*(30-$dia),
+            'proximo_mes' => date('m', strtotime('first day of +1 month'))
         ]);
     }
 
@@ -107,10 +115,10 @@ class IndexController extends Controller {
         return $helper->format($saldo_final);
     }
 
-    private function definirValoresFixosMes($data, $movimentacao) {
+    public function definirValoresFixosMes($data, $movimentacao) {
         $valores_fixos = [
             "salario" => [
-                'valor' => 9400,
+                'valor' => 9590,
                 'descricao' => null
             ],
             "oi" => [
@@ -121,20 +129,20 @@ class IndexController extends Controller {
                 'valor' => 55.9,
                 'descricao' => null
             ],
-            'yt' => [
-                'valor' => 23.3,
+            'google' => [
+                'valor' => 33.29,
                 'descricao' => 'Youtube Premium'
             ],
             'gplay' =>	[
-                'valor' => 11.45,
+                'valor' => 6.45,
                 'descricao' => 'Globoplay'
             ],
-            'hbo' => [
-                'valor' => 13.95,
+            'max' => [
+                'valor' => 17.45,
                 'descricao' => null
             ],
-            'apple' => [
-                'valor' => 14.9,
+            'meli' => [
+                'valor' => 17.99,
                 'descricao' => null
             ],
             "m" => [
@@ -150,7 +158,7 @@ class IndexController extends Controller {
                 'descricao' => 'Mercado'
             ],
             'seg' => [
-                'valor' => 5.46,
+                'valor' => 5.66,
                 'descricao' => 'Seguro Cartão Itaú'
             ]
         ];
@@ -174,9 +182,9 @@ class IndexController extends Controller {
         }
 
         $valores_fixos = [
-            'directvgo' => 79.9,
-            'vivo' => 34.99,
-            'globoplay' => 11.45,
+            'sky' => 79.9,
+            'vivo' => 39.42,
+            'globoplay' => 6.45,
             'youtube' => 8.6,
             'nubank' => null,
             'luz' => null
@@ -197,6 +205,26 @@ class IndexController extends Controller {
                 $p++;
             }
         }
+
+        $valores_fixos = [
+            'dívida' => 50
+        ];
+
+        $p = 1;
+        foreach ($valores_fixos as $nome => $valor) {
+            if ($movimentacao->whereRaw("data = '".$data->format('Y-m-d')."'")->where('nome', $nome)->where('tipo', 'terceiros')->count() == 0) {
+                $mov = new Movimentacao();
+                $mov->nome = $nome;
+                $mov->valor = $valor;
+                $mov->tipo = 'terceiros';
+                $mov->data = $data->format('Y-m-d');
+                $mov->status = 'definido';
+                $mov->responsavel = 'chah';
+                $mov->posicao = $p;
+                $mov->save();
+                $p++;
+            }
+        }
     }
 
     public function salvarConsolidado(Request $request) {
@@ -212,6 +240,7 @@ class IndexController extends Controller {
     }
     public function salvarSavings(Request $request) {
         $nubank = floatval(str_replace(",", ".", $request['nubank']));
+        $caixinha = floatval(str_replace(",", ".", $request['caixinha']));
         $bmg = floatval(str_replace(",", ".", $request['bmg']));
         $mp = floatval(str_replace(",", ".", $request['mp']));
         $casa = floatval(str_replace(",", ".", $request['casa']));
@@ -221,6 +250,7 @@ class IndexController extends Controller {
         $savings = number_format($nubank + $bmg + $mp + $casa + $itau + $iti + $inter, 2, '.', '');
 
         Consolidado::where('nome', 'nubank')->update(['valor' => $nubank]);
+        Consolidado::where('nome', 'caixinha')->update(['valor' => $caixinha]);
         Consolidado::where('nome', 'bmg')->update(['valor' => $bmg]);
         Consolidado::where('nome', 'mp')->update(['valor' => $mp]);
         Consolidado::where('nome', 'casa')->update(['valor' => $casa]);
@@ -277,6 +307,9 @@ class IndexController extends Controller {
             case 'planejado':
             case 'definido':
             case 'pago':
+                if ($request['valor'] == 'pago') {
+                    $movimentacao->itau = false;
+                }
                 $movimentacao->status = $request['valor'];
             break;
             case 'gasto';
