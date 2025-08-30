@@ -74,8 +74,8 @@ return [
 
         'drive' => [
             'driver' => 'local',
-            'root' => 'C:/Google Drive/db',
-            'url' => 'C:/Google Drive/db',
+            'root' => 'C:/Users/Izaias/My Drive/db',
+            'url' => 'C:/Users/Izaias/My Drive/db',
             'visibility' => 'public',
         ],
 

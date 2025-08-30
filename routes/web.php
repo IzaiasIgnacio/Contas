@@ -12,7 +12,11 @@
 */
 
 Route::get('/', 'IndexController@exibirContas');
-Route::get('/contas', 'IndexController@exibirContas');
+Route::get('/contas', 'IndexController@exibirContas'); // ajuste hospedagem
+
+Route::get('/dashboard', 'ContasController@exibirDashboard');
+Route::get('/tabela', 'ContasController@exibirContas'); // vai ser o raiz
+// Route::get('/calculos', 'ContasController@exibirCalculos');
 
 Route::any('/calculos', 'CalculosController@exibirCalculos')->name('exibir_calculos');
 

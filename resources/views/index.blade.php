@@ -37,9 +37,9 @@
                         case 'savings':
                             $(".valor_savings_nubank").val("{{$consolidado::where('nome', 'nubank')->first()->valor}}");
                             $(".valor_savings_caixinha").val("{{$consolidado::where('nome', 'caixinha')->first()->valor}}");
-                            $(".valor_savings_bmg").val("{{$consolidado::where('nome', 'bmg')->first()->valor}}");
+                            $(".valor_savings_caixinha2").val("{{$consolidado::where('nome', 'caixinha2')->first()->valor}}");
                             $(".valor_savings_casa").val("{{$consolidado::where('nome', 'casa')->first()->valor}}");
-                            $(".valor_savings_inter").val("{{$consolidado::where('nome', 'inter')->first()->valor}}");
+                            $(".valor_savings_cofrinho").val("{{$consolidado::where('nome', 'cofrinho')->first()->valor}}");
                             $(".valor_savings_itau").val("{{$consolidado::where('nome', 'itau')->first()->valor}}");
                             $(".valor_savings_iti").val("{{$consolidado::where('nome', 'iti')->first()->valor}}");
                             $(".valor_savings_mp").val("{{$consolidado::where('nome', 'mp')->first()->valor}}");
@@ -93,12 +93,12 @@
                     $.post("{{route('salvar_savings')}}", {
                         nubank: $(".valor_savings_nubank").val(),
                         caixinha: $(".valor_savings_caixinha").val(),
-                        bmg: $(".valor_savings_bmg").val(),
+                        caixinha2: $(".valor_savings_caixinha2").val(),
                         itau: $(".valor_savings_itau").val(),
                         iti: $(".valor_savings_iti").val(),
                         mp: $(".valor_savings_mp").val(),
                         casa: $(".valor_savings_casa").val(),
-                        inter: $(".valor_savings_inter").val()
+                        cofrinho: $(".valor_savings_cofrinho").val()
                     },
                     function(resposta) {
                         location.reload();
@@ -502,22 +502,26 @@
                                 @if (count($movimentacoes_mes[$m]['movimentacoes']) > 0)
                                     @switch ($m)
                                         @case (0)
-                                            @php $total_atual = $consolidado::where('nome', 'casa')->first()->valor + $consolidado::where('nome', 'nubank')->first()->valor + $consolidado::where('nome', 'itau')->first()->valor + $consolidado::where('nome', 'inter')->first()->valor + $consolidado::where('nome', 'caixinha')->first()->valor + $consolidado::where('nome', 'mp')->first()->valor; @endphp
+                                            @php $total_atual = $consolidado::where('nome', 'casa')->first()->valor + $consolidado::where('nome', 'nubank')->first()->valor + $consolidado::where('nome', 'itau')->first()->valor + $consolidado::where('nome', 'cofrinho')->first()->valor + $consolidado::where('nome', 'caixinha')->first()->valor + $consolidado::where('nome', 'mp')->first()->valor; @endphp
                                         @break
                                         @case (1)
                                             @php
-                                                if ($movimentacoes_mes[$m]['salario']->status == 'pago') {
+                                                if (!empty($movimentacoes_mes[$m]['salario']) && $movimentacoes_mes[$m]['salario']->status == 'pago') {
                                                     $total_atual = $sobra;
                                                 }
                                                 else {
-                                                    $total_atual = $movimentacoes_mes[$m]['salario']->valor+$sobra;
+                                                    $salario = 0;
+                                                    if (!empty($movimentacoes_mes[$m]['salario'])) {
+                                                        $salario = $movimentacoes_mes[$m]['salario']->valor;
+                                                    }
+                                                    $total_atual = $salario+$sobra;
                                                 }
                                             @endphp
                                         @break
                                         @default
                                             @php
                                                 $sobra = 0;
-                                                if ($movimentacoes_mes[$m]['salario']->status != 'pago') {
+                                                if (!empty($movimentacoes_mes[$m]['salario']) && $movimentacoes_mes[$m]['salario']->status != 'pago') {
                                                     $total_atual = $movimentacoes_mes[$m]['salario']->valor;
                                                 }
                                             @endphp
@@ -528,6 +532,7 @@
                                         $renda_mes = 0;
                                         $total_planejado = 0;
                                     @endphp
+                                    @if (!empty($movimentacoes_mes[$m]['salario']))
                                     <tr class="linha_{{$movimentacoes_mes[$m]['salario']->status}} linha_renda">
                                         <input type="hidden" class="id_movimentacao" value="{{$movimentacoes_mes[$m]['salario']->id}}" />
                                         <td class='td_nome_movimentacao' data-toggle="tooltip" data-container="body">salario</td>
@@ -539,9 +544,16 @@
                                             }
                                         @endphp
                                     </tr>
+                                    @endif
                                     @php $max = $maximo_movimentacoes; @endphp
-                                    @if ($m == 1)
-                                        @php // $max = $maximo_movimentacoes-1; @endphp
+                                    @if ($m >= 1)
+                                        @php
+                                        $renda_mes += $meses[$m-1]['renda'];
+                                        @endphp
+                                        <tr class="linha_planejado linha_renda">
+                                            <td class='td_nome_movimentacao'>cdb</td>
+                                            <td class="text-right td_valor">{{$helper->format($meses[$m-1]['renda'])}}</td>
+                                        </tr>
                                     @endif
                                     @for ($i=0;$i<$max;$i++)
                                         @isset($movimentacoes_mes[$m]['movimentacoes'][$i])
@@ -692,13 +704,17 @@
                                         <td class="text-right">{{$helper->format($savings_mes[$s])}}</td>
                                     @endif
                                 </tr>
-                                <tr>
+                                <!-- <tr>
                                     <td>&nbsp;</td>
                                     @if ($s == 0)
-                                        <td class="text-right">{{$helper->format(str_replace(',','.', $saldo_final)-4000)}}</td>
+                                        <td class="text-right">{{$helper->format(str_replace(',','.', $saldo_final)-10000)}}</td>
                                     @else
-                                        <td class="text-right">{{$helper->format($savings_mes[$s]-(4000+$s*1000)+1000-$objetivo)}}</td>
+                                        <td class="text-right">{{$helper->format($savings_mes[$s]-(10000+$s*1000)+1000-$objetivo)}}</td>
                                     @endif
+                                </tr> -->
+                                <tr>
+                                    <td></td>
+                                    <td class="text-right">{{$save[$movimentacoes_mes[$s]['numero_mes']]*1000}}</td>
                                 </tr>
                             </tfoot>
                         </table>
@@ -718,7 +734,8 @@
                                                 <td class='td_nome_movimentacao' data-toggle="tooltip" data-container="body">
                                                     {{$movimentacoes_terceiros[$t][$i]->nome}}
                                                     @if ($movimentacoes_terceiros[$t][$i]->id_cartao != '')
-                                                        <i class="fa fa-cc {{$modelCartoes::find($movimentacoes_terceiros[$t][$i]->id_cartao)->sigla}}"></i>
+                                                        <!-- <i class="fa fa-cc {{$modelCartoes::find($movimentacoes_terceiros[$t][$i]->id_cartao)->sigla}}"></i> -->
+                                                        <img style="max-height: 12px;" title="{{$modelCartoes::find($movimentacoes_terceiros[$t][$i]->id_cartao)->rotulo}}"  src="http://localhost/contas/public/imagens/{{$modelCartoes::find($movimentacoes_terceiros[$t][$i]->id_cartao)->nome}}.png">
                                                     @endif
                                                     [{{$movimentacoes_terceiros[$t][$i]->responsavel}}]
                                                 </td>

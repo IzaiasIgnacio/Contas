@@ -8,9 +8,10 @@ class Helper {
     }
     
     public function getTotalSavingsAtual() {
-        return Consolidado::get('bmg');
+        return Consolidado::get('caixinha2');
     }
 
+    // total incluindo savings
     public function getTotal() {
         return $this->format(Consolidado::where('totais', 1)->sum('valor'));
     }

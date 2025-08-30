@@ -22,6 +22,10 @@ class IndexController extends Controller {
             @unlink('dump.sql');
         }
     }
+
+    public function exibirLayout() {
+        return view('layout');
+    }
     
     public function exibirContas() {
         $this->atualizarBanco();
@@ -77,6 +81,21 @@ class IndexController extends Controller {
         
         $total_atual = $consolidado->where('nome', 'itau')->first()->valor + $consolidado->where('nome', 'casa')->first()->valor;
         
+        $save = [
+            2 => 60,
+            3 => 170,
+            4 => 160,
+            5 => 150,
+            6 => 140,
+            7 => 130,
+            8 => 120,
+            9 => 110,
+            10 => 100,
+            11 => 90,
+            12 => 80,
+            1 => 70
+        ];
+
         return view('index', [
             'helper' => new \App\Models\Helper(),
             'tipos' => Tipo::get(),
@@ -95,7 +114,9 @@ class IndexController extends Controller {
             'movimentacoes_terceiros' => $movimentacoes_terceiros,
             'saldo_final' => $this->calculoMesAtual(),
             'objetivo' => (1000/30)*(30-$dia),
-            'proximo_mes' => date('m', strtotime('first day of +1 month'))
+            'proximo_mes' => date('m', strtotime('first day of +1 month')),
+            'meses' => $this->meses(),
+            'save' => $save
         ]);
     }
 
@@ -115,18 +136,60 @@ class IndexController extends Controller {
         return $helper->format($saldo_final);
     }
 
+    private function meses() {
+        $consolidado = new Consolidado();
+        $movimentacao = new Movimentacao();
+        $helper = new Helper();
+        $meses = [];
+
+        date_default_timezone_set('America/Sao_Paulo');
+        $total_atual = Consolidado::where('totais', 1)->sum('valor');
+        $data = \Carbon\Carbon::createFromFormat('d/m/Y', '01/'.$consolidado->where('nome', 'mes_atual')->first()->valor);
+
+        for ($i=0;$i<=6;$i++) {
+            $renda = $movimentacao->whereMonth('data', $data->format('m'))->whereYear('data', $data->format('Y'))->where('tipo', 'renda')->where('status', '<>', 'pago')->sum('valor');
+            $gastos = $movimentacao->whereMonth('data', $data->format('m'))->whereYear('data', $data->format('Y'))->where('tipo', 'gasto')->where('status', '<>', 'pago')->sum('valor');
+            $saldo = $total_atual - $gastos + $renda;
+            $renda_cdb = $saldo * 0.009;
+
+            if ($i == 0) {
+                if ($data->format('m') == date('m')) {
+                    $dias = 30 - date('d');
+                    $renda_cdb = ($renda_cdb / 30) * $dias;
+                }
+            }
+
+            $meses[$i] = [
+                'saldo' => $helper->format($saldo),
+                'renda' => $renda_cdb
+            ];
+
+            $total_atual = $saldo + $renda_cdb;
+            $data->addMonth();
+            // if ($i == 1) {
+            //     echo $renda.PHP_EOL;
+            //     echo $gastos.PHP_EOL;
+            //     echo $saldo.PHP_EOL;
+            //     print_r($meses);
+            //     die;
+            // }            
+        }
+        
+        return $meses;
+    }
+
     public function definirValoresFixosMes($data, $movimentacao) {
         $valores_fixos = [
-            "salario" => [
-                'valor' => 9590,
-                'descricao' => null
-            ],
-            "oi" => [
-                'valor' => 109.9,
+            // "salario" => [
+            //     'valor' => Consolidado::where('nome', 'salario')->first()->valor,
+            //     'descricao' => null
+            // ],
+            "claro" => [
+                'valor' => 79.9,
                 'descricao' => null
             ],
             "netflix" => [
-                'valor' => 55.9,
+                'valor' => 59.9,
                 'descricao' => null
             ],
             'google' => [
@@ -137,16 +200,12 @@ class IndexController extends Controller {
                 'valor' => 6.45,
                 'descricao' => 'Globoplay'
             ],
-            'max' => [
-                'valor' => 17.45,
-                'descricao' => null
-            ],
             'meli' => [
-                'valor' => 17.99,
+                'valor' => 9.90,
                 'descricao' => null
             ],
             "m" => [
-                'valor' => 1300,
+                'valor' => 1800,
                 'descricao' => 'Mãe'
             ],
             'luz' => [
@@ -157,8 +216,12 @@ class IndexController extends Controller {
                 'valor' => 1300,
                 'descricao' => 'Mercado'
             ],
+            'klini' => [
+                'valor' => 302,
+                'descricao' => 'Saúde'
+            ],
             'seg' => [
-                'valor' => 5.66,
+                'valor' => 5.85,
                 'descricao' => 'Seguro Cartão Itaú'
             ]
         ];
@@ -182,8 +245,9 @@ class IndexController extends Controller {
         }
 
         $valores_fixos = [
-            'sky' => 79.9,
-            'vivo' => 39.42,
+            'klini' => 302,
+            'sky' => 84.9,
+            'vivo' => 44.42,
             'globoplay' => 6.45,
             'youtube' => 8.6,
             'nubank' => null,
@@ -207,7 +271,7 @@ class IndexController extends Controller {
         }
 
         $valores_fixos = [
-            'dívida' => 50
+            'google' => 4
         ];
 
         $p = 1;
@@ -238,25 +302,26 @@ class IndexController extends Controller {
         $consolidado->valor = str_replace(",", ".", $request['valor']);
         $consolidado->save();
     }
+
     public function salvarSavings(Request $request) {
         $nubank = floatval(str_replace(",", ".", $request['nubank']));
         $caixinha = floatval(str_replace(",", ".", $request['caixinha']));
-        $bmg = floatval(str_replace(",", ".", $request['bmg']));
+        $caixinha2 = floatval(str_replace(",", ".", $request['caixinha2']));
         $mp = floatval(str_replace(",", ".", $request['mp']));
         $casa = floatval(str_replace(",", ".", $request['casa']));
         $itau = floatval(str_replace(",", ".", $request['itau']));
         $iti = floatval(str_replace(",", ".", $request['iti']));
-        $inter = floatval(str_replace(",", ".", $request['inter']));
-        $savings = number_format($nubank + $bmg + $mp + $casa + $itau + $iti + $inter, 2, '.', '');
+        $cofrinho = floatval(str_replace(",", ".", $request['cofrinho']));
+        $savings = number_format($nubank + $caixinha2 + $mp + $casa + $itau + $iti + $cofrinho, 2, '.', '');
 
         Consolidado::where('nome', 'nubank')->update(['valor' => $nubank]);
         Consolidado::where('nome', 'caixinha')->update(['valor' => $caixinha]);
-        Consolidado::where('nome', 'bmg')->update(['valor' => $bmg]);
+        Consolidado::where('nome', 'caixinha2')->update(['valor' => $caixinha2]);
         Consolidado::where('nome', 'mp')->update(['valor' => $mp]);
         Consolidado::where('nome', 'casa')->update(['valor' => $casa]);
         Consolidado::where('nome', 'itau')->update(['valor' => $itau]);
         Consolidado::where('nome', 'iti')->update(['valor' => $iti]);
-        Consolidado::where('nome', 'inter')->update(['valor' => $inter]);
+        Consolidado::where('nome', 'cofrinho')->update(['valor' => $cofrinho]);
         Consolidado::where('nome', 'savings')->update(['valor' => $savings]);
     }
     

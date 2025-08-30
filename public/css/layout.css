@@ -1,0 +1,35 @@
+.nav li {
+    max-width: 100%;
+}
+
+.li_topo {
+    margin-bottom: 30px;
+}
+
+.li_sidebar {
+    cursor: pointer;
+}
+
+.li_sidebar:hover, .li_sidebar.ativo:hover {
+    background-color: #000;
+}
+
+.li_sidebar.ativo {
+    background-color: #000;
+}
+
+.icone_sidebar {
+    margin: 30px;
+    color: #fff;
+}
+
+.container_layout {
+    max-width: 100%;
+    margin-left: 50px;
+    margin-right: 50px;
+    margin-top: 50px;
+}
+
+.row_cartoes .card {
+    margin-bottom: 0 !important;
+}

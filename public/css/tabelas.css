@@ -1,0 +1,19 @@
+.table {
+    border-color: #64696e;
+}
+
+.table thead th, .table tfoot td {
+    background-color: #000;
+    color: #fff;
+}
+
+.table tbody td {
+    background-color: #272b30;
+    color: #fff;
+}
+
+.table td, .table th {
+    padding-left: 2px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
