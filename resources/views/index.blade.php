@@ -575,7 +575,7 @@
                                                     @if ($movimentacoes_mes[$m]['movimentacoes'][$i]->iti)
                                                         <i class="fa fa-info"></i>
                                                     @endif
-                                                    @if ($movimentacoes_mes[$m]['movimentacoes'][$i]->novo)
+                                                    @if ($movimentacoes_mes[$m]['movimentacoes'][$i]->novo && $movimentacoes_mes[$m]['movimentacoes'][$i]->tipo == 'gasto')
                                                         <i class="fa fa-star" style="font-size: 12px;"></i>
                                                     @endif
                                                 </td>
@@ -592,9 +592,9 @@
                                                     if ($movimentacoes_mes[$m]['movimentacoes'][$i]->tipo == 'renda') {
                                                         $renda_mes += $movimentacoes_mes[$m]['movimentacoes'][$i]->valor;
                                                     }
-                                                    if ($movimentacoes_mes[$m]['movimentacoes'][$i]->novo && $movimentacoes_mes[$m]['movimentacoes'][$i]->tipo == 'gasto') {
-                                                        $total_novo += $movimentacoes_mes[$m]['movimentacoes'][$i]->valor;
-                                                    }
+                                                }
+                                                if ($movimentacoes_mes[$m]['movimentacoes'][$i]->novo && $movimentacoes_mes[$m]['movimentacoes'][$i]->tipo == 'gasto') {
+                                                    $total_novo += $movimentacoes_mes[$m]['movimentacoes'][$i]->valor;
                                                 }
                                             @endphp
                                         @endisset
