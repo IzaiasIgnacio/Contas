@@ -80,21 +80,6 @@ class IndexController extends Controller {
         }
         
         $total_atual = $consolidado->where('nome', 'itau')->first()->valor + $consolidado->where('nome', 'casa')->first()->valor;
-        
-        $save = [
-            2 => 60,
-            3 => 170,
-            4 => 160,
-            5 => 150,
-            6 => 140,
-            7 => 130,
-            8 => 120,
-            9 => 110,
-            10 => 100,
-            11 => 90,
-            12 => 80,
-            1 => 70
-        ];
 
         return view('index', [
             'helper' => new \App\Models\Helper(),
@@ -115,8 +100,7 @@ class IndexController extends Controller {
             'saldo_final' => $this->calculoMesAtual(),
             'objetivo' => (1000/30)*(30-$dia),
             'proximo_mes' => date('m', strtotime('first day of +1 month')),
-            'meses' => $this->meses(),
-            'save' => $save
+            'meses' => $this->meses()
         ]);
     }
 
@@ -180,10 +164,10 @@ class IndexController extends Controller {
 
     public function definirValoresFixosMes($data, $movimentacao) {
         $valores_fixos = [
-            // "salario" => [
-            //     'valor' => Consolidado::where('nome', 'salario')->first()->valor,
-            //     'descricao' => null
-            // ],
+            "salario" => [
+                'valor' => Consolidado::where('nome', 'salario')->first()->valor,
+                'descricao' => null
+            ],
             "claro" => [
                 'valor' => 79.9,
                 'descricao' => null
@@ -205,15 +189,15 @@ class IndexController extends Controller {
                 'descricao' => null
             ],
             "m" => [
-                'valor' => 1800,
+                'valor' => 1000,
                 'descricao' => 'Mãe'
             ],
             'luz' => [
-                'valor' => 300,
+                'valor' => 350,
                 'descricao' => null
             ],
             'merc' => [
-                'valor' => 1300,
+                'valor' => 0,
                 'descricao' => 'Mercado'
             ],
             'klini' => [
@@ -221,7 +205,7 @@ class IndexController extends Controller {
                 'descricao' => 'Saúde'
             ],
             'seg' => [
-                'valor' => 5.85,
+                'valor' => 6.14,
                 'descricao' => 'Seguro Cartão Itaú'
             ]
         ];

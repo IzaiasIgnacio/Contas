@@ -531,6 +531,7 @@
                                         $total_mes = 0;
                                         $renda_mes = 0;
                                         $total_planejado = 0;
+                                        $total_novo = 0;
                                     @endphp
                                     @if (!empty($movimentacoes_mes[$m]['salario']))
                                     <tr class="linha_{{$movimentacoes_mes[$m]['salario']->status}} linha_renda">
@@ -574,6 +575,9 @@
                                                     @if ($movimentacoes_mes[$m]['movimentacoes'][$i]->iti)
                                                         <i class="fa fa-info"></i>
                                                     @endif
+                                                    @if ($movimentacoes_mes[$m]['movimentacoes'][$i]->novo)
+                                                        <i class="fa fa-star" style="font-size: 12px;"></i>
+                                                    @endif
                                                 </td>
                                                 <td class="text-right td_valor">{{$helper->format($movimentacoes_mes[$m]['movimentacoes'][$i]->valor)}}</td>
                                             </tr>
@@ -587,6 +591,9 @@
                                                     }
                                                     if ($movimentacoes_mes[$m]['movimentacoes'][$i]->tipo == 'renda') {
                                                         $renda_mes += $movimentacoes_mes[$m]['movimentacoes'][$i]->valor;
+                                                    }
+                                                    if ($movimentacoes_mes[$m]['movimentacoes'][$i]->novo && $movimentacoes_mes[$m]['movimentacoes'][$i]->tipo == 'gasto') {
+                                                        $total_novo += $movimentacoes_mes[$m]['movimentacoes'][$i]->valor;
                                                     }
                                                 }
                                             @endphp
@@ -615,6 +622,10 @@
                                 <tr>
                                     <td>Total</td>
                                     <td class="text-right"><span class="valor_total">{{$helper->format($total_mes)}}</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Novo</td>
+                                    <td class="text-right"><span class="valor_total">{{$helper->format($total_novo)}}</span></td>
                                 </tr>
                                 @if ($m > 0)
                                 <tr>
@@ -712,10 +723,6 @@
                                         <td class="text-right">{{$helper->format($savings_mes[$s]-(10000+$s*1000)+1000-$objetivo)}}</td>
                                     @endif
                                 </tr> -->
-                                <tr>
-                                    <td></td>
-                                    <td class="text-right">{{$save[$movimentacoes_mes[$s]['numero_mes']]*1000}}</td>
-                                </tr>
                             </tfoot>
                         </table>
                     </div>
@@ -734,7 +741,6 @@
                                                 <td class='td_nome_movimentacao' data-toggle="tooltip" data-container="body">
                                                     {{$movimentacoes_terceiros[$t][$i]->nome}}
                                                     @if ($movimentacoes_terceiros[$t][$i]->id_cartao != '')
-                                                        <!-- <i class="fa fa-cc {{$modelCartoes::find($movimentacoes_terceiros[$t][$i]->id_cartao)->sigla}}"></i> -->
                                                         <img style="max-height: 12px;" title="{{$modelCartoes::find($movimentacoes_terceiros[$t][$i]->id_cartao)->rotulo}}"  src="http://localhost/contas/public/imagens/{{$modelCartoes::find($movimentacoes_terceiros[$t][$i]->id_cartao)->nome}}.png">
                                                     @endif
                                                     [{{$movimentacoes_terceiros[$t][$i]->responsavel}}]
